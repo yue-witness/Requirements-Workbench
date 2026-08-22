@@ -1,0 +1,42 @@
+{
+  "schema_version": "0.2",
+  "project": "RequestBridge",
+  "generated_utc": "2026-08-22T04:15:20.572938+00:00",
+  "selected_modules": [
+    "requirements",
+    "fishbone",
+    "context",
+    "use-cases",
+    "activity",
+    "wireframe"
+  ],
+  "revision_target": null,
+  "untouched_modules_verified": [],
+  "quality_warnings": [],
+  "files": {
+    "requirements": {
+      "path": "requirements.md",
+      "sha256": "7e829adbf2f7190ab96f37d3039fa3b2140372a66743b762ed59020a6531d151"
+    },
+    "fishbone": {
+      "path": "fishbone.mmd",
+      "sha256": "15c371fa6dec3841c4d0acade2babb4c8ae66cdcf7d2934d0107e67da8bcb508"
+    },
+    "context": {
+      "path": "context.mmd",
+      "sha256": "00fa6a1e3be1d58533c8a4d493c313e59363c40a9c62df4be0dd347f960cf69b"
+    },
+    "use-cases": {
+      "path": "use-cases.md",
+      "sha256": "874ff02f0bb22a11a24f89f04383a309e50dd0dacba9ab3efabdedd89e5b562b"
+    },
+    "activity": {
+      "path": "activity.mmd",
+      "sha256": "eb1fe7c2a4cc84e349f5bf02e7782d73a2ca22339a0641fe28369f668b00764f"
+    },
+    "wireframe": {
+      "path": "wireframe.html",
+      "sha256": "1b55bd60496de4f5d198b3802e7a42c0ddc7169a09ad9cc5952fb9288e5f3669"
+    }
+  }
+}

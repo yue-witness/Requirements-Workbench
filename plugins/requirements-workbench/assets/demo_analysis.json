@@ -1,0 +1,346 @@
+{
+  "project": {
+    "name": "RequestBridge",
+    "scenario_summary": "A broadly usable service-request and appointment platform for community requesters, operational staff, and service managers.",
+    "analysis_status": "demo draft for stakeholder review",
+    "review_mode": "guided",
+    "minimum_requirements": 11,
+    "binding_terms": "Must and shall are binding in this specification. Proposed requirements remain subject to stakeholder approval."
+  },
+  "selected_modules": [
+    "requirements",
+    "fishbone",
+    "context",
+    "use-cases",
+    "activity",
+    "wireframe"
+  ],
+  "plain_language_summary": "RequestBridge helps a person explain a service need, submit it safely, and follow what happens next. Staff can clarify, route, schedule, and close requests. The draft keeps unresolved policy choices visible instead of guessing them.",
+  "glossary": [
+    {"term": "System boundary", "meaning": "The functions owned by RequestBridge, separated from people and external services."},
+    {"term": "Triage", "meaning": "A staff review that decides what information or service path a request needs."},
+    {"term": "Acceptance check", "meaning": "An observable test that helps reviewers decide whether a requirement has been met."},
+    {"term": "Confidence", "meaning": "Whether a requirement is explicit in the scenario, inferred from it, or proposed for discussion."}
+  ],
+  "stakeholders": [
+    "Requester",
+    "Service Staff",
+    "Service Manager",
+    "Identity Service",
+    "Email Service",
+    "SMS Service",
+    "File Storage Service"
+  ],
+  "assumptions": [
+    "A verified email link can identify a requester who has no organisational account.",
+    "Service managers own the approved categories and routing rules.",
+    "Email, SMS, and file storage are external services with separate availability and security controls."
+  ],
+  "open_questions": [
+    "Which request types are in scope for the first release?",
+    "What criteria define urgency, and who may change those criteria?",
+    "Which roles may view each class of sensitive information?",
+    "What retention period applies to requests, messages, attachments, and audit records?",
+    "Which response-time, availability, and notification targets are binding?",
+    "When may a requester cancel or update a submitted request?",
+    "Which languages and accessibility conformance target must the first release support?"
+  ],
+  "requirements": [
+    {
+      "id": "FR-01", "category": "functional", "priority": "must",
+      "statement": "The system shall identify a requester through an approved organisational account or verified email link before protected request details are displayed.",
+      "rationale": "A verified identity is needed to protect request information while still supporting people who do not have an organisational account.",
+      "evidence": "The scenario permits an organisational account or verified email link.",
+      "acceptance": "Given either approved identity method, when verification succeeds, then the requester can access only requests associated with that verified identity.",
+      "confidence": "explicit"
+    },
+    {
+      "id": "FR-02", "category": "functional", "priority": "must",
+      "statement": "The system shall allow a requester to select a request type and describe the service need in everyday language.",
+      "rationale": "Staff need a minimum description to understand and route the request, while requesters should not need professional terminology.",
+      "evidence": "The scenario requires a request type and plain-language description.",
+      "acceptance": "Given an identified requester, when a draft is created, then the requester can save one request type and a free-text description.",
+      "confidence": "explicit"
+    },
+    {
+      "id": "FR-03", "category": "functional", "priority": "must",
+      "statement": "The system shall allow a requester to record preferred contact channel, language needs, accessibility needs, and proposed availability when those details are relevant.",
+      "rationale": "These preferences help staff communicate and arrange an accessible service interaction.",
+      "evidence": "The scenario lists contact, language, accessibility, and availability information.",
+      "acceptance": "Given a draft request, when the requester records a preference, then the review summary displays the saved value before submission.",
+      "confidence": "explicit"
+    },
+    {
+      "id": "FR-04", "category": "functional", "priority": "should",
+      "statement": "The system shall allow a requester to attach supporting information when the selected request type permits attachments.",
+      "rationale": "Optional supporting information may help staff understand a request without forcing every requester to upload a file.",
+      "evidence": "The scenario states that supporting information may be attached.",
+      "acceptance": "Given an attachment-enabled request type, when an allowed file is uploaded, then the draft lists its name and upload status before submission.",
+      "confidence": "explicit"
+    },
+    {
+      "id": "FR-05", "category": "functional", "priority": "must",
+      "statement": "The system shall present a complete, validated review summary before a requester can submit a request.",
+      "rationale": "Early validation reduces avoidable clarification while the summary lets the requester correct misunderstandings.",
+      "evidence": "The scenario requires validation and a pre-submission review summary.",
+      "acceptance": "Given an incomplete draft, when submission is attempted, then each missing field is identified; given a complete draft, then a summary is shown before final confirmation.",
+      "confidence": "explicit"
+    },
+    {
+      "id": "FR-06", "category": "functional", "priority": "must",
+      "statement": "The system shall obtain the requester's recorded consent before creating a submitted request.",
+      "rationale": "The organisation needs evidence that the requester agreed to the stated use of submitted information.",
+      "evidence": "The scenario requires consent before submission.",
+      "acceptance": "Given a complete draft, when consent has not been recorded, then final submission is unavailable; when consent is recorded, submission can proceed.",
+      "confidence": "explicit"
+    },
+    {
+      "id": "FR-07", "category": "functional", "priority": "must",
+      "statement": "The system shall create a unique tracking reference and an initial status when a valid request is submitted.",
+      "rationale": "A stable reference lets requesters and staff discuss and trace the same request.",
+      "evidence": "The scenario requires a tracking reference and status viewing.",
+      "acceptance": "Given a valid confirmed submission, when processing succeeds, then exactly one request, one unique reference, and one initial status are stored and displayed.",
+      "confidence": "explicit"
+    },
+    {
+      "id": "FR-08", "category": "functional", "priority": "must",
+      "statement": "The system shall display the current status and a plain-language history for each request accessible to the verified requester.",
+      "rationale": "Visible progress reduces uncertainty and unnecessary status enquiries.",
+      "evidence": "The scenario states that requesters can view status.",
+      "acceptance": "Given an accessible request, when its status page is opened, then the current status and time-ordered history are displayed without internal-only notes.",
+      "confidence": "explicit"
+    },
+    {
+      "id": "FR-09", "category": "functional", "priority": "must",
+      "statement": "The system shall preserve each authorised clarification exchange against the original request.",
+      "rationale": "Staff need a controlled way to resolve missing or ambiguous information without losing the request history.",
+      "evidence": "The scenario states that triage staff can ask for clarification.",
+      "acceptance": "Given an assigned staff member, when clarification is requested and the requester replies, then both messages are linked to the request and visible to authorised participants.",
+      "confidence": "explicit"
+    },
+    {
+      "id": "FR-10", "category": "functional", "priority": "must",
+      "statement": "The system shall allow authorised service staff to classify and assign a request according to approved categories and routing rules.",
+      "rationale": "Consistent classification and assignment help a request reach the responsible team.",
+      "evidence": "The scenario gives triage staff assignment responsibility and managers ownership of routing rules.",
+      "acceptance": "Given an unassigned request and active routing rules, when staff confirms a category and destination, then one current assignment and the rule or reason used are recorded.",
+      "confidence": "explicit"
+    },
+    {
+      "id": "FR-11", "category": "functional", "priority": "should",
+      "statement": "The system shall allow authorised service staff to propose and confirm an appointment time when a service interaction requires an appointment.",
+      "rationale": "Some requests require a scheduled conversation rather than an asynchronous response.",
+      "evidence": "The scenario includes booking a conversation with service staff.",
+      "acceptance": "Given a request requiring an appointment, when requester and staff confirm an available time, then one appointment is linked to the request and shown in its history.",
+      "confidence": "explicit"
+    },
+    {
+      "id": "FR-12", "category": "functional", "priority": "must",
+      "statement": "The system shall require an authorised staff member to record a reason when a request is rejected or closed.",
+      "rationale": "A recorded reason supports transparency, audit, and meaningful communication to the requester.",
+      "evidence": "The scenario permits rejection with a reason and closure of completed work.",
+      "acceptance": "Given an open request, when rejection or closure is attempted without a reason, then the status change is blocked; with a reason, the change is recorded.",
+      "confidence": "explicit"
+    },
+    {
+      "id": "FR-13", "category": "functional", "priority": "should",
+      "statement": "The system shall send a status notification through each approved channel selected for the request when a configured notification event occurs.",
+      "rationale": "Timely notifications reduce the need for requesters to repeatedly check status while respecting organisational channel rules.",
+      "evidence": "The scenario states that email and SMS notifications may be enabled; exact rules are unresolved.",
+      "acceptance": "Given an enabled channel and configured event, when the event occurs, then one notification request is sent and its delivery result is recorded.",
+      "confidence": "inferred"
+    },
+    {
+      "id": "FR-14", "category": "functional", "priority": "must",
+      "statement": "The system shall allow an authorised service manager to maintain request categories and routing rules with effective dates.",
+      "rationale": "Managers need controlled configuration so service changes do not require hidden or ad hoc routing decisions.",
+      "evidence": "The scenario assigns categories and routing rules to service managers.",
+      "acceptance": "Given an authorised manager, when a valid rule version is activated, then new triage decisions use it and existing audit history retains the previous version.",
+      "confidence": "explicit"
+    },
+    {
+      "id": "FR-15", "category": "functional", "priority": "should",
+      "statement": "The system shall provide authorised service managers with aggregate request counts by approved category, status, and time period.",
+      "rationale": "Aggregated demand information supports service planning without exposing individual request details.",
+      "evidence": "The scenario states that managers view aggregate demand.",
+      "acceptance": "Given stored requests, when a manager selects filters, then the system displays counts and excludes request descriptions, attachments, and direct identifiers.",
+      "confidence": "explicit"
+    },
+    {
+      "id": "QR-01", "category": "quality", "priority": "must",
+      "statement": "The system shall restrict request details, attachments, messages, and internal notes to approved roles for the relevant service context.",
+      "rationale": "Requests may contain sensitive information that should not be visible merely because a person can use the platform.",
+      "evidence": "The scenario requires sensitive information to be limited to authorised roles.",
+      "acceptance": "Given a user without an approved role, when protected request content is requested, then access is denied and the attempt is recorded.",
+      "confidence": "explicit"
+    },
+    {
+      "id": "QR-02", "category": "quality", "priority": "must",
+      "statement": "The system shall support labelled controls, keyboard operation, visible focus, plain-language guidance, and layouts without horizontal page scrolling at a 480-pixel viewport.",
+      "rationale": "The service must be understandable and operable for first-time non-technical users and people using different devices or input methods.",
+      "evidence": "The scenario requires an interface suitable for first-time users while remaining efficient for staff.",
+      "acceptance": "Given the primary requester flow at 480 pixels, when a keyboard-only reviewer completes it, then every control is labelled, reachable, visibly focused, and usable without horizontal scrolling.",
+      "confidence": "inferred"
+    },
+    {
+      "id": "QR-03", "category": "quality", "priority": "should",
+      "statement": "The system shall display interactive pages within two seconds for at least 95 percent of measured requests under the approved reference load.",
+      "rationale": "A measurable placeholder allows stakeholders to discuss responsiveness without relying on the vague word fast.",
+      "evidence": "Proposed quality target because the scenario says service targets are not yet agreed.",
+      "acceptance": "Given the approved reference environment and load profile, when a representative test is run, then at least 95 percent of measured page responses complete within two seconds.",
+      "confidence": "proposed"
+    },
+    {
+      "id": "BR-01", "category": "business", "priority": "must",
+      "statement": "The system must require authorised human confirmation before a high-impact eligibility, rejection, or service-access decision takes effect.",
+      "rationale": "Human confirmation prevents an automated classification or routing suggestion from becoming an unsupported high-impact decision.",
+      "evidence": "The scenario explicitly prohibits automatic high-impact decisions.",
+      "acceptance": "Given an automated suggestion, when no authorised person has confirmed the decision, then the system does not apply a high-impact eligibility, rejection, or access outcome.",
+      "confidence": "explicit"
+    }
+  ],
+  "fishbone": {
+    "problem": "Service requests reach the wrong team or stall before resolution",
+    "categories": [
+      {"name": "People", "causes": ["Requesters may not know organisational service terminology", "Staff may interpret similar needs differently"]},
+      {"name": "Process", "causes": ["Urgency and cancellation rules are unresolved", "Clarification ownership may be unclear"]},
+      {"name": "Information", "causes": ["Descriptions may omit facts staff need", "Categories may overlap or use unfamiliar language"]},
+      {"name": "Technology", "causes": ["Identity or notification services may be unavailable", "Attachments may fail validation or upload"]},
+      {"name": "Governance", "causes": ["Role access and retention rules are not approved", "Routing-rule changes may lack accountable ownership"]}
+    ]
+  },
+  "context": {
+    "system": "RequestBridge",
+    "actors": ["Requester", "Service Staff", "Service Manager", "Identity Service", "Email Service", "SMS Service", "File Storage Service"],
+    "flows": [
+      {"from": "Requester", "to": "RequestBridge", "label": "Request details, preferences, consent, replies"},
+      {"from": "RequestBridge", "to": "Requester", "label": "Reference, status, clarification, appointment"},
+      {"from": "Service Staff", "to": "RequestBridge", "label": "Triage, assignment, clarification, outcome"},
+      {"from": "Service Manager", "to": "RequestBridge", "label": "Categories, routing rules, report filters"},
+      {"from": "RequestBridge", "to": "Identity Service", "label": "Identity verification request"},
+      {"from": "Identity Service", "to": "RequestBridge", "label": "Verified identity and role"},
+      {"from": "RequestBridge", "to": "Email Service", "label": "Approved email notification"},
+      {"from": "RequestBridge", "to": "SMS Service", "label": "Approved SMS notification"},
+      {"from": "RequestBridge", "to": "File Storage Service", "label": "Protected attachment storage and retrieval"}
+    ]
+  },
+  "use_cases": [
+    {
+      "id": "UC-01", "name": "Submit a service request", "primary_actor": "Requester",
+      "goal": "Explain a need and receive a traceable submitted request.",
+      "stakeholders": ["Requester: wants an understandable, accessible submission process.", "Service Staff: need enough accurate information to begin triage."],
+      "preconditions": ["The requester can use an approved identity method."],
+      "trigger": "The requester selects Start a request.",
+      "main_flow": ["The system verifies the requester.", "The requester selects a request type and describes the need.", "The requester records relevant contact, language, accessibility, and availability preferences.", "The system validates required information.", "The system displays a review summary and consent statement.", "The requester confirms consent and submits.", "The system creates a unique reference and initial status."],
+      "alternatives": ["A1: The requester saves a draft and returns later.", "A2: The requester removes or replaces an invalid attachment."],
+      "exceptions": ["E1: If identity verification fails, protected submission is not created.", "E2: If required information is missing, the system identifies each missing item."],
+      "postconditions": ["One submitted request with a unique reference exists, or the draft remains unsubmitted."],
+      "business_rules": ["BR-01 requires human confirmation for any later high-impact decision."],
+      "related_requirements": ["FR-01", "FR-02", "FR-03", "FR-04", "FR-05", "FR-06", "FR-07", "QR-02"]
+    },
+    {
+      "id": "UC-02", "name": "Triage a request", "primary_actor": "Service Staff",
+      "goal": "Clarify and assign a request to an appropriate service path.",
+      "stakeholders": ["Requester: wants a fair, understandable next step.", "Service Manager: wants approved rules used consistently."],
+      "preconditions": ["The request is submitted and the staff member is authorised."],
+      "trigger": "An untriaged request enters the staff queue.",
+      "main_flow": ["The system displays the request and applicable routing information.", "The staff member reviews the request.", "The staff member selects a category and destination.", "The system records the assignment and decision basis.", "The system updates the requester-visible status."],
+      "alternatives": ["A1: The staff member asks for clarification and pauses assignment.", "A2: The staff member records a reason and rejects an unsupported request."],
+      "exceptions": ["E1: If no destination is available, the request remains unassigned and the conflict is visible."],
+      "postconditions": ["The request is assigned, awaiting clarification, or rejected with a recorded reason."],
+      "business_rules": ["Only effective approved routing rules may be applied.", "BR-01 prevents an automated suggestion from taking effect without human confirmation."],
+      "related_requirements": ["FR-09", "FR-10", "FR-12", "FR-14", "QR-01", "BR-01"]
+    },
+    {
+      "id": "UC-03", "name": "Arrange an appointment", "primary_actor": "Service Staff",
+      "goal": "Agree a service conversation time with the requester.",
+      "stakeholders": ["Requester and Service Staff: need an available time and clear confirmation."],
+      "preconditions": ["The request requires an appointment and has an assigned service team."],
+      "trigger": "The staff member selects Arrange appointment.",
+      "main_flow": ["The system displays applicable requester availability.", "The staff member proposes an available time.", "The requester confirms the proposed time.", "The system links the appointment to the request and sends approved notifications."],
+      "alternatives": ["A1: The requester declines and supplies different availability."],
+      "exceptions": ["E1: If the time becomes unavailable, the system preserves the request and asks staff to propose another time."],
+      "postconditions": ["One confirmed appointment is linked to the request, or scheduling remains pending."],
+      "business_rules": ["Notification channels and timing must follow approved configuration."],
+      "related_requirements": ["FR-03", "FR-11", "FR-13"]
+    },
+    {
+      "id": "UC-04", "name": "Maintain service rules", "primary_actor": "Service Manager",
+      "goal": "Keep categories and routing rules current and accountable.",
+      "stakeholders": ["Service Staff: need understandable current rules.", "Requesters: need consistent routing."],
+      "preconditions": ["The manager is authenticated and authorised."],
+      "trigger": "The manager opens service configuration.",
+      "main_flow": ["The manager creates or edits a category or routing rule.", "The system validates the proposed effective dates and references.", "The manager reviews and activates the rule version.", "The system records the change and applies it to new triage decisions."],
+      "alternatives": ["A1: The manager schedules a future effective date."],
+      "exceptions": ["E1: If the change would create an invalid destination, activation is blocked with an explanation."],
+      "postconditions": ["One accountable rule version is active or scheduled."],
+      "business_rules": ["Historical decisions retain the rule version that supported them."],
+      "related_requirements": ["FR-14", "FR-15"]
+    }
+  ],
+  "activity": {
+    "title": "Submit and triage a service request",
+    "start": "S1",
+    "steps": [
+      {"id": "S1", "label": "Verify requester identity", "next": "S2"},
+      {"id": "S2", "label": "Describe need and preferences", "next": "D1"},
+      {"id": "D1", "label": "Validate draft", "condition": "Required information complete?", "yes": "S3", "no": "S2"},
+      {"id": "S3", "label": "Review summary and confirm consent", "next": "S4"},
+      {"id": "S4", "label": "Create reference and initial status", "next": "S5"},
+      {"id": "S5", "label": "Authorised staff review request", "next": "D2"},
+      {"id": "D2", "label": "Assess information", "condition": "Clarification needed?", "yes": "S6", "no": "D3"},
+      {"id": "S6", "label": "Request and receive clarification", "next": "S5"},
+      {"id": "D3", "label": "Confirm service path", "condition": "Request supported?", "yes": "S7", "no": "S8"},
+      {"id": "S7", "label": "Assign service team and update status", "next": "END"},
+      {"id": "S8", "label": "Record rejection reason after human confirmation", "next": "END"}
+    ]
+  },
+  "wireframe": {
+    "title": "RequestBridge guided request flow",
+    "screens": [
+      {
+        "name": "Tell us what you need",
+        "components": [
+          {"kind": "heading", "label": "Start a service request", "trace_ids": ["UC-01", "FR-02"]},
+          {"kind": "note", "label": "You do not need professional terms. Describe what is happening in your own words.", "trace_ids": ["QR-02"]},
+          {"kind": "select", "label": "What kind of help are you looking for?", "options": ["Information or advice", "Book a conversation", "Help with an existing request", "Something else / not sure"], "trace_ids": ["FR-02"]},
+          {"kind": "input", "label": "What would you like help with?", "trace_ids": ["FR-02"]},
+          {"kind": "select", "label": "How should we contact you?", "options": ["Email", "SMS", "Either"], "trace_ids": ["FR-03"]},
+          {"kind": "input", "label": "Language or accessibility needs (optional)", "trace_ids": ["FR-03", "QR-02"]},
+          {"kind": "button", "label": "Review my request", "trace_ids": ["FR-05"]}
+        ]
+      },
+      {
+        "name": "Review and consent",
+        "components": [
+          {"kind": "heading", "label": "Check your request", "trace_ids": ["FR-05"]},
+          {"kind": "text", "label": "Request type: Book a conversation"},
+          {"kind": "text", "label": "Contact preference: Email"},
+          {"kind": "note", "label": "Please confirm that the organisation may use this information to respond to your request.", "trace_ids": ["FR-06"]},
+          {"kind": "button", "label": "Confirm and submit", "trace_ids": ["FR-06", "FR-07"]},
+          {"kind": "button", "label": "Go back and edit", "trace_ids": ["FR-05"]}
+        ]
+      },
+      {
+        "name": "Track progress",
+        "components": [
+          {"kind": "heading", "label": "Request RB-1042", "trace_ids": ["FR-07", "FR-08"]},
+          {"kind": "note", "label": "Status: We need more information", "trace_ids": ["FR-08", "FR-09"]},
+          {"kind": "text", "label": "A staff member asked: Which days are you available?"},
+          {"kind": "input", "label": "Your reply", "trace_ids": ["FR-09"]},
+          {"kind": "button", "label": "Send reply", "trace_ids": ["FR-09"]}
+        ]
+      },
+      {
+        "name": "Staff triage",
+        "components": [
+          {"kind": "heading", "label": "Review request RB-1042", "trace_ids": ["UC-02"]},
+          {"kind": "select", "label": "Request category", "options": ["Information", "Appointment", "Existing request", "Unclear"], "trace_ids": ["FR-10"]},
+          {"kind": "select", "label": "Assign to", "options": ["General service team", "Specialist team", "Ask for clarification"], "trace_ids": ["FR-10"]},
+          {"kind": "note", "label": "High-impact outcomes require authorised human confirmation.", "trace_ids": ["BR-01"]},
+          {"kind": "button", "label": "Confirm assignment", "trace_ids": ["FR-10", "BR-01"]}
+        ]
+      }
+    ]
+  }
+}

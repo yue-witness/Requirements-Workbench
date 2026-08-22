@@ -1,0 +1,20 @@
+flowchart LR
+    subgraph BOUNDARY[System boundary]
+        SYSTEM["RequestBridge"]
+    end
+    ACT_bcdf8d37["Requester"]
+    ACT_2b26a038["Service Staff"]
+    ACT_3afb15c9["Service Manager"]
+    ACT_644c8e2d["Identity Service"]
+    ACT_9e5d6800["Email Service"]
+    ACT_a9bba0cc["SMS Service"]
+    ACT_169e78df["File Storage Service"]
+    ACT_bcdf8d37 -->|"Request details, preferences, consent, replies"| SYSTEM
+    SYSTEM -->|"Reference, status, clarification, appointment"| ACT_bcdf8d37
+    ACT_2b26a038 -->|"Triage, assignment, clarification, outcome"| SYSTEM
+    ACT_3afb15c9 -->|"Categories, routing rules, report filters"| SYSTEM
+    SYSTEM -->|"Identity verification request"| ACT_644c8e2d
+    ACT_644c8e2d -->|"Verified identity and role"| SYSTEM
+    SYSTEM -->|"Approved email notification"| ACT_9e5d6800
+    SYSTEM -->|"Approved SMS notification"| ACT_a9bba0cc
+    SYSTEM -->|"Protected attachment storage and retrieval"| ACT_169e78df

@@ -1,0 +1,20 @@
+requirement_id,category,evidence,use_cases,selected_artefacts,confidence
+FR-01,functional,The scenario permits an organisational account or verified email link.,UC-01,requirements;fishbone;context;use-cases;activity;wireframe,explicit
+FR-02,functional,The scenario requires a request type and plain-language description.,UC-01,requirements;fishbone;context;use-cases;activity;wireframe,explicit
+FR-03,functional,"The scenario lists contact, language, accessibility, and availability information.",UC-01;UC-03,requirements;fishbone;context;use-cases;activity;wireframe,explicit
+FR-04,functional,The scenario states that supporting information may be attached.,UC-01,requirements;fishbone;context;use-cases;activity;wireframe,explicit
+FR-05,functional,The scenario requires validation and a pre-submission review summary.,UC-01,requirements;fishbone;context;use-cases;activity;wireframe,explicit
+FR-06,functional,The scenario requires consent before submission.,UC-01,requirements;fishbone;context;use-cases;activity;wireframe,explicit
+FR-07,functional,The scenario requires a tracking reference and status viewing.,UC-01,requirements;fishbone;context;use-cases;activity;wireframe,explicit
+FR-08,functional,The scenario states that requesters can view status.,,requirements;fishbone;context;use-cases;activity;wireframe,explicit
+FR-09,functional,The scenario states that triage staff can ask for clarification.,UC-02,requirements;fishbone;context;use-cases;activity;wireframe,explicit
+FR-10,functional,The scenario gives triage staff assignment responsibility and managers ownership of routing rules.,UC-02,requirements;fishbone;context;use-cases;activity;wireframe,explicit
+FR-11,functional,The scenario includes booking a conversation with service staff.,UC-03,requirements;fishbone;context;use-cases;activity;wireframe,explicit
+FR-12,functional,The scenario permits rejection with a reason and closure of completed work.,UC-02,requirements;fishbone;context;use-cases;activity;wireframe,explicit
+FR-13,functional,The scenario states that email and SMS notifications may be enabled; exact rules are unresolved.,UC-03,requirements;fishbone;context;use-cases;activity;wireframe,inferred
+FR-14,functional,The scenario assigns categories and routing rules to service managers.,UC-02;UC-04,requirements;fishbone;context;use-cases;activity;wireframe,explicit
+FR-15,functional,The scenario states that managers view aggregate demand.,UC-04,requirements;fishbone;context;use-cases;activity;wireframe,explicit
+QR-01,quality,The scenario requires sensitive information to be limited to authorised roles.,UC-02,requirements;fishbone;context;use-cases;activity;wireframe,explicit
+QR-02,quality,The scenario requires an interface suitable for first-time users while remaining efficient for staff.,UC-01,requirements;fishbone;context;use-cases;activity;wireframe,inferred
+QR-03,quality,Proposed quality target because the scenario says service targets are not yet agreed.,,requirements;fishbone;context;use-cases;activity;wireframe,proposed
+BR-01,business,The scenario explicitly prohibits automatic high-impact decisions.,UC-02,requirements;fishbone;context;use-cases;activity;wireframe,explicit

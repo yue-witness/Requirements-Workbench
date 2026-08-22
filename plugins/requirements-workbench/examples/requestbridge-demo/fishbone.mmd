@@ -1,0 +1,21 @@
+flowchart LR
+    EFFECT(["Service requests reach the wrong team or stall before resolution"])
+    CAT1["People"] --> EFFECT
+    C1_1["Requesters may not know organisational service terminology"] --> CAT1
+    C1_2["Staff may interpret similar needs differently"] --> CAT1
+    CAT2["Process"] --> EFFECT
+    C2_1["Urgency and cancellation rules are unresolved"] --> CAT2
+    C2_2["Clarification ownership may be unclear"] --> CAT2
+    CAT3["Information"] --> EFFECT
+    C3_1["Descriptions may omit facts staff need"] --> CAT3
+    C3_2["Categories may overlap or use unfamiliar language"] --> CAT3
+    CAT4["Technology"] --> EFFECT
+    C4_1["Identity or notification services may be unavailable"] --> CAT4
+    C4_2["Attachments may fail validation or upload"] --> CAT4
+    CAT5["Governance"] --> EFFECT
+    C5_1["Role access and retention rules are not approved"] --> CAT5
+    C5_2["Routing-rule changes may lack accountable ownership"] --> CAT5
+    classDef effect fill:#fee2e2,stroke:#991b1b,stroke-width:2px;
+    classDef category fill:#dbeafe,stroke:#1d4ed8;
+    class EFFECT effect;
+    class CAT1,CAT2,CAT3,CAT4,CAT5 category;

@@ -1,0 +1,13 @@
+{
+  "scenario": "A regional service organisation wants RequestBridge, a web application that any community member can use to request help or book a conversation with service staff. A requester may sign in with an organisational account or verified email link, choose a request type, explain the need in everyday language, select a preferred contact channel, state language or accessibility needs, propose availability, and optionally attach supporting information. Before submission, the system validates required information, displays a review summary, and asks for consent. The requester receives a tracking reference and can view status. Triage staff can ask for clarification, assign the request to a team, schedule an appointment, reject an unsupported request with a reason, or close completed work. Service managers maintain categories and routing rules and view aggregate demand. Email and SMS notifications may be enabled. Sensitive information must be limited to authorised roles and significant actions must be auditable. The system must not make an automatic high-impact eligibility decision. Urgency criteria, retention periods, service targets, cancellation cut-offs, and notification rules are not yet agreed. The interface must be understandable to first-time non-technical users while remaining efficient for experienced staff.",
+  "selected_modules": [
+    "requirements",
+    "fishbone",
+    "context",
+    "use-cases",
+    "activity",
+    "wireframe"
+  ],
+  "review_mode": "guided",
+  "review_focus": "Check clarity for first-time users, requirement quality, uncertainty, traceability, privacy, accessibility, and independent module revision."
+}

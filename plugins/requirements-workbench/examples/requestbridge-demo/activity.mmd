@@ -1,0 +1,29 @@
+flowchart TD
+    START(["Start: Submit and triage a service request"])
+    END_NODE([End])
+    S1["Verify requester identity"]
+    S2["Describe need and preferences"]
+    D1{"Validate draft: Required information complete?"}
+    S3["Review summary and confirm consent"]
+    S4["Create reference and initial status"]
+    S5["Authorised staff review request"]
+    D2{"Assess information: Clarification needed?"}
+    S6["Request and receive clarification"]
+    D3{"Confirm service path: Request supported?"}
+    S7["Assign service team and update status"]
+    S8["Record rejection reason after human confirmation"]
+    START --> S1
+    S1 --> S2
+    S2 --> D1
+    D1 -->|Yes| S3
+    D1 -->|No| S2
+    S3 --> S4
+    S4 --> S5
+    S5 --> D2
+    D2 -->|Yes| S6
+    D2 -->|No| D3
+    S6 --> S5
+    D3 -->|Yes| S7
+    D3 -->|No| S8
+    S7 --> END_NODE
+    S8 --> END_NODE

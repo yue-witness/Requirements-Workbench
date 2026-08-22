@@ -1,0 +1,20 @@
+{
+  "name": "requirements-workbench",
+  "interface": {
+    "displayName": "Requirements Workbench"
+  },
+  "plugins": [
+    {
+      "name": "requirements-workbench",
+      "source": {
+        "source": "local",
+        "path": "./plugins/requirements-workbench"
+      },
+      "policy": {
+        "installation": "AVAILABLE",
+        "authentication": "ON_INSTALL"
+      },
+      "category": "Productivity"
+    }
+  ]
+}

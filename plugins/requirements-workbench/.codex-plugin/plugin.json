@@ -1,0 +1,38 @@
+{
+  "name": "requirements-workbench",
+  "version": "0.2.0",
+  "description": "Turn software ideas into selectable, traceable, independently revisable requirements artefacts.",
+  "author": {
+    "name": "Requirements Workbench contributors",
+    "url": "https://github.com/yue-witness"
+  },
+  "homepage": "https://github.com/yue-witness/Requirements-Workbench",
+  "repository": "https://github.com/yue-witness/Requirements-Workbench",
+  "license": "MIT",
+  "keywords": [
+    "requirements-engineering",
+    "requirements-analysis",
+    "traceability",
+    "wireframe"
+  ],
+  "skills": "./skills/",
+  "interface": {
+    "displayName": "Requirements Workbench",
+    "shortDescription": "Turn software ideas into reviewable requirements artefacts.",
+    "longDescription": "Requirements Workbench supports first-time contributors and experienced analysts. It explains unresolved questions in plain language, then produces traceable requirements, fishbone, context, use-case, activity, and wireframe modules that can be revised independently.",
+    "developerName": "Requirements Workbench contributors",
+    "category": "Productivity",
+    "capabilities": [
+      "requirements-analysis",
+      "diagram-generation",
+      "module-revision"
+    ],
+    "websiteURL": "https://github.com/yue-witness/Requirements-Workbench",
+    "defaultPrompt": [
+      "Turn my software idea into clear, reviewable requirements.",
+      "Analyse stakeholder notes and generate traceable artefacts.",
+      "Revise one requirements module without changing the others."
+    ],
+    "brandColor": "#173F5F"
+  }
+}

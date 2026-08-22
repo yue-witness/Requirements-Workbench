@@ -1,0 +1,22 @@
+# Changelog
+
+All notable changes to Requirements Workbench are documented here.
+
+## [0.2.0] - 2026-08-23
+
+### Added
+
+- Guided, standard, and professional requirements-analysis modes.
+- Six selectable artefact modules: requirements, fishbone, context, use cases, activity, and wireframe.
+- Canonical JSON analysis, review index, traceability CSV, and SHA-256 manifest.
+- Independent module revision with non-target hash preservation checks.
+- Deterministic validation and an eight-test regression suite.
+- Generic RequestBridge example and bilingual English/Chinese documentation.
+- Repository marketplace metadata and reproducible release packaging.
+
+### Distribution boundary
+
+- The public plugin is domain-neutral.
+- Project-specific count gates are optional data fields and are not global plugin rules.
+
+[0.2.0]: https://github.com/yue-witness/Requirements-Workbench/releases/tag/v0.2.0
