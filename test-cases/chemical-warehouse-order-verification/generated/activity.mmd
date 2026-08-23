@@ -1,0 +1,24 @@
+flowchart TD
+    START(["Start: Capture, confirm, and retrieve order shipment evidence"])
+    END_NODE([End])
+    S1["Select order and open its Order Evidence Record"]
+    S2["Capture product quantities and lot numbers through an approved integrated method"]
+    S3["Capture photographs and associate them with order lines and lots"]
+    S4["Review consolidated order evidence"]
+    D1{"Check evidence: Required evidence complete and consistent?"}
+    S5["Request dispatch confirmation under the stakeholder-approved rule"]
+    S6["Preserve the dispatch-confirmed evidence version"]
+    D2{"Assess follow-up need: Order report or discrepancy review requested?"}
+    S7["Retrieve the order and export its comprehensive report"]
+    START --> S1
+    S1 --> S2
+    S2 --> S3
+    S3 --> S4
+    S4 --> D1
+    D1 -->|Yes| S5
+    D1 -->|No| S2
+    S5 --> S6
+    S6 --> D2
+    D2 -->|Yes| S7
+    D2 -->|No| END_NODE
+    S7 --> END_NODE

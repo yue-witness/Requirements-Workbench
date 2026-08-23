@@ -1,0 +1,1022 @@
+{
+  "project": {
+    "name": "Chemical Warehouse Order Verification System",
+    "scenario_summary": "A chemical warehouse handling 25 to 30 pallet shipments per week needs one order-centred record that combines quantities, lot numbers, and pre-dispatch photographs so shipment claims can be checked efficiently.",
+    "analysis_status": "Professional draft for warehouse stakeholder review",
+    "review_mode": "professional",
+    "minimum_requirements": 0,
+    "binding_terms": "Must and shall are binding in this draft only after stakeholder approval. Inferred and proposed requirements remain visibly unconfirmed; BR-02 is a high-impact proposed dispatch rule and must not be treated as approved while TraceGuard abstains."
+  },
+  "selected_modules": [
+    "requirements",
+    "fishbone",
+    "context",
+    "use-cases",
+    "activity",
+    "wireframe"
+  ],
+  "sources": [
+    {
+      "id": "SRC-01",
+      "title": "User-supplied chemical warehouse test case",
+      "text": "The subject operates a chemical warehouse managing 25 to 30 pallet shipments per week. The operation requires rigorous tracking of individual order inventory, including product quantities, lot numbers, and photographic evidence of the inventory sent out per order.\n\nThe warehouse currently relies on a manual, fragmented tracking system that utilizes Google Sheets. The operator manually updates each order with product quantities and coordinating lot numbers. To combat a recurring issue where customers claim product is missing from their shipments, the operator uses a separate, dedicated mobile phone to photograph each order, capturing the product amounts and lot numbers before dispatch. This disjointed workflow makes order verification inefficient and time-consuming.\n\nThe warehouse operator is seeking a unified system to streamline individual order inventory tracking. The ideal solution will eliminate manual data entry by incorporating barcode scanning or a centralized mobile application. This system must consolidate quantities, lot numbers, and photographic documentation into a single platform, enabling the quick export of comprehensive order reports to verify shipments and resolve customer discrepancies efficiently."
+    }
+  ],
+  "traceguard": {
+    "evidence_spans": {
+      "FR-01": [
+        {
+          "source_id": "SRC-01",
+          "quote": "requires rigorous tracking of individual order inventory"
+        }
+      ],
+      "FR-02": [
+        {
+          "source_id": "SRC-01",
+          "quote": "including product quantities"
+        }
+      ],
+      "FR-03": [
+        {
+          "source_id": "SRC-01",
+          "quote": "lot numbers"
+        }
+      ],
+      "FR-04": [
+        {
+          "source_id": "SRC-01",
+          "quote": "eliminate manual data entry by incorporating barcode scanning or a centralized mobile application"
+        }
+      ],
+      "FR-05": [
+        {
+          "source_id": "SRC-01",
+          "quote": "photographic evidence of the inventory sent out per order"
+        }
+      ],
+      "FR-06": [
+        {
+          "source_id": "SRC-01",
+          "quote": "uses a separate, dedicated mobile phone to photograph each order, capturing the product amounts and lot numbers before dispatch"
+        }
+      ],
+      "FR-07": [
+        {
+          "source_id": "SRC-01",
+          "quote": "consolidate quantities, lot numbers, and photographic documentation into a single platform"
+        }
+      ],
+      "FR-08": [
+        {
+          "source_id": "SRC-01",
+          "quote": "quick export of comprehensive order reports"
+        }
+      ],
+      "FR-09": [
+        {
+          "source_id": "SRC-01",
+          "quote": "comprehensive order reports to verify shipments"
+        }
+      ],
+      "FR-10": [
+        {
+          "source_id": "SRC-01",
+          "quote": "makes order verification inefficient and time-consuming"
+        }
+      ],
+      "FR-11": [
+        {
+          "source_id": "SRC-01",
+          "quote": "resolve customer discrepancies efficiently"
+        }
+      ],
+      "FR-12": [
+        {
+          "source_id": "SRC-01",
+          "quote": "The operator manually updates each order with product quantities and coordinating lot numbers"
+        }
+      ],
+      "FR-13": [
+        {
+          "source_id": "SRC-01",
+          "quote": "photographic evidence of the inventory sent out per order"
+        }
+      ],
+      "QR-01": [
+        {
+          "source_id": "SRC-01",
+          "quote": "consolidate quantities, lot numbers, and photographic documentation into a single platform"
+        }
+      ],
+      "QR-02": [
+        {
+          "source_id": "SRC-01",
+          "quote": "managing 25 to 30 pallet shipments per week"
+        }
+      ],
+      "BR-01": [
+        {
+          "source_id": "SRC-01",
+          "quote": "individual order inventory"
+        }
+      ],
+      "BR-02": [
+        {
+          "source_id": "SRC-01",
+          "quote": "capturing the product amounts and lot numbers before dispatch"
+        }
+      ],
+      "BR-03": [
+        {
+          "source_id": "SRC-01",
+          "quote": "photographic evidence of the inventory sent out per order"
+        }
+      ]
+    },
+    "high_impact_ids": [
+      "BR-02"
+    ],
+    "approvals": [],
+    "terminology": [
+      {
+        "canonical": "Order Evidence Record",
+        "aliases": [
+          "proof bundle",
+          "evidence pack"
+        ]
+      }
+    ]
+  },
+  "plain_language_summary": "The proposed system replaces the fragmented Google Sheets and separate-phone workflow with one record for each order. A warehouse operator can capture product quantities, lot numbers, and shipment photographs together, review the evidence, find the order later, and export a report when a customer reports missing product. The scenario does not yet define barcode standards, report format, user roles, retention, offline operation, existing-data migration, or a measurable meaning of quick export. A proposed rule that blocks dispatch confirmation when evidence is incomplete remains unapproved and is deliberately held by TraceGuard.",
+  "glossary": [
+    {
+      "term": "Order Evidence Record",
+      "meaning": "The consolidated system record for one order, linking its product lines, quantities, lot numbers, photographs, and dispatch state."
+    },
+    {
+      "term": "Order line",
+      "meaning": "One product entry within an order, with its own quantity and one or more applicable lot numbers."
+    },
+    {
+      "term": "Lot number",
+      "meaning": "A batch identifier used to distinguish a specific production lot of a product."
+    },
+    {
+      "term": "Exact evidence span",
+      "meaning": "A verbatim excerpt from the supplied scenario that supports or motivates a requirement."
+    },
+    {
+      "term": "TraceGuard abstain",
+      "meaning": "A high-impact proposal is shown for review but is not accepted until a named reviewer records approval."
+    }
+  ],
+  "stakeholders": [
+    "Warehouse Operator",
+    "Customer",
+    "Warehouse Operations Owner or Authorised Reviewer (role to be confirmed)"
+  ],
+  "assumptions": [
+    "The Warehouse Operator is the primary system user in the first review scope.",
+    "An order may contain multiple product lines and a product line may require one or more lot numbers; the exact cardinality must be confirmed.",
+    "The future system will replace duplicate tracking across Google Sheets and a separate photo library, but migration of historical Google Sheets data is not yet in scope.",
+    "Product or lot labels can provide machine-readable data when barcode capture is selected; supported barcode standards are not yet known.",
+    "Photographs can be captured by or uploaded from an approved warehouse mobile device; device ownership and management rules are not yet known.",
+    "A customer discrepancy is resolved by human review of evidence; the system does not automatically decide liability or the outcome of a claim."
+  ],
+  "open_questions": [
+    "What is the exact relationship among an order, a shipment, and one or more pallets?",
+    "Which product identifiers and barcode symbologies are already present on product and lot labels?",
+    "Does a barcode encode product, lot, and quantity, or must quantity be captured by another method?",
+    "Must the first release support barcode scanning, a centralized mobile application, or both?",
+    "How many photographs are required per order, pallet, product line, or lot, and what must each image visibly show?",
+    "Who may create, edit, dispatch-confirm, view, export, or share an Order Evidence Record?",
+    "May evidence be corrected after dispatch, and if so, what version history and approval are required?",
+    "Should incomplete evidence block dispatch confirmation, warn the operator, or allow an authorised override?",
+    "Which report formats, layout, image resolution, and delivery channels are required?",
+    "What measurable search and export time would satisfy the word quick under normal and peak load?",
+    "How long must order data, photographs, exports, and change history be retained?",
+    "Must capture work without network connectivity, and how should later synchronization conflicts be handled?",
+    "Is import of existing Google Sheets rows and historical phone photographs required?",
+    "Must the solution integrate with an order-management, warehouse-management, ERP, carrier, or customer-service system?",
+    "What weekly peak, number of simultaneous operators, seasonal growth, and report size must be supported beyond the current 25 to 30 pallet shipments?",
+    "What workflow and evidence are required after a customer reports a discrepancy, and who records the final outcome?",
+    "Which chemical-industry safety, privacy, recordkeeping, or audit obligations apply to this warehouse and jurisdiction?"
+  ],
+  "requirements": [
+    {
+      "id": "FR-01",
+      "category": "functional",
+      "priority": "must",
+      "statement": "The Chemical Warehouse Order Verification System shall create and maintain one Order Evidence Record for each order selected for shipment processing.",
+      "rationale": "An order-centred record is the foundation for replacing fragmented tracking and for retrieving all evidence about one shipment claim.",
+      "evidence": "SRC-01 explicitly requires rigorous tracking of individual order inventory.",
+      "acceptance": "Given an order not yet represented in the system, when the Warehouse Operator starts shipment processing, then exactly one Order Evidence Record is created for that order and can be reopened by its order identifier.",
+      "confidence": "explicit"
+    },
+    {
+      "id": "FR-02",
+      "category": "functional",
+      "priority": "must",
+      "statement": "The Chemical Warehouse Order Verification System shall record the shipped quantity for each product line in an Order Evidence Record.",
+      "rationale": "A quantity linked to the correct product line is required to show what amount was prepared and sent.",
+      "evidence": "SRC-01 explicitly identifies product quantities as required order inventory data.",
+      "acceptance": "Given an Order Evidence Record with a product line, when a valid shipped quantity is captured, then the saved line displays that quantity and the same value appears when the record is reopened.",
+      "confidence": "explicit"
+    },
+    {
+      "id": "FR-03",
+      "category": "functional",
+      "priority": "must",
+      "statement": "The Chemical Warehouse Order Verification System shall record each applicable lot number against the corresponding product line in an Order Evidence Record.",
+      "rationale": "Lot-level association is required to distinguish the exact product batch included in an order.",
+      "evidence": "SRC-01 explicitly requires lot-number tracking for each order.",
+      "acceptance": "Given a product line supplied from one or more lots, when the Warehouse Operator saves the captured lot numbers, then every saved lot remains linked to that product line and order when the record is reopened.",
+      "confidence": "explicit"
+    },
+    {
+      "id": "FR-04",
+      "category": "functional",
+      "priority": "must",
+      "statement": "The Chemical Warehouse Order Verification System shall provide at least one approved integrated capture method that records product and lot data without re-keying the same data between separate tracking tools.",
+      "rationale": "Integrated capture addresses the duplicated manual work caused by updating Google Sheets separately from photographic documentation.",
+      "evidence": "SRC-01 explicitly seeks elimination of manual data entry through barcode scanning or a centralized mobile application; the selected method remains open.",
+      "acceptance": "Given an approved capture method, when a product and lot are captured once, then their values populate the active Order Evidence Record without the operator copying them from one tracking tool into another.",
+      "confidence": "explicit"
+    },
+    {
+      "id": "FR-05",
+      "category": "functional",
+      "priority": "must",
+      "statement": "The Chemical Warehouse Order Verification System shall attach photographic documentation to the Order Evidence Record for the order being prepared for dispatch.",
+      "rationale": "Photographs are the current evidentiary response to claims that a shipment was missing product.",
+      "evidence": "SRC-01 explicitly requires photographic evidence of inventory sent out per order.",
+      "acceptance": "Given an active Order Evidence Record, when the Warehouse Operator captures or uploads an accepted image, then the image is stored with and displayed from that same order record.",
+      "confidence": "explicit"
+    },
+    {
+      "id": "FR-06",
+      "category": "functional",
+      "priority": "must",
+      "statement": "The Chemical Warehouse Order Verification System shall allow each order photograph to be associated with the applicable product lines, quantities, and lot numbers before dispatch review.",
+      "rationale": "A photograph is useful evidence only when a reviewer can tell which recorded products and lots it supports.",
+      "evidence": "SRC-01 states that order photographs capture product amounts and lot numbers before dispatch; explicit association inside the new platform is inferred.",
+      "acceptance": "Given an order photograph and recorded order lines, when the Warehouse Operator selects the lines and lots represented by the image, then reopening the photograph displays those associations.",
+      "confidence": "inferred"
+    },
+    {
+      "id": "FR-07",
+      "category": "functional",
+      "priority": "must",
+      "statement": "The Chemical Warehouse Order Verification System shall present quantities, lot numbers, and photographic documentation together in one consolidated order view.",
+      "rationale": "A single view removes the need to reconcile a spreadsheet row with a separate phone photo library during verification.",
+      "evidence": "SRC-01 explicitly requires consolidation of quantities, lot numbers, and photographs into one platform.",
+      "acceptance": "Given an Order Evidence Record containing saved line and photo evidence, when the record is opened, then its product quantities, lot numbers, photograph thumbnails, and evidence associations are accessible from that record without opening another tracking tool.",
+      "confidence": "explicit"
+    },
+    {
+      "id": "FR-08",
+      "category": "functional",
+      "priority": "must",
+      "statement": "The Chemical Warehouse Order Verification System shall export a comprehensive report for a selected Order Evidence Record on request by an authorised Warehouse Operator.",
+      "rationale": "A portable report is required to verify a shipment and support discrepancy handling outside the capture screen.",
+      "evidence": "SRC-01 explicitly requests quick export of comprehensive order reports.",
+      "acceptance": "Given an authorised Warehouse Operator and a selected Order Evidence Record, when export is requested in an approved format, then the system creates one report for that order or reports a clear export failure without changing the evidence record.",
+      "confidence": "explicit"
+    },
+    {
+      "id": "FR-09",
+      "category": "functional",
+      "priority": "must",
+      "statement": "The Chemical Warehouse Order Verification System shall include the selected order identifier, product quantities, applicable lot numbers, and photographic documentation in each comprehensive order report.",
+      "rationale": "The exported report must preserve the evidence categories needed to check a missing-product claim.",
+      "evidence": "SRC-01 explicitly defines the consolidated evidence and says the report is used to verify shipments.",
+      "acceptance": "Given a completed Order Evidence Record, when its report is exported, then a reviewer can identify the order and match every reported product quantity and lot number to the included or referenced photographic documentation.",
+      "confidence": "explicit"
+    },
+    {
+      "id": "FR-10",
+      "category": "functional",
+      "priority": "must",
+      "statement": "The Chemical Warehouse Order Verification System shall allow the Warehouse Operator to retrieve an individual Order Evidence Record using its order identifier.",
+      "rationale": "Direct retrieval reduces the time spent searching across fragmented spreadsheet and phone records.",
+      "evidence": "SRC-01 explicitly states that the current workflow makes order verification inefficient and time-consuming; identifier search is an inferred solution behaviour.",
+      "acceptance": "Given an existing Order Evidence Record and its exact order identifier, when the Warehouse Operator searches that identifier, then the matching record is returned without records from other orders.",
+      "confidence": "inferred"
+    },
+    {
+      "id": "FR-11",
+      "category": "functional",
+      "priority": "must",
+      "statement": "The Chemical Warehouse Order Verification System shall display the preserved shipment evidence for a selected order during human review of a customer discrepancy.",
+      "rationale": "The operator needs a coherent evidence view to verify what was dispatched without the system automatically deciding the customer's claim.",
+      "evidence": "SRC-01 explicitly requires order reports to resolve customer discrepancies efficiently; human-only outcome determination is an assumption.",
+      "acceptance": "Given a customer discrepancy and a matching order identifier, when the Warehouse Operator opens the shipped Order Evidence Record, then the system displays the preserved quantities, lots, photographs, and available report for human comparison.",
+      "confidence": "explicit"
+    },
+    {
+      "id": "FR-12",
+      "category": "functional",
+      "priority": "should",
+      "statement": "The Chemical Warehouse Order Verification System shall allow an authorised Warehouse Operator to correct captured quantities, lot numbers, and photo associations before dispatch confirmation.",
+      "rationale": "Scanning, selection, or capture errors must be correctable before evidence is relied on as the shipment record.",
+      "evidence": "SRC-01 describes manual updates to order quantities and lots; controlled correction in the unified workflow is inferred.",
+      "acceptance": "Given an order not yet dispatch-confirmed, when an authorised Warehouse Operator corrects a captured value, then the consolidated view and next export use the corrected value.",
+      "confidence": "inferred"
+    },
+    {
+      "id": "FR-13",
+      "category": "functional",
+      "priority": "must",
+      "statement": "The Chemical Warehouse Order Verification System shall preserve the dispatch-confirmed version of an Order Evidence Record for later shipment verification.",
+      "rationale": "Later customer discrepancies must be checked against the evidence that represented the order when it was sent, not a silently changed current view.",
+      "evidence": "SRC-01 requires photographic evidence of inventory sent per order; preservation of a dispatch-confirmed version is inferred.",
+      "acceptance": "Given a dispatch-confirmed Order Evidence Record, when it is retrieved later, then the system can reproduce the quantities, lots, and photographs that belonged to the confirmed version.",
+      "confidence": "inferred"
+    },
+    {
+      "id": "QR-01",
+      "category": "quality",
+      "priority": "must",
+      "statement": "The Chemical Warehouse Order Verification System shall preserve referential integrity among each order, its product lines, quantities, lot numbers, photographs, and exported report versions.",
+      "rationale": "Broken or cross-order associations would undermine the evidentiary value of the consolidated platform.",
+      "evidence": "SRC-01 explicitly requires the three evidence types to be consolidated per order; the integrity constraint is inferred.",
+      "acceptance": "Given create, edit, dispatch-confirm, retrieve, and export operations on multiple test orders, when associations are validated, then every quantity, lot, photograph, and report version resolves to its intended order and no evidence resolves to an unrelated order.",
+      "confidence": "inferred"
+    },
+    {
+      "id": "QR-02",
+      "category": "quality",
+      "priority": "must",
+      "statement": "The Chemical Warehouse Order Verification System shall process at least the current workload of 30 pallet shipments per week without losing or mixing Order Evidence Records.",
+      "rationale": "The first reviewed capacity must cover the upper end of the workload explicitly stated in the scenario while future peak growth remains open.",
+      "evidence": "SRC-01 explicitly states a current workload of 25 to 30 pallet shipments per week.",
+      "acceptance": "Given a representative week containing 30 pallet shipments across test orders, when their evidence is captured and retrieved, then every Order Evidence Record remains complete and isolated from all other orders.",
+      "confidence": "inferred"
+    },
+    {
+      "id": "BR-01",
+      "category": "business",
+      "priority": "must",
+      "statement": "The Chemical Warehouse Order Verification System must use the individual order as the primary unit for organising inventory evidence and producing a report.",
+      "rationale": "Customer claims and the supplied tracking problem are framed per order, so evidence must not be organised only by phone date, spreadsheet row, or weekly shipment batch.",
+      "evidence": "SRC-01 explicitly requires individual order inventory tracking and photographic evidence per order.",
+      "acceptance": "Given evidence for two different orders, when records and reports are generated, then each output is organised by one order identifier and does not merge evidence from the other order.",
+      "confidence": "explicit"
+    },
+    {
+      "id": "BR-02",
+      "category": "business",
+      "priority": "proposed-must",
+      "statement": "The Chemical Warehouse Order Verification System must prevent dispatch confirmation while any required product quantity, lot number, or photographic documentation is missing from the Order Evidence Record, unless a stakeholder-approved override rule is configured.",
+      "rationale": "A completeness gate could stop incomplete evidence from becoming the record used in a later dispute, but it may also interrupt warehouse operations and therefore requires explicit approval.",
+      "evidence": "SRC-01 states that the operator photographs product amounts and lot numbers before dispatch, but it does not state that software must block dispatch; this is a proposed high-impact rule.",
+      "acceptance": "Given an order with any evidence item defined as required but missing, when dispatch confirmation is attempted, then confirmation is blocked unless an approved override rule applies and its authorised use is recorded.",
+      "confidence": "proposed"
+    },
+    {
+      "id": "BR-03",
+      "category": "business",
+      "priority": "must",
+      "statement": "The Chemical Warehouse Order Verification System must exclude evidence belonging to other orders from a selected order's consolidated view and exported report.",
+      "rationale": "Cross-order evidence would create misleading proof and could worsen rather than resolve a customer discrepancy.",
+      "evidence": "SRC-01 explicitly requires photographic evidence and inventory tracking per order; strict exclusion is inferred.",
+      "acceptance": "Given two orders with different products, lots, and photographs, when either order is viewed or exported, then no evidence uniquely associated with the other order appears.",
+      "confidence": "inferred"
+    }
+  ],
+  "fishbone": {
+    "problem": "Customer missing-product claims are inefficient and time-consuming to verify",
+    "categories": [
+      {
+        "name": "People",
+        "causes": [
+          "The Warehouse Operator may need to repeat the same information across separate tools",
+          "A later reviewer may not know which phone photograph corresponds to which order line"
+        ]
+      },
+      {
+        "name": "Process",
+        "causes": [
+          "Evidence-completeness checks before dispatch may be informal or inconsistent",
+          "The discrepancy-review workflow and decision ownership are not defined"
+        ]
+      },
+      {
+        "name": "Information",
+        "causes": [
+          "Quantities and lot numbers may be transcribed incorrectly during manual entry",
+          "The relationship among order, shipment, pallet, product line, lot, and photograph is not specified"
+        ]
+      },
+      {
+        "name": "Technology",
+        "causes": [
+          "Google Sheets and a separate phone library do not provide one order-centred evidence record",
+          "Barcode content, supported symbologies, device capability, and network availability are unknown"
+        ]
+      },
+      {
+        "name": "Photographic Evidence",
+        "causes": [
+          "Required image count, viewpoints, legibility, and resolution are not defined",
+          "Photographs may lack an explicit association to the products and lots they show"
+        ]
+      },
+      {
+        "name": "Governance",
+        "causes": [
+          "Edit permissions, post-dispatch correction rules, and retention periods are not approved",
+          "Report format, sharing channel, response target, and evidentiary acceptance criteria are unresolved"
+        ]
+      }
+    ]
+  },
+  "context": {
+    "system": "Chemical Warehouse Order Verification System",
+    "actors": [
+      "Warehouse Operator",
+      "Barcode Capture Device",
+      "Mobile Camera or Device"
+    ],
+    "flows": [
+      {
+        "from": "Warehouse Operator",
+        "to": "Chemical Warehouse Order Verification System",
+        "label": "Order selection, evidence review, corrections, dispatch confirmation, report request"
+      },
+      {
+        "from": "Chemical Warehouse Order Verification System",
+        "to": "Warehouse Operator",
+        "label": "Consolidated order evidence, completeness result, preserved shipment record, exported report"
+      },
+      {
+        "from": "Barcode Capture Device",
+        "to": "Chemical Warehouse Order Verification System",
+        "label": "Candidate scanned product or lot data; exact barcode content to be confirmed"
+      },
+      {
+        "from": "Chemical Warehouse Order Verification System",
+        "to": "Barcode Capture Device",
+        "label": "Capture prompt and validation result"
+      },
+      {
+        "from": "Mobile Camera or Device",
+        "to": "Chemical Warehouse Order Verification System",
+        "label": "Order photographs and capture result"
+      },
+      {
+        "from": "Chemical Warehouse Order Verification System",
+        "to": "Mobile Camera or Device",
+        "label": "Camera or upload request and association prompt"
+      }
+    ]
+  },
+  "use_cases": [
+    {
+      "id": "UC-01",
+      "name": "Capture order inventory evidence",
+      "primary_actor": "Warehouse Operator",
+      "goal": "Create one complete order-centred record of product quantities, lot numbers, and photographs before dispatch review.",
+      "stakeholders": [
+        "Warehouse Operator: wants one efficient capture workflow without duplicate entry across separate tools.",
+        "Customer: wants reliable evidence when shipment contents are disputed."
+      ],
+      "preconditions": [
+        "The order is available for shipment processing.",
+        "The Warehouse Operator is permitted to work on the selected order.",
+        "At least one stakeholder-approved product and lot capture method is available."
+      ],
+      "trigger": "The Warehouse Operator selects an order to prepare its shipment evidence.",
+      "main_flow": [
+        "The system opens or creates the Order Evidence Record for the selected order.",
+        "The Warehouse Operator captures each product line and shipped quantity.",
+        "The Warehouse Operator captures the applicable lot numbers for each product line.",
+        "The Warehouse Operator captures or uploads order photographs.",
+        "The Warehouse Operator associates each photograph with the applicable product lines, quantities, and lots.",
+        "The system displays the consolidated order evidence for review."
+      ],
+      "alternatives": [
+        "A1: If barcode capture is unavailable or not approved, the Warehouse Operator uses the approved centralized mobile capture method.",
+        "A2: The Warehouse Operator corrects a captured quantity, lot, or photo association before dispatch confirmation."
+      ],
+      "exceptions": [
+        "E1: If captured data cannot be validated, the system keeps the order unconfirmed and identifies the affected field.",
+        "E2: If a photograph cannot be stored, the system reports the failure and does not show the photograph as saved."
+      ],
+      "postconditions": [
+        "One Order Evidence Record contains the evidence saved for the order, or the order remains visibly incomplete."
+      ],
+      "business_rules": [
+        "BR-01 makes the order the primary evidence unit.",
+        "BR-03 prohibits cross-order evidence in the record."
+      ],
+      "related_requirements": [
+        "FR-01",
+        "FR-02",
+        "FR-03",
+        "FR-04",
+        "FR-05",
+        "FR-06",
+        "FR-07",
+        "FR-12",
+        "QR-01",
+        "BR-01",
+        "BR-03"
+      ]
+    },
+    {
+      "id": "UC-02",
+      "name": "Review evidence and confirm dispatch",
+      "primary_actor": "Warehouse Operator",
+      "goal": "Review the consolidated evidence and preserve the version representing the dispatched order.",
+      "stakeholders": [
+        "Warehouse Operator: needs a clear indication of incomplete or inconsistent evidence.",
+        "Customer: needs later verification to use the evidence that represented the shipped order.",
+        "Authorised Reviewer: must decide whether the proposed dispatch-blocking rule and any override are acceptable."
+      ],
+      "preconditions": [
+        "An Order Evidence Record exists for the order.",
+        "The Warehouse Operator has completed the available capture steps."
+      ],
+      "trigger": "The Warehouse Operator selects Review for dispatch.",
+      "main_flow": [
+        "The system displays the consolidated quantities, lots, photographs, and associations.",
+        "The system identifies any evidence defined as required but missing.",
+        "The Warehouse Operator reviews and corrects discrepancies before confirmation.",
+        "The Warehouse Operator requests dispatch confirmation.",
+        "The system preserves the dispatch-confirmed version of the Order Evidence Record."
+      ],
+      "alternatives": [
+        "A1: The Warehouse Operator returns to capture when evidence is missing or inconsistent.",
+        "A2: If stakeholders approve an override rule, an authorised person uses it and the system records the authorised use."
+      ],
+      "exceptions": [
+        "E1: While BR-02 remains unapproved, the proposed software block must not be treated as an accepted operating rule.",
+        "E2: If preservation fails, the system does not present the order as dispatch-confirmed."
+      ],
+      "postconditions": [
+        "A dispatch-confirmed evidence version exists, or the order remains unconfirmed with unresolved evidence visible."
+      ],
+      "business_rules": [
+        "BR-02 is proposed and high-impact; TraceGuard requires named approval before it becomes binding.",
+        "BR-03 keeps the confirmed version isolated from other orders."
+      ],
+      "related_requirements": [
+        "FR-07",
+        "FR-12",
+        "FR-13",
+        "QR-01",
+        "BR-02",
+        "BR-03"
+      ]
+    },
+    {
+      "id": "UC-03",
+      "name": "Export an order report",
+      "primary_actor": "Warehouse Operator",
+      "goal": "Create a portable, comprehensive report for one selected order.",
+      "stakeholders": [
+        "Warehouse Operator: needs an efficient report-generation path.",
+        "Customer or other reviewer: needs an understandable account of what the warehouse recorded as sent."
+      ],
+      "preconditions": [
+        "An Order Evidence Record exists and is accessible to the Warehouse Operator.",
+        "An approved report format has been selected."
+      ],
+      "trigger": "The Warehouse Operator requests an export for a selected order.",
+      "main_flow": [
+        "The system loads the selected Order Evidence Record.",
+        "The system prepares the order identifier, product quantities, lot numbers, and photographic documentation.",
+        "The Warehouse Operator reviews the report preview or content summary.",
+        "The system creates the report in the approved format.",
+        "The system makes the completed report available to the Warehouse Operator."
+      ],
+      "alternatives": [
+        "A1: The Warehouse Operator cancels export and returns to the order record without changing it."
+      ],
+      "exceptions": [
+        "E1: If report generation fails, the system identifies the failure and does not substitute evidence from another order.",
+        "E2: If required report content is unavailable, the system identifies the omission rather than representing the report as complete."
+      ],
+      "postconditions": [
+        "One report for the selected order is available, or a visible export failure is recorded for the current attempt."
+      ],
+      "business_rules": [
+        "BR-01 requires order-centred reporting.",
+        "BR-03 prevents cross-order evidence from appearing."
+      ],
+      "related_requirements": [
+        "FR-08",
+        "FR-09",
+        "QR-01",
+        "BR-01",
+        "BR-03"
+      ]
+    },
+    {
+      "id": "UC-04",
+      "name": "Verify a customer discrepancy",
+      "primary_actor": "Warehouse Operator",
+      "goal": "Retrieve and review the preserved evidence for the order identified in a customer claim.",
+      "stakeholders": [
+        "Warehouse Operator: wants to locate credible order evidence without reconciling separate tools.",
+        "Customer: wants the reported missing-product issue investigated against the relevant shipment evidence."
+      ],
+      "preconditions": [
+        "The Warehouse Operator has the order identifier associated with the customer discrepancy.",
+        "A preserved Order Evidence Record exists for that order."
+      ],
+      "trigger": "The Warehouse Operator begins investigation of a customer missing-product claim.",
+      "main_flow": [
+        "The Warehouse Operator searches by the order identifier.",
+        "The system returns the matching preserved Order Evidence Record.",
+        "The system displays the recorded quantities, lots, photographs, and available report.",
+        "The Warehouse Operator compares the customer claim with the preserved evidence.",
+        "The Warehouse Operator exports the order report when it is required for the human resolution process."
+      ],
+      "alternatives": [
+        "A1: If an export is not required, the Warehouse Operator completes the evidence review in the consolidated order view."
+      ],
+      "exceptions": [
+        "E1: If no matching order exists, the system reports that no exact identifier match was found without returning another order.",
+        "E2: If evidence is incomplete, the system displays the available evidence and the omission without deciding the claim outcome."
+      ],
+      "postconditions": [
+        "The relevant order evidence has been presented for human review; the customer-claim outcome remains outside the currently confirmed system scope."
+      ],
+      "business_rules": [
+        "BR-03 prevents another order's evidence from being used in the review."
+      ],
+      "related_requirements": [
+        "FR-08",
+        "FR-09",
+        "FR-10",
+        "FR-11",
+        "FR-13",
+        "QR-01",
+        "BR-03"
+      ]
+    }
+  ],
+  "activity": {
+    "title": "Capture, confirm, and retrieve order shipment evidence",
+    "start": "S1",
+    "steps": [
+      {
+        "id": "S1",
+        "label": "Select order and open its Order Evidence Record",
+        "next": "S2",
+        "trace_ids": [
+          "FR-01",
+          "BR-01",
+          "UC-01"
+        ]
+      },
+      {
+        "id": "S2",
+        "label": "Capture product quantities and lot numbers through an approved integrated method",
+        "next": "S3",
+        "trace_ids": [
+          "FR-02",
+          "FR-03",
+          "FR-04",
+          "UC-01"
+        ]
+      },
+      {
+        "id": "S3",
+        "label": "Capture photographs and associate them with order lines and lots",
+        "next": "S4",
+        "trace_ids": [
+          "FR-05",
+          "FR-06",
+          "UC-01"
+        ]
+      },
+      {
+        "id": "S4",
+        "label": "Review consolidated order evidence",
+        "next": "D1",
+        "trace_ids": [
+          "FR-07",
+          "QR-01",
+          "UC-02"
+        ]
+      },
+      {
+        "id": "D1",
+        "label": "Check evidence",
+        "condition": "Required evidence complete and consistent?",
+        "yes": "S5",
+        "no": "S2",
+        "trace_ids": [
+          "FR-12",
+          "BR-02",
+          "UC-02"
+        ]
+      },
+      {
+        "id": "S5",
+        "label": "Request dispatch confirmation under the stakeholder-approved rule",
+        "next": "S6",
+        "trace_ids": [
+          "BR-02",
+          "UC-02"
+        ]
+      },
+      {
+        "id": "S6",
+        "label": "Preserve the dispatch-confirmed evidence version",
+        "next": "D2",
+        "trace_ids": [
+          "FR-13",
+          "QR-01",
+          "UC-02"
+        ]
+      },
+      {
+        "id": "D2",
+        "label": "Assess follow-up need",
+        "condition": "Order report or discrepancy review requested?",
+        "yes": "S7",
+        "no": "END",
+        "trace_ids": [
+          "FR-08",
+          "FR-11",
+          "UC-03",
+          "UC-04"
+        ]
+      },
+      {
+        "id": "S7",
+        "label": "Retrieve the order and export its comprehensive report",
+        "next": "END",
+        "trace_ids": [
+          "FR-08",
+          "FR-09",
+          "FR-10",
+          "FR-11",
+          "BR-03",
+          "UC-03",
+          "UC-04"
+        ]
+      }
+    ]
+  },
+  "wireframe": {
+    "title": "Chemical warehouse order-verification workflow",
+    "screens": [
+      {
+        "name": "Order search and queue",
+        "components": [
+          {
+            "kind": "heading",
+            "label": "Order verification workspace",
+            "trace_ids": [
+              "FR-01",
+              "BR-01"
+            ]
+          },
+          {
+            "kind": "input",
+            "label": "Order identifier",
+            "input_type": "text",
+            "trace_ids": [
+              "FR-10",
+              "UC-04"
+            ]
+          },
+          {
+            "kind": "button",
+            "label": "Find order",
+            "trace_ids": [
+              "FR-10",
+              "UC-04"
+            ]
+          },
+          {
+            "kind": "list",
+            "label": "Orders awaiting evidence review",
+            "items": [
+              "Order CH-1048 - capture in progress",
+              "Order CH-1049 - evidence review"
+            ],
+            "trace_ids": [
+              "FR-01",
+              "UC-01",
+              "UC-02"
+            ]
+          },
+          {
+            "kind": "button",
+            "label": "Open selected order",
+            "trace_ids": [
+              "FR-01",
+              "UC-01"
+            ]
+          }
+        ]
+      },
+      {
+        "name": "Capture order evidence",
+        "components": [
+          {
+            "kind": "heading",
+            "label": "Order CH-1049 - capture evidence",
+            "trace_ids": [
+              "FR-01",
+              "UC-01"
+            ]
+          },
+          {
+            "kind": "note",
+            "label": "Capture method is subject to stakeholder choice: barcode scanning, centralized mobile capture, or both.",
+            "trace_ids": [
+              "FR-04"
+            ]
+          },
+          {
+            "kind": "input",
+            "label": "Scan or enter approved product identifier",
+            "input_type": "text",
+            "trace_ids": [
+              "FR-04",
+              "UC-01"
+            ]
+          },
+          {
+            "kind": "input",
+            "label": "Shipped quantity",
+            "input_type": "number",
+            "trace_ids": [
+              "FR-02"
+            ]
+          },
+          {
+            "kind": "input",
+            "label": "Lot number",
+            "input_type": "text",
+            "trace_ids": [
+              "FR-03"
+            ]
+          },
+          {
+            "kind": "button",
+            "label": "Add product line",
+            "trace_ids": [
+              "FR-02",
+              "FR-03"
+            ]
+          },
+          {
+            "kind": "list",
+            "label": "Captured order lines and lots",
+            "items": [
+              "Product A - quantity 12 - lot L-2481",
+              "Product B - quantity 8 - lot L-2488"
+            ],
+            "trace_ids": [
+              "FR-02",
+              "FR-03",
+              "FR-07"
+            ]
+          },
+          {
+            "kind": "button",
+            "label": "Capture or upload photograph",
+            "trace_ids": [
+              "FR-05",
+              "FR-06"
+            ]
+          },
+          {
+            "kind": "select",
+            "label": "Associate photograph with order lines",
+            "options": [
+              "Product A - lot L-2481",
+              "Product B - lot L-2488",
+              "Multiple selected lines"
+            ],
+            "trace_ids": [
+              "FR-06"
+            ]
+          },
+          {
+            "kind": "button",
+            "label": "Review consolidated evidence",
+            "trace_ids": [
+              "FR-07",
+              "UC-02"
+            ]
+          }
+        ]
+      },
+      {
+        "name": "Dispatch evidence review",
+        "components": [
+          {
+            "kind": "heading",
+            "label": "Review order CH-1049 before dispatch",
+            "trace_ids": [
+              "FR-07",
+              "UC-02"
+            ]
+          },
+          {
+            "kind": "list",
+            "label": "Consolidated products, quantities, lots, and photographs",
+            "items": [
+              "Product A - quantity 12 - lot L-2481 - photo linked",
+              "Product B - quantity 8 - lot L-2488 - photo linked"
+            ],
+            "trace_ids": [
+              "FR-07",
+              "QR-01",
+              "BR-03"
+            ]
+          },
+          {
+            "kind": "note",
+            "label": "Proposed high-impact rule: dispatch confirmation is blocked when required evidence is missing. This is not approved while TraceGuard abstains.",
+            "trace_ids": [
+              "BR-02"
+            ]
+          },
+          {
+            "kind": "button",
+            "label": "Return to correct evidence",
+            "trace_ids": [
+              "FR-12",
+              "UC-02"
+            ]
+          },
+          {
+            "kind": "button",
+            "label": "Confirm dispatch evidence",
+            "trace_ids": [
+              "FR-13",
+              "BR-02",
+              "UC-02"
+            ]
+          }
+        ]
+      },
+      {
+        "name": "Report and discrepancy review",
+        "components": [
+          {
+            "kind": "heading",
+            "label": "Order CH-1049 - shipment evidence",
+            "trace_ids": [
+              "FR-11",
+              "UC-04"
+            ]
+          },
+          {
+            "kind": "list",
+            "label": "Preserved shipment evidence",
+            "items": [
+              "Confirmed products and quantities",
+              "Applicable lot numbers",
+              "Linked dispatch photographs"
+            ],
+            "trace_ids": [
+              "FR-09",
+              "FR-11",
+              "FR-13",
+              "BR-03"
+            ]
+          },
+          {
+            "kind": "select",
+            "label": "Approved report format",
+            "options": [
+              "Format to be confirmed"
+            ],
+            "trace_ids": [
+              "FR-08",
+              "UC-03"
+            ]
+          },
+          {
+            "kind": "button",
+            "label": "Export comprehensive order report",
+            "trace_ids": [
+              "FR-08",
+              "FR-09",
+              "UC-03"
+            ]
+          },
+          {
+            "kind": "note",
+            "label": "The system presents evidence for human review and does not decide the customer claim outcome.",
+            "trace_ids": [
+              "FR-11",
+              "UC-04"
+            ]
+          }
+        ]
+      }
+    ]
+  }
+}

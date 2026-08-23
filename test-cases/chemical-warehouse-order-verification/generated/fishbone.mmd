@@ -1,0 +1,24 @@
+flowchart LR
+    EFFECT(["Customer missing-product claims are inefficient and time-consuming to verify"])
+    CAT1["People"] --> EFFECT
+    C1_1["The Warehouse Operator may need to repeat the same information across separate tools"] --> CAT1
+    C1_2["A later reviewer may not know which phone photograph corresponds to which order line"] --> CAT1
+    CAT2["Process"] --> EFFECT
+    C2_1["Evidence-completeness checks before dispatch may be informal or inconsistent"] --> CAT2
+    C2_2["The discrepancy-review workflow and decision ownership are not defined"] --> CAT2
+    CAT3["Information"] --> EFFECT
+    C3_1["Quantities and lot numbers may be transcribed incorrectly during manual entry"] --> CAT3
+    C3_2["The relationship among order, shipment, pallet, product line, lot, and photograph is not specified"] --> CAT3
+    CAT4["Technology"] --> EFFECT
+    C4_1["Google Sheets and a separate phone library do not provide one order-centred evidence record"] --> CAT4
+    C4_2["Barcode content, supported symbologies, device capability, and network availability are unknown"] --> CAT4
+    CAT5["Photographic Evidence"] --> EFFECT
+    C5_1["Required image count, viewpoints, legibility, and resolution are not defined"] --> CAT5
+    C5_2["Photographs may lack an explicit association to the products and lots they show"] --> CAT5
+    CAT6["Governance"] --> EFFECT
+    C6_1["Edit permissions, post-dispatch correction rules, and retention periods are not approved"] --> CAT6
+    C6_2["Report format, sharing channel, response target, and evidentiary acceptance criteria are unresolved"] --> CAT6
+    classDef effect fill:#fee2e2,stroke:#991b1b,stroke-width:2px;
+    classDef category fill:#dbeafe,stroke:#1d4ed8;
+    class EFFECT effect;
+    class CAT1,CAT2,CAT3,CAT4,CAT5,CAT6 category;

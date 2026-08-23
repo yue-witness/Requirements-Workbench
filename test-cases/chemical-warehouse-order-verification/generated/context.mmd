@@ -1,0 +1,13 @@
+flowchart LR
+    subgraph BOUNDARY[System boundary]
+        SYSTEM["Chemical Warehouse Order Verification System"]
+    end
+    ACT_dea85b1a["Warehouse Operator"]
+    ACT_aad3931a["Barcode Capture Device"]
+    ACT_904b9d72["Mobile Camera or Device"]
+    ACT_dea85b1a -->|"Order selection, evidence review, corrections, dispatch confirmation, report request"| SYSTEM
+    SYSTEM -->|"Consolidated order evidence, completeness result, preserved shipment record, exported report"| ACT_dea85b1a
+    ACT_aad3931a -->|"Candidate scanned product or lot data; exact barcode content to be confirmed"| SYSTEM
+    SYSTEM -->|"Capture prompt and validation result"| ACT_aad3931a
+    ACT_904b9d72 -->|"Order photographs and capture result"| SYSTEM
+    SYSTEM -->|"Camera or upload request and association prompt"| ACT_904b9d72

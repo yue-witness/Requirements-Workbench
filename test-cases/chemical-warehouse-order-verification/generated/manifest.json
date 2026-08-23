@@ -1,0 +1,54 @@
+{
+  "schema_version": "0.3",
+  "project": "Chemical Warehouse Order Verification System",
+  "generated_utc": "2026-08-23T10:48:05.322195+00:00",
+  "selected_modules": [
+    "requirements",
+    "fishbone",
+    "context",
+    "use-cases",
+    "activity",
+    "wireframe"
+  ],
+  "revision_target": null,
+  "untouched_modules_verified": [],
+  "quality_warnings": [],
+  "traceguard": {
+    "status": "abstain",
+    "summary": {
+      "error": 0,
+      "warning": 0,
+      "abstain": 1,
+      "exact_source_spans": 18
+    },
+    "human_report": "traceguard.md",
+    "machine_report": "traceguard.json",
+    "rollback_snapshot": null
+  },
+  "files": {
+    "requirements": {
+      "path": "requirements.md",
+      "sha256": "6329eafb1133de814fd77ca99905f87ef02065c2400a5963dbd28261789b09cf"
+    },
+    "fishbone": {
+      "path": "fishbone.mmd",
+      "sha256": "55f54f12095abfe91cd6ecc65c367aacae553fbace2453f8b065f4c7da192970"
+    },
+    "context": {
+      "path": "context.mmd",
+      "sha256": "1f868c8b748cc7ddedec040525ded19698e36fbf146389108f67050db6514426"
+    },
+    "use-cases": {
+      "path": "use-cases.md",
+      "sha256": "32555533dadff470db0dd0ef0c5f4f2ec98af60bd4786c5f712733b4ded2b322"
+    },
+    "activity": {
+      "path": "activity.mmd",
+      "sha256": "b955dd4e6e22e1aede26e31a3496e12bc20d6d7af6a27b1f669b055d81f946a2"
+    },
+    "wireframe": {
+      "path": "wireframe.html",
+      "sha256": "633d3e69677187f4eae1db2f62b414fecd77665ce37b5187b109d236b41cc04d"
+    }
+  }
+}
