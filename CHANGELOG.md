@@ -2,6 +2,13 @@
 
 All notable changes to Requirements Analysis Workbench are documented here.
 
+## [0.3.1] - 2026-08-23
+
+### Changed
+
+- Direct `@` invocation with a matching requirements description now opens the visual workbench before analysis by default.
+- An explicit no-GUI request bypasses the visual panel, while incompatible hosts retain the conversational fallback.
+
 ## [0.3.0] - 2026-08-23
 
 ### Added
@@ -38,3 +45,4 @@ All notable changes to Requirements Analysis Workbench are documented here.
 
 [0.2.0]: https://github.com/yue-witness/Requirements-Workbench/releases/tag/v0.2.0
 [0.3.0]: https://github.com/yue-witness/Requirements-Workbench/releases/tag/v0.3.0
+[0.3.1]: https://github.com/yue-witness/Requirements-Workbench/releases/tag/v0.3.1

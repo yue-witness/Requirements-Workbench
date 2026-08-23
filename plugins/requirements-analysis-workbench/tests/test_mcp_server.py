@@ -27,6 +27,15 @@ class WorkbenchMcpServerTests(unittest.TestCase):
             server.RESOURCE_URI,
             tools["open_workbench"]["_meta"]["ui"]["resourceUri"],
         )
+        self.assertIn("@mentions this plugin", tools["open_workbench"]["description"])
+
+        initialize = server.handle(
+            {"jsonrpc": "2.0", "id": 11, "method": "initialize", "params": {}}
+        )
+        self.assertIn(
+            "open the workbench before analysis by default",
+            initialize["result"]["instructions"],
+        )
 
     def test_ui_resource_contains_modes_and_six_module_checkboxes(self) -> None:
         response = server.handle(

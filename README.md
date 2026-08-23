@@ -21,6 +21,7 @@ Every run also creates a canonical `analysis.json`, a reviewer-oriented `review-
 
 ## Key behaviours
 
+- When the plugin is directly `@`-mentioned with a matching requirements description, it opens the visual workbench by default so the user can confirm the review mode and output modules. Users can explicitly decline the GUI, and hosts without MCP Apps support fall back to the same choices in conversation.
 - A visual Guided, Standard, and Professional mode selector.
 - Independent checkboxes for all six output modules.
 - Explicit separation of stakeholder evidence, inference, assumptions, proposals, conflicts, and open questions.
@@ -39,19 +40,19 @@ For example, `project.minimum_requirements` is optional and defaults to no count
 Use a current ChatGPT desktop/Codex installation that supports plugins. Add this repository as a marketplace source:
 
 ```powershell
-codex plugin marketplace add yue-witness/Requirements-Workbench --ref v0.3.0
+codex plugin marketplace add yue-witness/Requirements-Workbench --ref v0.3.1
 ```
 
 Restart the desktop app, open the Plugins Directory, select the **Requirements Analysis Workbench** source, and install or enable `requirements-analysis-workbench`. Start a new task after installation so the three bundled skills and MCP tools are loaded.
 
-To follow the latest `main` branch instead of a tagged release, omit `--ref v0.3.0`.
+To follow the latest `main` branch instead of a tagged release, omit `--ref v0.3.1`.
 
 ## Install from the release package
 
-Download `requirements-analysis-workbench-v0.3.0.zip` from the GitHub Release and extract it. Add the extracted marketplace root:
+Download `requirements-analysis-workbench-v0.3.1.zip` from the GitHub Release and extract it. Add the extracted marketplace root:
 
 ```powershell
-codex plugin marketplace add C:\path\to\requirements-analysis-workbench-v0.3.0
+codex plugin marketplace add C:\path\to\requirements-analysis-workbench-v0.3.1
 ```
 
 Then restart the desktop app and install the plugin from the Plugins Directory.
@@ -65,6 +66,10 @@ Guided analysis:
 Visual configuration:
 
 > Open the visual requirements workbench so I can choose a mode and switch modules on or off.
+
+Direct plugin invocation also opens the workbench by default when the request includes a matching requirements description:
+
+> @Requirements Analysis Workbench Analyse these stakeholder notes for a booking system.
 
 Professional analysis:
 

@@ -10,6 +10,8 @@ This folder is the installable `requirements-analysis-workbench` plugin. It bund
 
 The visual workbench distinguishes Guided, Standard, and Professional modes and provides an independent checkbox for each supported module: `requirements`, `fishbone`, `context`, `use-cases`, `activity`, and `wireframe`. Supporting files include canonical `analysis.json`, `review-index.md`, `traceability.csv`, `traceguard.md`, `traceguard.json`, and `manifest.json`.
 
+When a user directly `@`-mentions the plugin and supplies a matching requirements description, the `analyze-requirements` skill opens this workbench before analysis by default. An explicit request not to open the GUI is respected, and incompatible hosts fall back to the same choices in conversation.
+
 ## Deterministic demo
 
 From this plugin folder:

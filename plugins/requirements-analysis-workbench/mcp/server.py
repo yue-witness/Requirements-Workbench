@@ -14,7 +14,7 @@ from typing import Any
 
 
 SERVER_NAME = "requirements-analysis-workbench"
-SERVER_VERSION = "0.3.0"
+SERVER_VERSION = "0.3.1"
 RESOURCE_URI = "ui://requirements-analysis-workbench/workbench.html"
 PLUGIN_ROOT = Path(__file__).resolve().parents[1]
 UI_PATH = PLUGIN_ROOT / "ui" / "workbench.html"
@@ -50,7 +50,9 @@ def _tool_definitions() -> list[dict[str, Any]]:
             "name": "open_workbench",
             "title": "Open Requirements Analysis Workbench",
             "description": (
-                "Open the visual mode and module selector before a requirements-analysis run."
+                "Open the visual mode and module selector before a requirements-analysis run. "
+                "Use it by default when the user @mentions this plugin and supplies a matching "
+                "requirements description, unless the user explicitly declines the GUI."
             ),
             "inputSchema": {"type": "object", "properties": {}},
             "annotations": {
@@ -143,7 +145,11 @@ def handle(message: dict[str, Any]) -> dict[str, Any] | None:
                 "capabilities": {"tools": {}, "resources": {}},
                 "serverInfo": {"name": SERVER_NAME, "version": SERVER_VERSION},
                 "instructions": (
-                    "Open the workbench when the user wants visual mode or module selection. "
+                    "When the user @mentions Requirements Analysis Workbench and supplies a "
+                    "matching software idea, scenario, user-story collection, meeting note, or "
+                    "requirements draft, open the workbench before analysis by default unless "
+                    "the user explicitly declines the GUI. Also open it whenever the user asks "
+                    "for visual mode or module selection. "
                     "Keep TraceGuard results visible and require named approval for abstained high-impact items."
                 ),
             },

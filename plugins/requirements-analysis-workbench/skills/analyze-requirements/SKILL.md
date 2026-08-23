@@ -9,11 +9,15 @@ Turn informal software ideas into traceable review artefacts without assuming th
 
 ## Visual configuration
 
-When the user asks for a GUI, visual selector, mode choice, or module switches,
-call `open_workbench` before analysis. Treat the saved selection as the source
-of truth for `project.review_mode` and `selected_modules`. If the host does not
-render MCP Apps UI, present the same three modes and six modules in conversation;
-the workflow must remain usable without the component.
+When the user directly invokes Requirements Analysis Workbench with an
+`@`-mention and supplies a matching software idea, problem statement, scenario,
+user-story collection, meeting note, or requirements draft, call
+`open_workbench` before analysis by default. Do the same when the user asks for
+a GUI, visual selector, mode choice, or module switches. Skip the automatic GUI
+only when the user explicitly asks not to open it. Treat the saved selection as
+the source of truth for `project.review_mode` and `selected_modules`. If the host
+does not render MCP Apps UI, present the same three modes and six modules in
+conversation; the workflow must remain usable without the component.
 
 ## Choose the level of guidance
 

@@ -21,6 +21,7 @@ Requirements Analysis Workbench 是一个适用于 ChatGPT 和 Codex 的插件�
 
 ## 核心特性
 
+- 当用户通过 `@` 直接调用插件并提供匹配的需求描述时，默认打开可视化工作台，让用户确认评审模式和输出模块。用户可明确要求不打开 GUI；不支持 MCP Apps 的宿主则在对话中提供同样的选项。
 - 可视化的引导、标准和专业三种模式选择器。
 - 六个输出模块分别提供独立勾选框。
 - 明确区分利益相关者证据、推断、假设、建议、冲突和待确认问题。
@@ -39,19 +40,19 @@ Requirements Analysis Workbench 是一个适用于 ChatGPT 和 Codex 的插件�
 请使用支持插件的当前版 ChatGPT 桌面应用或 Codex。先将本仓库添加为 marketplace 来源：
 
 ```powershell
-codex plugin marketplace add yue-witness/Requirements-Workbench --ref v0.3.0
+codex plugin marketplace add yue-witness/Requirements-Workbench --ref v0.3.1
 ```
 
 重启桌面应用，打开 Plugins Directory，选择 **Requirements Analysis Workbench** 来源，然后安装或启用 `requirements-analysis-workbench`。安装后请新建一个任务，使三个内置技能和 MCP 工具正确加载。
 
-如需跟随最新 `main` 分支，可省略 `--ref v0.3.0`。
+如需跟随最新 `main` 分支，可省略 `--ref v0.3.1`。
 
 ## 从 Release 包安装
 
-从 GitHub Release 下载 `requirements-analysis-workbench-v0.3.0.zip` 并解压，然后添加解压后的 marketplace 根目录：
+从 GitHub Release 下载 `requirements-analysis-workbench-v0.3.1.zip` 并解压，然后添加解压后的 marketplace 根目录：
 
 ```powershell
-codex plugin marketplace add C:\path\to\requirements-analysis-workbench-v0.3.0
+codex plugin marketplace add C:\path\to\requirements-analysis-workbench-v0.3.1
 ```
 
 随后重启桌面应用，并在 Plugins Directory 中安装插件。
@@ -65,6 +66,10 @@ codex plugin marketplace add C:\path\to\requirements-analysis-workbench-v0.3.0
 可视化配置：
 
 > 打开可视化需求工作台，让我选择模式并分别开关各个模块。
+
+直接通过 `@` 调用插件并提供匹配的需求描述时，也会默认打开工作台：
+
+> @Requirements Analysis Workbench 请分析这个预约系统的利益相关者记录。
 
 专业模式：
 
