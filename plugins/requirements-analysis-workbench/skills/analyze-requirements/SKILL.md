@@ -13,15 +13,33 @@ When the user directly invokes Requirements Analysis Workbench with an
 `@`-mention and supplies a matching software idea, problem statement, scenario,
 user-story collection, meeting note, or requirements draft, call
 `open_workbench` before analysis by default. Do the same when the user asks for
-a GUI, visual selector, mode choice, or module switches. Skip the automatic GUI
-only when the user explicitly asks not to open it. Treat the saved selection as
-the source of truth for `project.review_mode` and `selected_modules`. If the host
-does not render MCP Apps UI, present the same three modes and six modules in
-conversation; the workflow must remain usable without the component.
+a GUI, visual selector, mode choice, or module switches.
+
+Opening the workbench is a hard interaction gate:
+
+1. `open_workbench` returns `state=awaiting_user_selection`, never a default
+   selection.
+2. After calling it, end the current turn immediately. Do not read analysis
+   references, inspect project materials, create directories, draft canonical
+   JSON, run scripts, or generate any module in that turn.
+3. Resume only in a later user turn after the workbench submission has called
+   `save_workbench_selection` and supplied `confirmed=true`, a valid mode, and at
+   least one selected module. Never infer confirmation from the values initially
+   displayed in the form.
+
+Skip the automatic GUI only when the user explicitly asks not to open it **and**
+provides both a mode and at least one module. If a native structured user-input
+tool is available, use it as the first fallback because it waits for a response.
+Otherwise, present the same three modes and six modules in conversation and end
+the turn with a direct selection question. Do not begin analysis in the fallback
+path until the user replies with an explicit selection.
+
+Treat the confirmed saved selection as the source of truth for
+`project.review_mode` and `selected_modules`.
 
 ## Choose the level of guidance
 
-Infer the lightest suitable mode from the request, or ask once if the choice materially changes the interaction:
+Use the explicitly confirmed mode from the workbench or fallback question:
 
 - `guided`: explain each module in plain language, use short questions, and include a reviewer checklist;
 - `standard`: provide concise explanations and normal analyst detail;
@@ -44,7 +62,7 @@ Collect or infer only what the user has actually supplied:
 3. An optional review mode: `guided`, `standard`, or `professional`.
 4. An output directory. Default to `requirements-analysis-output/` in the active workspace.
 
-If no modules are selected, present friendly descriptions: requirements (what the software must do and why), fishbone (possible causes of the problem), context (what is inside and outside the system), use cases (how people achieve goals), activity (workflow and decisions), and wireframe (a low-fidelity screen concept). Ask the user to select one or more; do not silently generate every module.
+If no modules are confirmed, present friendly descriptions: requirements (what the software must do and why), fishbone (possible causes of the problem), context (what is inside and outside the system), use cases (how people achieve goals), activity (workflow and decisions), and wireframe (a low-fidelity screen concept). Ask the user to select one or more, end the turn, and wait for the reply; do not silently generate every module.
 
 ## Analysis workflow
 

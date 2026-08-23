@@ -40,6 +40,16 @@ def _error(request_id: Any, code: int, message: str) -> dict[str, Any]:
     }
 
 
+def _serialize(response: dict[str, Any]) -> str:
+    """Serialize one MCP message without depending on the Windows code page."""
+
+    return json.dumps(
+        response,
+        ensure_ascii=True,
+        separators=(",", ":"),
+    ) + "\n"
+
+
 def _tool_definitions() -> list[dict[str, Any]]:
     ui_meta = {
         "ui": {"resourceUri": RESOURCE_URI},
@@ -51,8 +61,9 @@ def _tool_definitions() -> list[dict[str, Any]]:
             "title": "Open Requirements Analysis Workbench",
             "description": (
                 "Open the visual mode and module selector before a requirements-analysis run. "
-                "Use it by default when the user @mentions this plugin and supplies a matching "
-                "requirements description, unless the user explicitly declines the GUI."
+                "This tool never confirms defaults. After calling it, stop the current turn and "
+                "wait for an explicit save_workbench_selection result in a later user turn. "
+                "Do not analyse requirements or create files while the state is awaiting_user_selection."
             ),
             "inputSchema": {"type": "object", "properties": {}},
             "annotations": {
@@ -66,7 +77,9 @@ def _tool_definitions() -> list[dict[str, Any]]:
             "name": "save_workbench_selection",
             "title": "Save workbench selection",
             "description": (
-                "Validate a Guided, Standard, or Professional mode and the enabled output modules."
+                "Validate and explicitly confirm a Guided, Standard, or Professional mode and "
+                "the enabled output modules. Analysis may start only after this tool returns "
+                "confirmed=true."
             ),
             "inputSchema": {
                 "type": "object",
@@ -116,7 +129,11 @@ def _selection_result(arguments: dict[str, Any]) -> dict[str, Any]:
         "traceguard": traceguard,
     }
     return {
-        "structuredContent": {"selection": selection},
+        "structuredContent": {
+            "state": "selection_confirmed",
+            "confirmed": True,
+            "selection": selection,
+        },
         "content": [
             {
                 "type": "text",
@@ -127,6 +144,35 @@ def _selection_result(arguments: dict[str, Any]) -> dict[str, Any]:
                 ),
             }
         ],
+    }
+
+
+def _awaiting_selection_result() -> dict[str, Any]:
+    """Return a non-selection result that keeps the analysis workflow blocked."""
+
+    return {
+        "structuredContent": {
+            "state": "awaiting_user_selection",
+            "confirmed": False,
+            "selection": None,
+            "modes": ["guided", "standard", "professional"],
+            "modules": MODULES,
+        },
+        "content": [
+            {
+                "type": "text",
+                "text": (
+                    "WORKFLOW_BLOCKED: waiting for the user to apply a mode and at least "
+                    "one module in the workbench. Do not analyse requirements, read analysis "
+                    "references, create output files, or infer a default selection. End this "
+                    "turn now. Continue only after save_workbench_selection returns confirmed=true."
+                ),
+            }
+        ],
+        "_meta": {
+            "ui": {"resourceUri": RESOURCE_URI},
+            "openai/outputTemplate": RESOURCE_URI,
+        },
     }
 
 
@@ -148,8 +194,11 @@ def handle(message: dict[str, Any]) -> dict[str, Any] | None:
                     "When the user @mentions Requirements Analysis Workbench and supplies a "
                     "matching software idea, scenario, user-story collection, meeting note, or "
                     "requirements draft, open the workbench before analysis by default unless "
-                    "the user explicitly declines the GUI. Also open it whenever the user asks "
-                    "for visual mode or module selection. "
+                    "the user explicitly declines the GUI. Opening the workbench sets state to "
+                    "awaiting_user_selection and is a hard stop: end that turn without analysing "
+                    "or creating files. Resume only after save_workbench_selection returns "
+                    "confirmed=true from the user's explicit submission. Also open it whenever "
+                    "the user asks for visual mode or module selection. "
                     "Keep TraceGuard results visible and require named approval for abstained high-impact items."
                 ),
             },
@@ -185,6 +234,7 @@ def handle(message: dict[str, Any]) -> dict[str, Any] | None:
                         "uri": RESOURCE_URI,
                         "mimeType": "text/html;profile=mcp-app",
                         "text": UI_PATH.read_text(encoding="utf-8"),
+                        "_meta": {"ui": {"prefersBorder": True}},
                     }
                 ]
             },
@@ -195,18 +245,7 @@ def handle(message: dict[str, Any]) -> dict[str, Any] | None:
         arguments = params.get("arguments", {})
         try:
             if name == "open_workbench":
-                value = _selection_result(
-                    {
-                        "mode": "guided",
-                        "modules": MODULES,
-                        "traceguard": True,
-                    }
-                )
-                value["_meta"] = {
-                    "ui": {"resourceUri": RESOURCE_URI},
-                    "openai/outputTemplate": RESOURCE_URI,
-                }
-                return _result(request_id, value)
+                return _result(request_id, _awaiting_selection_result())
             if name == "save_workbench_selection":
                 return _result(request_id, _selection_result(arguments))
             return _error(request_id, -32601, f"Unknown tool: {name}")
@@ -219,6 +258,13 @@ def handle(message: dict[str, Any]) -> dict[str, Any] | None:
 
 
 def main() -> int:
+    # MCP stdio is UTF-8. Codex may launch Python under a legacy Windows code
+    # page, so configure both streams explicitly and keep responses ASCII-safe.
+    if hasattr(sys.stdin, "reconfigure"):
+        sys.stdin.reconfigure(encoding="utf-8")
+    if hasattr(sys.stdout, "reconfigure"):
+        sys.stdout.reconfigure(encoding="utf-8")
+
     for raw_line in sys.stdin:
         line = raw_line.strip()
         if not line:
@@ -229,7 +275,7 @@ def main() -> int:
         except (json.JSONDecodeError, OSError) as exc:
             response = _error(None, -32700, str(exc))
         if response is not None:
-            sys.stdout.write(json.dumps(response, ensure_ascii=False) + "\n")
+            sys.stdout.write(_serialize(response))
             sys.stdout.flush()
     return 0
 

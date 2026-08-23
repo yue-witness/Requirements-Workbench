@@ -10,7 +10,7 @@
 
 可视化工作台区分引导、标准和专业模式，并为 `requirements`、`fishbone`、`context`、`use-cases`、`activity` 和 `wireframe` 六个模块分别提供勾选框。辅助文件包括作为单一事实来源的 `analysis.json`、`review-index.md`、`traceability.csv`、`traceguard.md`、`traceguard.json` 和 `manifest.json`。
 
-当用户通过 `@` 直接调用插件并提供匹配的需求描述时，`analyze-requirements` 技能默认在分析前打开此工作台。用户明确要求不打开 GUI 时将遵从该要求；宿主不兼容 MCP Apps 时则回退为对话式选择。
+当用户通过 `@` 直接调用插件并提供匹配的需求描述时，`analyze-requirements` 技能默认在分析前打开此工作台。仅打开面板不会接受界面中显示的默认值：用户必须点击 **Apply selection**，且服务端确认已保存模式与模块后，分析才会解锁。只有在请求同时给出模式和至少一个模块时，插件才接受“不打开 GUI”的明确要求；不兼容 MCP Apps 的宿主则回退为同样具有等待门禁的结构化或对话式选择。
 
 ## 确定性示例
 

@@ -21,7 +21,7 @@ Every run also creates a canonical `analysis.json`, a reviewer-oriented `review-
 
 ## Key behaviours
 
-- When the plugin is directly `@`-mentioned with a matching requirements description, it opens the visual workbench by default so the user can confirm the review mode and output modules. Users can explicitly decline the GUI, and hosts without MCP Apps support fall back to the same choices in conversation.
+- When the plugin is directly `@`-mentioned with a matching requirements description, it opens the visual workbench by default so the user can confirm the review mode and output modules. Opening the panel does not accept its displayed defaults: the workflow remains blocked until the user applies a valid selection. Users can explicitly decline the GUI only when they already provide a mode and at least one module; hosts without MCP Apps support fall back to the same blocking choices in conversation.
 - A visual Guided, Standard, and Professional mode selector.
 - Independent checkboxes for all six output modules.
 - Explicit separation of stakeholder evidence, inference, assumptions, proposals, conflicts, and open questions.
