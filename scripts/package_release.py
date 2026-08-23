@@ -10,7 +10,7 @@ from zipfile import ZIP_DEFLATED, ZipFile, ZipInfo
 
 
 ROOT = Path(__file__).resolve().parents[1]
-PLUGIN_ROOT = ROOT / "plugins" / "requirements-workbench"
+PLUGIN_ROOT = ROOT / "plugins" / "requirements-analysis-workbench"
 MANIFEST_PATH = PLUGIN_ROOT / ".codex-plugin" / "plugin.json"
 DIST_DIR = ROOT / "dist"
 FIXED_TIMESTAMP = (2026, 8, 23, 0, 0, 0)
@@ -63,8 +63,8 @@ def main() -> None:
 
     manifest = json.loads(MANIFEST_PATH.read_text(encoding="utf-8"))
     version = str(manifest["version"])
-    archive_root = Path(f"requirements-workbench-v{version}")
-    archive_path = DIST_DIR / f"requirements-workbench-v{version}.zip"
+    archive_root = Path(f"requirements-analysis-workbench-v{version}")
+    archive_path = DIST_DIR / f"requirements-analysis-workbench-v{version}.zip"
     checksum_path = DIST_DIR / "SHA256SUMS.txt"
 
     DIST_DIR.mkdir(parents=True, exist_ok=True)

@@ -21,6 +21,15 @@ from pathlib import Path
 from typing import Any, Iterable
 
 
+# Keep the deterministic helper importable when this file is loaded directly
+# by the regression suite rather than executed as a package module.
+SCRIPT_DIR = Path(__file__).resolve().parent
+if str(SCRIPT_DIR) not in sys.path:
+    sys.path.insert(0, str(SCRIPT_DIR))
+
+from traceguard import write_audit
+
+
 MODULE_FILES = {
     "requirements": "requirements.md",
     "fishbone": "fishbone.mmd",
@@ -659,6 +668,7 @@ def write_review_index(
     out_dir: Path,
     module_hashes: dict[str, str],
     quality_warnings: list[str],
+    traceguard_report: dict[str, Any],
 ) -> None:
     lines = [
         f"# {data['project']['name']} - Review Index",
@@ -683,6 +693,22 @@ def write_review_index(
             f"| {module} | {MODULE_DESCRIPTIONS[module]} | "
             f"`{module_file}` | `{file_hash}` |"
         )
+
+    traceguard_summary = traceguard_report["summary"]
+    lines.extend(
+        [
+            "",
+            "## TraceGuard",
+            "",
+            f"**Decision state:** `{traceguard_report['status']}`",
+            "",
+            f"- Exact source spans: {traceguard_summary['exact_source_spans']}",
+            f"- Errors: {traceguard_summary['error']}",
+            f"- Warnings: {traceguard_summary['warning']}",
+            f"- Abstentions awaiting named approval: {traceguard_summary['abstain']}",
+            "- Review `traceguard.md` for human-readable findings and `traceguard.json` for automation.",
+        ]
+    )
 
     glossary = data.get("glossary", [])
     if glossary:
@@ -759,14 +785,27 @@ def materialise(data: dict[str, Any], out_dir: Path, only: str | None) -> None:
     before_hashes = existing_module_hashes(out_dir, selected)
     targets = [only] if only else selected
 
+    canonical_text = json.dumps(data, indent=2, ensure_ascii=False) + "\n"
+    canonical_path = out_dir / "analysis.json"
+    rollback_path: Path | None = None
+    if only and canonical_path.exists():
+        previous_text = canonical_path.read_text(encoding="utf-8")
+        if previous_text != canonical_text:
+            history_dir = out_dir / ".traceguard" / "history"
+            history_dir.mkdir(parents=True, exist_ok=True)
+            timestamp = datetime.now(timezone.utc).strftime("%Y%m%dT%H%M%SZ")
+            rollback_path = history_dir / f"{timestamp}-analysis.json"
+            rollback_path.write_text(previous_text, encoding="utf-8", newline="\n")
+
     for module in targets:
         output_path = out_dir / MODULE_FILES[module]
         write_text(output_path, RENDERERS[module](data))
 
     # The canonical analysis and index may change during a targeted revision;
     # non-target module files remain byte-for-byte untouched.
-    write_text(out_dir / "analysis.json", json.dumps(data, indent=2, ensure_ascii=False) + "\n")
+    write_text(canonical_path, canonical_text)
     write_traceability(data, out_dir / "traceability.csv")
+    traceguard_report = write_audit(data, out_dir)
 
     after_hashes = existing_module_hashes(out_dir, selected)
     quality_warnings = lint_requirement_warnings(data)
@@ -782,13 +821,24 @@ def materialise(data: dict[str, Any], out_dir: Path, only: str | None) -> None:
             untouched.append(module)
 
     manifest = {
-        "schema_version": "0.2",
+        "schema_version": "0.3",
         "project": data["project"]["name"],
         "generated_utc": datetime.now(timezone.utc).isoformat(),
         "selected_modules": selected,
         "revision_target": only,
         "untouched_modules_verified": untouched,
         "quality_warnings": quality_warnings,
+        "traceguard": {
+            "status": traceguard_report["status"],
+            "summary": traceguard_report["summary"],
+            "human_report": "traceguard.md",
+            "machine_report": "traceguard.json",
+            "rollback_snapshot": (
+                str(rollback_path.relative_to(out_dir)).replace("\\", "/")
+                if rollback_path
+                else None
+            ),
+        },
         "files": {
             module: {
                 "path": MODULE_FILES[module],
@@ -799,7 +849,13 @@ def materialise(data: dict[str, Any], out_dir: Path, only: str | None) -> None:
         },
     }
     write_text(out_dir / "manifest.json", json.dumps(manifest, indent=2) + "\n")
-    write_review_index(data, out_dir, after_hashes, quality_warnings)
+    write_review_index(
+        data,
+        out_dir,
+        after_hashes,
+        quality_warnings,
+        traceguard_report,
+    )
 
 
 def main() -> int:

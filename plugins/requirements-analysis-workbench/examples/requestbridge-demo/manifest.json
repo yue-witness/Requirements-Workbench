@@ -1,7 +1,7 @@
 {
-  "schema_version": "0.2",
+  "schema_version": "0.3",
   "project": "RequestBridge",
-  "generated_utc": "2026-08-22T04:15:20.572938+00:00",
+  "generated_utc": "2026-08-23T05:40:48.178673+00:00",
   "selected_modules": [
     "requirements",
     "fishbone",
@@ -13,6 +13,18 @@
   "revision_target": null,
   "untouched_modules_verified": [],
   "quality_warnings": [],
+  "traceguard": {
+    "status": "abstain",
+    "summary": {
+      "error": 0,
+      "warning": 1,
+      "abstain": 2,
+      "exact_source_spans": 18
+    },
+    "human_report": "traceguard.md",
+    "machine_report": "traceguard.json",
+    "rollback_snapshot": null
+  },
   "files": {
     "requirements": {
       "path": "requirements.md",

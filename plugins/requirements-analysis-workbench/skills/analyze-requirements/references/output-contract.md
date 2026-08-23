@@ -6,6 +6,8 @@ The canonical `analysis.json` is the single source of truth. Keep top-level keys
 {
   "project": {},
   "selected_modules": [],
+  "sources": [],
+  "traceguard": {},
   "plain_language_summary": "",
   "glossary": [],
   "stakeholders": [],
@@ -32,8 +34,22 @@ The canonical `analysis.json` is the single source of truth. Keep top-level keys
 | `wireframe` | `wireframe.html` | Low-fidelity interface review page |
 
 Support files are always generated: `analysis.json`, `review-index.md`,
-`traceability.csv`, and `manifest.json`. Selecting modules controls the six
-module files, not these support files.
+`traceability.csv`, `traceguard.md`, `traceguard.json`, and `manifest.json`.
+Selecting modules controls the six module files, not these support files.
+
+## Sources and exact evidence spans
+
+Record supplied source text in `sources[]` with a stable `id`, optional `title`,
+and exact `text`. A requirement may carry `evidence_spans[]`, or the same spans
+may be grouped under `traceguard.evidence_spans[requirement_id]`. Each span must
+contain `source_id` and an exact `quote`. Optional `start` and `end` offsets are
+validated when supplied; TraceGuard resolves and records offsets when they are
+omitted.
+
+Use `traceguard.high_impact_ids` for decisions that must remain abstained until
+`traceguard.approvals[]` contains the same `element_id`, a non-empty named
+`reviewer`, and `decision: approved`. `traceguard.terminology[]` may define a
+canonical term and aliases that should be flagged across modules.
 
 ## Project record
 
@@ -63,6 +79,13 @@ Each requirement record contains:
   "confidence": "explicit"
 }
 ```
+
+`evidence_spans` is optional for legacy bundles but required for a clean
+TraceGuard result when a requirement is labelled explicit.
+
+Activity steps should include `trace_ids` that refer to a known requirement or
+use-case ID. Actionable wireframe components (`button`, `input`, `select`, and
+`list`) must also include at least one known trace ID.
 
 Allowed categories are `functional`, `quality`, and `business`. Use distinct ID prefixes such as `FR`, `QR`, and `BR` when that improves scanning, but preserve user-supplied IDs.
 

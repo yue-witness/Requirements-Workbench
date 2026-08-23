@@ -37,6 +37,8 @@ class MaterialiseAnalysisTests(unittest.TestCase):
 
             self.assertTrue((output / "review-index.md").is_file())
             self.assertTrue((output / "traceability.csv").is_file())
+            self.assertTrue((output / "traceguard.json").is_file())
+            self.assertTrue((output / "traceguard.md").is_file())
             self.assertNotIn("<script", (output / "wireframe.html").read_text().lower())
 
     def test_targeted_revision_preserves_other_module_hashes(self) -> None:
@@ -103,6 +105,61 @@ class MaterialiseAnalysisTests(unittest.TestCase):
         )
         self.assertIn('type="date"', rendered)
         self.assertNotIn("textarea", rendered)
+
+    def test_traceguard_resolves_exact_source_spans(self) -> None:
+        data = self.load_demo()
+        with tempfile.TemporaryDirectory() as temporary_directory:
+            report = materialize_analysis.write_audit(
+                data, Path(temporary_directory)
+            )
+
+            self.assertGreater(report["summary"]["exact_source_spans"], 0)
+            self.assertFalse(
+                any(
+                    item["check_id"] == "TG-EVIDENCE-QUOTE"
+                    for item in report["findings"]
+                )
+            )
+
+    def test_traceguard_flags_cross_artefact_actor_drift(self) -> None:
+        data = self.load_demo()
+        data["use_cases"][0]["primary_actor"] = "Unmodelled Actor"
+        with tempfile.TemporaryDirectory() as temporary_directory:
+            report = materialize_analysis.write_audit(
+                data, Path(temporary_directory)
+            )
+
+            self.assertTrue(
+                any(
+                    item["check_id"] == "TG-ACTOR-CONTEXT"
+                    for item in report["findings"]
+                )
+            )
+
+    def test_traceguard_requires_named_approval_for_high_impact_items(self) -> None:
+        data = self.load_demo()
+        with tempfile.TemporaryDirectory() as temporary_directory:
+            report = materialize_analysis.write_audit(
+                data, Path(temporary_directory)
+            )
+
+            self.assertEqual("abstain", report["status"])
+            self.assertGreater(report["summary"]["abstain"], 0)
+
+    def test_targeted_revision_writes_rollback_snapshot(self) -> None:
+        original = self.load_demo()
+        revised = copy.deepcopy(original)
+        revised["use_cases"][0]["goal"] += " A rollback test change."
+
+        with tempfile.TemporaryDirectory() as temporary_directory:
+            output = Path(temporary_directory)
+            materialize_analysis.materialise(original, output, only=None)
+            materialize_analysis.materialise(revised, output, only="use-cases")
+            manifest = json.loads((output / "manifest.json").read_text(encoding="utf-8"))
+
+            rollback = manifest["traceguard"]["rollback_snapshot"]
+            self.assertIsNotNone(rollback)
+            self.assertTrue((output / rollback).is_file())
 
 
 if __name__ == "__main__":

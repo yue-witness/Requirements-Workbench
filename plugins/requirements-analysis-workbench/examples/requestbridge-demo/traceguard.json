@@ -1,0 +1,175 @@
+{
+  "schema_version": "1.0",
+  "generated_utc": "2026-08-23T05:40:48.159157+00:00",
+  "project": "RequestBridge",
+  "status": "abstain",
+  "summary": {
+    "error": 0,
+    "warning": 1,
+    "abstain": 2,
+    "exact_source_spans": 18
+  },
+  "resolved_source_spans": [
+    {
+      "element_id": "FR-01",
+      "source_id": "SRC-01",
+      "quote": "A requester may sign in with an organisational account or verified email link",
+      "start": 164,
+      "end": 241
+    },
+    {
+      "element_id": "FR-02",
+      "source_id": "SRC-01",
+      "quote": "choose a request type, explain the need in everyday language",
+      "start": 243,
+      "end": 303
+    },
+    {
+      "element_id": "FR-03",
+      "source_id": "SRC-01",
+      "quote": "select a preferred contact channel, state language or accessibility needs, propose availability",
+      "start": 305,
+      "end": 400
+    },
+    {
+      "element_id": "FR-04",
+      "source_id": "SRC-01",
+      "quote": "optionally attach supporting information",
+      "start": 406,
+      "end": 446
+    },
+    {
+      "element_id": "FR-05",
+      "source_id": "SRC-01",
+      "quote": "Before submission, the system validates required information, displays a review summary",
+      "start": 448,
+      "end": 535
+    },
+    {
+      "element_id": "FR-06",
+      "source_id": "SRC-01",
+      "quote": "and asks for consent",
+      "start": 537,
+      "end": 557
+    },
+    {
+      "element_id": "FR-07",
+      "source_id": "SRC-01",
+      "quote": "The requester receives a tracking reference and can view status",
+      "start": 559,
+      "end": 622
+    },
+    {
+      "element_id": "FR-08",
+      "source_id": "SRC-01",
+      "quote": "can view status",
+      "start": 607,
+      "end": 622
+    },
+    {
+      "element_id": "FR-09",
+      "source_id": "SRC-01",
+      "quote": "Triage staff can ask for clarification",
+      "start": 624,
+      "end": 662
+    },
+    {
+      "element_id": "FR-10",
+      "source_id": "SRC-01",
+      "quote": "assign the request to a team",
+      "start": 664,
+      "end": 692
+    },
+    {
+      "element_id": "FR-11",
+      "source_id": "SRC-01",
+      "quote": "book a conversation with service staff",
+      "start": 124,
+      "end": 162
+    },
+    {
+      "element_id": "FR-12",
+      "source_id": "SRC-01",
+      "quote": "reject an unsupported request with a reason, or close completed work",
+      "start": 719,
+      "end": 787
+    },
+    {
+      "element_id": "FR-13",
+      "source_id": "SRC-01",
+      "quote": "Email and SMS notifications may be enabled",
+      "start": 871,
+      "end": 913
+    },
+    {
+      "element_id": "FR-14",
+      "source_id": "SRC-01",
+      "quote": "Service managers maintain categories and routing rules",
+      "start": 789,
+      "end": 843
+    },
+    {
+      "element_id": "FR-15",
+      "source_id": "SRC-01",
+      "quote": "view aggregate demand",
+      "start": 848,
+      "end": 869
+    },
+    {
+      "element_id": "QR-01",
+      "source_id": "SRC-01",
+      "quote": "Sensitive information must be limited to authorised roles",
+      "start": 915,
+      "end": 972
+    },
+    {
+      "element_id": "QR-02",
+      "source_id": "SRC-01",
+      "quote": "The interface must be understandable to first-time non-technical users while remaining efficient for experienced staff",
+      "start": 1208,
+      "end": 1326
+    },
+    {
+      "element_id": "BR-01",
+      "source_id": "SRC-01",
+      "quote": "The system must not make an automatic high-impact eligibility decision",
+      "start": 1016,
+      "end": 1086
+    }
+  ],
+  "findings": [
+    {
+      "check_id": "TG-EVIDENCE-MISSING",
+      "severity": "warning",
+      "message": "QR-03 has no exact source-span evidence.",
+      "affected_modules": [
+        "requirements",
+        "traceability"
+      ],
+      "element_id": "QR-03"
+    },
+    {
+      "check_id": "TG-APPROVAL-ABSTAIN",
+      "severity": "abstain",
+      "message": "BR-01 is high-impact and remains abstained until a named reviewer approves it.",
+      "affected_modules": [
+        "activity",
+        "requirements",
+        "use-cases",
+        "wireframe"
+      ],
+      "element_id": "BR-01"
+    },
+    {
+      "check_id": "TG-APPROVAL-ABSTAIN",
+      "severity": "abstain",
+      "message": "QR-01 is high-impact and remains abstained until a named reviewer approves it.",
+      "affected_modules": [
+        "activity",
+        "requirements",
+        "use-cases"
+      ],
+      "element_id": "QR-01"
+    }
+  ]
+}

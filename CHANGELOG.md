@@ -1,6 +1,23 @@
 # Changelog
 
-All notable changes to Requirements Workbench are documented here.
+All notable changes to Requirements Analysis Workbench are documented here.
+
+## [0.3.0] - 2026-08-23
+
+### Added
+
+- Native MCP Apps visual selector for Guided, Standard, and Professional modes.
+- Independent checkboxes for all six requirements-analysis modules.
+- TraceGuard exact source-span validation and cross-artefact invariants.
+- Change-impact previews with propagate, local-override, and cancel choices.
+- Canonical-analysis rollback snapshots for targeted revisions.
+- Abstention gates that require named approval for configured high-impact items.
+- A dedicated `traceguard-audit` skill and protocol-level GUI tests.
+
+### Changed
+
+- Renamed the plugin and normalized identifier to Requirements Analysis Workbench / `requirements-analysis-workbench`.
+- Upgraded generated bundle manifests to schema version 0.3.
 
 ## [0.2.0] - 2026-08-23
 
@@ -20,3 +37,4 @@ All notable changes to Requirements Workbench are documented here.
 - Project-specific count gates are optional data fields and are not global plugin rules.
 
 [0.2.0]: https://github.com/yue-witness/Requirements-Workbench/releases/tag/v0.2.0
+[0.3.0]: https://github.com/yue-witness/Requirements-Workbench/releases/tag/v0.3.0

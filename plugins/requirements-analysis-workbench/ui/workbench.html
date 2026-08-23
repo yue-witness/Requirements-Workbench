@@ -1,0 +1,265 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Requirements Analysis Workbench</title>
+  <style>
+    :root {
+      color-scheme: light dark;
+      font-family: Inter, ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+      --ink: #152132;
+      --muted: #5d6878;
+      --surface: #ffffff;
+      --panel: #f3f6f8;
+      --line: #cbd4dd;
+      --accent: #0f766e;
+      --accent-soft: #d9f4ef;
+      --guard: #a16207;
+      --guard-soft: #fef3c7;
+    }
+
+    * { box-sizing: border-box; }
+
+    body {
+      margin: 0;
+      background: var(--panel);
+      color: var(--ink);
+    }
+
+    main {
+      max-width: 920px;
+      margin: 0 auto;
+      padding: 24px;
+    }
+
+    header {
+      display: grid;
+      grid-template-columns: 1fr auto;
+      gap: 20px;
+      align-items: start;
+      margin-bottom: 20px;
+    }
+
+    h1 { margin: 0 0 6px; font-size: clamp(1.45rem, 3vw, 2rem); }
+    h2 { margin: 0 0 12px; font-size: 1rem; }
+    p { margin: 0; color: var(--muted); line-height: 1.5; }
+
+    .guard-badge {
+      display: inline-flex;
+      gap: 7px;
+      align-items: center;
+      padding: 7px 10px;
+      border: 1px solid #d6a63c;
+      border-radius: 999px;
+      background: var(--guard-soft);
+      color: #713f12;
+      font-size: 0.8rem;
+      font-weight: 700;
+      white-space: nowrap;
+    }
+
+    .section {
+      margin-top: 16px;
+      padding: 18px;
+      border: 1px solid var(--line);
+      border-radius: 14px;
+      background: var(--surface);
+      box-shadow: 0 8px 24px rgb(15 23 42 / 6%);
+    }
+
+    .mode-grid,
+    .module-grid {
+      display: grid;
+      grid-template-columns: repeat(3, minmax(0, 1fr));
+      gap: 10px;
+    }
+
+    .choice {
+      display: flex;
+      gap: 10px;
+      min-width: 0;
+      padding: 12px;
+      border: 1px solid var(--line);
+      border-radius: 10px;
+      cursor: pointer;
+    }
+
+    .choice:hover { border-color: var(--accent); }
+    .choice:has(input:checked) {
+      border-color: var(--accent);
+      background: var(--accent-soft);
+    }
+
+    .choice input { margin-top: 3px; accent-color: var(--accent); }
+    .choice strong { display: block; margin-bottom: 3px; font-size: 0.92rem; }
+    .choice span { display: block; color: var(--muted); font-size: 0.79rem; line-height: 1.35; }
+
+    .toolbar {
+      display: flex;
+      justify-content: space-between;
+      gap: 12px;
+      align-items: center;
+      margin-top: 18px;
+    }
+
+    .summary { font-size: 0.86rem; color: var(--muted); }
+
+    button {
+      min-height: 42px;
+      padding: 10px 18px;
+      border: 0;
+      border-radius: 9px;
+      background: var(--accent);
+      color: white;
+      font: inherit;
+      font-weight: 750;
+      cursor: pointer;
+    }
+
+    button:hover { filter: brightness(0.93); }
+    button:focus-visible,
+    input:focus-visible { outline: 3px solid #f59e0b; outline-offset: 3px; }
+
+    #status {
+      min-height: 1.5em;
+      margin-top: 12px;
+      color: var(--accent);
+      font-size: 0.86rem;
+      font-weight: 650;
+    }
+
+    @media (max-width: 700px) {
+      main { padding: 16px; }
+      header { grid-template-columns: 1fr; }
+      .mode-grid,
+      .module-grid { grid-template-columns: 1fr; }
+      .toolbar { align-items: stretch; flex-direction: column; }
+    }
+
+    @media (prefers-color-scheme: dark) {
+      :root {
+        --ink: #e9eef5;
+        --muted: #a8b2c1;
+        --surface: #17202c;
+        --panel: #0e1520;
+        --line: #3a4656;
+        --accent: #2dd4bf;
+        --accent-soft: #153d3a;
+        --guard-soft: #4d3612;
+      }
+      .guard-badge { color: #fde68a; }
+      button { color: #062d29; }
+    }
+  </style>
+</head>
+<body>
+  <main>
+    <header>
+      <div>
+        <h1>Requirements Analysis Workbench</h1>
+        <p>Choose the review experience and enable only the artefacts needed for this analysis.</p>
+      </div>
+      <div class="guard-badge" aria-label="TraceGuard enabled">◆ TraceGuard enabled</div>
+    </header>
+
+    <form id="workbench-form">
+      <section class="section" aria-labelledby="mode-heading">
+        <h2 id="mode-heading">1. Review mode</h2>
+        <div class="mode-grid">
+          <label class="choice">
+            <input type="radio" name="mode" value="guided" checked>
+            <span><strong>Guided</strong><span>Plain-language explanations and short review prompts.</span></span>
+          </label>
+          <label class="choice">
+            <input type="radio" name="mode" value="standard">
+            <span><strong>Standard</strong><span>Concise analyst detail with normal review guidance.</span></span>
+          </label>
+          <label class="choice">
+            <input type="radio" name="mode" value="professional">
+            <span><strong>Professional</strong><span>Full traceability, verification, and change-impact emphasis.</span></span>
+          </label>
+        </div>
+      </section>
+
+      <section class="section" aria-labelledby="module-heading">
+        <h2 id="module-heading">2. Output modules</h2>
+        <div class="module-grid">
+          <label class="choice"><input type="checkbox" name="modules" value="requirements" checked><span><strong>Requirements</strong><span>Atomic statements, evidence, rationale, and acceptance checks.</span></span></label>
+          <label class="choice"><input type="checkbox" name="modules" value="fishbone" checked><span><strong>Fishbone</strong><span>Candidate causes grouped for validation.</span></span></label>
+          <label class="choice"><input type="checkbox" name="modules" value="context" checked><span><strong>Context</strong><span>System boundary, actors, and external flows.</span></span></label>
+          <label class="choice"><input type="checkbox" name="modules" value="use-cases" checked><span><strong>Use cases</strong><span>Actor goals, main paths, alternatives, and exceptions.</span></span></label>
+          <label class="choice"><input type="checkbox" name="modules" value="activity" checked><span><strong>Activity</strong><span>Workflow, decisions, guards, and end states.</span></span></label>
+          <label class="choice"><input type="checkbox" name="modules" value="wireframe" checked><span><strong>Wireframe</strong><span>Accessible low-fidelity screens with trace labels.</span></span></label>
+        </div>
+
+        <div class="toolbar">
+          <div class="summary" id="summary" aria-live="polite">Guided mode · 6 modules · TraceGuard on</div>
+          <button type="submit">Apply selection</button>
+        </div>
+        <div id="status" role="status" aria-live="polite"></div>
+      </section>
+    </form>
+  </main>
+
+  <script>
+    const form = document.querySelector("#workbench-form");
+    const summary = document.querySelector("#summary");
+    const status = document.querySelector("#status");
+
+    function currentSelection() {
+      const mode = form.elements.mode.value;
+      const modules = [...form.querySelectorAll('input[name="modules"]:checked')]
+        .map((input) => input.value);
+      return { mode, modules, traceguard: true };
+    }
+
+    function updateSummary() {
+      const selection = currentSelection();
+      const modeLabel = selection.mode[0].toUpperCase() + selection.mode.slice(1);
+      summary.textContent = `${modeLabel} mode · ${selection.modules.length} module${selection.modules.length === 1 ? "" : "s"} · TraceGuard on`;
+    }
+
+    async function applySelection(selection) {
+      const openai = typeof window !== "undefined" ? window.openai : undefined;
+      if (openai?.callTool) {
+        await openai.callTool("save_workbench_selection", selection);
+      }
+
+      const message = `Use Requirements Analysis Workbench in ${selection.mode} mode. Enable only these modules: ${selection.modules.join(", ")}. Run TraceGuard and keep abstained items pending named human approval.`;
+      if (openai?.sendFollowUpMessage) {
+        await openai.sendFollowUpMessage({ prompt: message });
+        return "Selection sent to the conversation.";
+      }
+
+      // MCP Apps hosts can receive the same intent through the shared bridge.
+      window.parent.postMessage({
+        jsonrpc: "2.0",
+        id: Date.now(),
+        method: "ui/message",
+        params: { role: "user", content: [{ type: "text", text: message }] }
+      }, "*");
+      return "Selection saved. Continue in the conversation to start analysis.";
+    }
+
+    form.addEventListener("change", updateSummary);
+    form.addEventListener("submit", async (event) => {
+      event.preventDefault();
+      const selection = currentSelection();
+      if (!selection.modules.length) {
+        status.textContent = "Select at least one output module.";
+        return;
+      }
+
+      status.textContent = "Applying selection…";
+      try {
+        status.textContent = await applySelection(selection);
+      } catch (error) {
+        status.textContent = `Unable to apply selection: ${error.message}`;
+      }
+    });
+
+    updateSummary();
+  </script>
+</body>
+</html>

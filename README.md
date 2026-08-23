@@ -1,8 +1,8 @@
-# Requirements Workbench
+# Requirements Analysis Workbench
 
 [简体中文](README.zh-CN.md) | English
 
-Requirements Workbench is a skills-only plugin for ChatGPT and Codex that turns software ideas, problem statements, user stories, meeting notes, or draft requirements into selectable, traceable review artefacts.
+Requirements Analysis Workbench is a plugin for ChatGPT and Codex that turns software ideas, problem statements, user stories, meeting notes, or draft requirements into selectable, traceable review artefacts. It combines three skills, deterministic Python tools, and an MCP Apps visual configuration panel.
 
 It supports first-time contributors with plain-language guidance and experienced analysts with evidence, confidence, acceptance, traceability, and change-scope controls. The plugin is domain-neutral, with project-specific constraints supplied as project data.
 
@@ -17,17 +17,20 @@ Choose one or more independent modules:
 - `activity`: workflow decisions, failure paths, and outcomes;
 - `wireframe`: accessible low-fidelity HTML screens with trace labels.
 
-Every run also creates a canonical `analysis.json`, a reviewer-oriented `review-index.md`, `traceability.csv`, and a SHA-256 `manifest.json`.
+Every run also creates a canonical `analysis.json`, a reviewer-oriented `review-index.md`, `traceability.csv`, `traceguard.md`, `traceguard.json`, and a SHA-256 `manifest.json`.
 
 ## Key behaviours
 
-- Guided, standard, and professional review modes.
+- A visual Guided, Standard, and Professional mode selector.
+- Independent checkboxes for all six output modules.
 - Explicit separation of stakeholder evidence, inference, assumptions, proposals, conflicts, and open questions.
 - Stable IDs and trace links across generated artefacts.
 - Deterministic validation before files are materialised.
 - Targeted revision of one module with byte-for-byte hash checks for non-target modules.
-- Human confirmation boundary for safety-critical, regulated, or high-impact conclusions.
-- No API key, MCP server, or third-party Python package is required by the deterministic materialiser.
+- TraceGuard exact source spans, actor/context checks, activity and wireframe traces, terminology checks, and machine-readable findings.
+- Shared-change impact previews with propagate, local-override, and cancel choices.
+- Rollback snapshots and named-approval abstention gates for configured high-impact items.
+- No API key or third-party Python package is required by the deterministic materialiser or local MCP server.
 
 For example, `project.minimum_requirements` is optional and defaults to no count gate; the reusable plugin does not impose an organisation- or industry-wide minimum.
 
@@ -36,19 +39,19 @@ For example, `project.minimum_requirements` is optional and defaults to no count
 Use a current ChatGPT desktop/Codex installation that supports plugins. Add this repository as a marketplace source:
 
 ```powershell
-codex plugin marketplace add yue-witness/Requirements-Workbench --ref v0.2.0
+codex plugin marketplace add yue-witness/Requirements-Workbench --ref v0.3.0
 ```
 
-Restart the desktop app, open the Plugins Directory, select the **Requirements Workbench** source, and install or enable `requirements-workbench`. Start a new task after installation so the two bundled skills are loaded.
+Restart the desktop app, open the Plugins Directory, select the **Requirements Analysis Workbench** source, and install or enable `requirements-analysis-workbench`. Start a new task after installation so the three bundled skills and MCP tools are loaded.
 
-To follow the latest `main` branch instead of a tagged release, omit `--ref v0.2.0`.
+To follow the latest `main` branch instead of a tagged release, omit `--ref v0.3.0`.
 
 ## Install from the release package
 
-Download `requirements-workbench-v0.2.0.zip` from the GitHub Release and extract it. Add the extracted marketplace root:
+Download `requirements-analysis-workbench-v0.3.0.zip` from the GitHub Release and extract it. Add the extracted marketplace root:
 
 ```powershell
-codex plugin marketplace add C:\path\to\requirements-workbench-v0.2.0
+codex plugin marketplace add C:\path\to\requirements-analysis-workbench-v0.3.0
 ```
 
 Then restart the desktop app and install the plugin from the Plugins Directory.
@@ -59,6 +62,10 @@ Guided analysis:
 
 > I have a software idea but I am new to requirements analysis. Explain the available outputs, help me identify missing information, and generate requirements, context, use cases, and a wireframe.
 
+Visual configuration:
+
+> Open the visual requirements workbench so I can choose a mode and switch modules on or off.
+
 Professional analysis:
 
 > Analyse these stakeholder notes in professional mode. Generate all six modules, preserve supplied terminology, label inference, and include acceptance checks and traceability.
@@ -67,13 +74,21 @@ Targeted revision:
 
 > Revise only the activity module to add a rejected-request path. Do not rewrite any other module file.
 
+TraceGuard impact preview:
+
+> Preview the effect of changing FR-01, but do not propagate the change until I confirm.
+
 ## Run the deterministic demo
 
 Python 3.10 or later is recommended. From the repository root:
 
 ```powershell
-python plugins/requirements-workbench/scripts/materialize_analysis.py `
-  plugins/requirements-workbench/assets/demo_analysis.json `
+python plugins/requirements-analysis-workbench/scripts/materialize_analysis.py `
+  plugins/requirements-analysis-workbench/assets/demo_analysis.json `
+  --out demo-output
+
+python plugins/requirements-analysis-workbench/scripts/traceguard.py audit `
+  plugins/requirements-analysis-workbench/assets/demo_analysis.json `
   --out demo-output
 ```
 
@@ -82,7 +97,7 @@ The materialiser itself uses only the Python standard library and does not make 
 ## Validate and package
 
 ```powershell
-python -m unittest discover -s plugins/requirements-workbench/tests -v
+python -m unittest discover -s plugins/requirements-analysis-workbench/tests -v
 python scripts/package_release.py
 ```
 
@@ -93,10 +108,13 @@ Maintainers can additionally run the official Plugin Creator and Skill Creator v
 ```text
 .
 |-- .agents/plugins/marketplace.json
-|-- plugins/requirements-workbench/
+|-- plugins/requirements-analysis-workbench/
 |   |-- .codex-plugin/plugin.json
+|   |-- .mcp.json
+|   |-- mcp/server.py
+|   |-- ui/workbench.html
 |   |-- skills/
-|   |-- scripts/materialize_analysis.py
+|   |-- scripts/
 |   |-- assets/
 |   |-- examples/requestbridge-demo/
 |   `-- tests/

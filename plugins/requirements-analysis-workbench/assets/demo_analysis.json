@@ -15,6 +15,41 @@
     "activity",
     "wireframe"
   ],
+  "sources": [
+    {
+      "id": "SRC-01",
+      "title": "RequestBridge stakeholder scenario",
+      "text": "A regional service organisation wants RequestBridge, a web application that any community member can use to request help or book a conversation with service staff. A requester may sign in with an organisational account or verified email link, choose a request type, explain the need in everyday language, select a preferred contact channel, state language or accessibility needs, propose availability, and optionally attach supporting information. Before submission, the system validates required information, displays a review summary, and asks for consent. The requester receives a tracking reference and can view status. Triage staff can ask for clarification, assign the request to a team, schedule an appointment, reject an unsupported request with a reason, or close completed work. Service managers maintain categories and routing rules and view aggregate demand. Email and SMS notifications may be enabled. Sensitive information must be limited to authorised roles and significant actions must be auditable. The system must not make an automatic high-impact eligibility decision. Urgency criteria, retention periods, service targets, cancellation cut-offs, and notification rules are not yet agreed. The interface must be understandable to first-time non-technical users while remaining efficient for experienced staff."
+    }
+  ],
+  "traceguard": {
+    "evidence_spans": {
+      "FR-01": [{"source_id": "SRC-01", "quote": "A requester may sign in with an organisational account or verified email link"}],
+      "FR-02": [{"source_id": "SRC-01", "quote": "choose a request type, explain the need in everyday language"}],
+      "FR-03": [{"source_id": "SRC-01", "quote": "select a preferred contact channel, state language or accessibility needs, propose availability"}],
+      "FR-04": [{"source_id": "SRC-01", "quote": "optionally attach supporting information"}],
+      "FR-05": [{"source_id": "SRC-01", "quote": "Before submission, the system validates required information, displays a review summary"}],
+      "FR-06": [{"source_id": "SRC-01", "quote": "and asks for consent"}],
+      "FR-07": [{"source_id": "SRC-01", "quote": "The requester receives a tracking reference and can view status"}],
+      "FR-08": [{"source_id": "SRC-01", "quote": "can view status"}],
+      "FR-09": [{"source_id": "SRC-01", "quote": "Triage staff can ask for clarification"}],
+      "FR-10": [{"source_id": "SRC-01", "quote": "assign the request to a team"}],
+      "FR-11": [{"source_id": "SRC-01", "quote": "book a conversation with service staff"}],
+      "FR-12": [{"source_id": "SRC-01", "quote": "reject an unsupported request with a reason, or close completed work"}],
+      "FR-13": [{"source_id": "SRC-01", "quote": "Email and SMS notifications may be enabled"}],
+      "FR-14": [{"source_id": "SRC-01", "quote": "Service managers maintain categories and routing rules"}],
+      "FR-15": [{"source_id": "SRC-01", "quote": "view aggregate demand"}],
+      "QR-01": [{"source_id": "SRC-01", "quote": "Sensitive information must be limited to authorised roles"}],
+      "QR-02": [{"source_id": "SRC-01", "quote": "The interface must be understandable to first-time non-technical users while remaining efficient for experienced staff"}],
+      "BR-01": [{"source_id": "SRC-01", "quote": "The system must not make an automatic high-impact eligibility decision"}]
+    },
+    "high_impact_ids": ["QR-01", "BR-01"],
+    "approvals": [],
+    "terminology": [
+      {"canonical": "Requester", "aliases": ["customer", "client"]},
+      {"canonical": "Service Staff", "aliases": ["operator"]}
+    ]
+  },
   "plain_language_summary": "RequestBridge helps a person explain a service need, submit it safely, and follow what happens next. Staff can clarify, route, schedule, and close requests. The draft keeps unresolved policy choices visible instead of guessing them.",
   "glossary": [
     {"term": "System boundary", "meaning": "The functions owned by RequestBridge, separated from people and external services."},
@@ -282,17 +317,17 @@
     "title": "Submit and triage a service request",
     "start": "S1",
     "steps": [
-      {"id": "S1", "label": "Verify requester identity", "next": "S2"},
-      {"id": "S2", "label": "Describe need and preferences", "next": "D1"},
-      {"id": "D1", "label": "Validate draft", "condition": "Required information complete?", "yes": "S3", "no": "S2"},
-      {"id": "S3", "label": "Review summary and confirm consent", "next": "S4"},
-      {"id": "S4", "label": "Create reference and initial status", "next": "S5"},
-      {"id": "S5", "label": "Authorised staff review request", "next": "D2"},
-      {"id": "D2", "label": "Assess information", "condition": "Clarification needed?", "yes": "S6", "no": "D3"},
-      {"id": "S6", "label": "Request and receive clarification", "next": "S5"},
-      {"id": "D3", "label": "Confirm service path", "condition": "Request supported?", "yes": "S7", "no": "S8"},
-      {"id": "S7", "label": "Assign service team and update status", "next": "END"},
-      {"id": "S8", "label": "Record rejection reason after human confirmation", "next": "END"}
+      {"id": "S1", "label": "Verify requester identity", "next": "S2", "trace_ids": ["FR-01", "UC-01"]},
+      {"id": "S2", "label": "Describe need and preferences", "next": "D1", "trace_ids": ["FR-02", "FR-03", "UC-01"]},
+      {"id": "D1", "label": "Validate draft", "condition": "Required information complete?", "yes": "S3", "no": "S2", "trace_ids": ["FR-05", "UC-01"]},
+      {"id": "S3", "label": "Review summary and confirm consent", "next": "S4", "trace_ids": ["FR-05", "FR-06", "UC-01"]},
+      {"id": "S4", "label": "Create reference and initial status", "next": "S5", "trace_ids": ["FR-07", "UC-01"]},
+      {"id": "S5", "label": "Authorised staff review request", "next": "D2", "trace_ids": ["QR-01", "UC-02"]},
+      {"id": "D2", "label": "Assess information", "condition": "Clarification needed?", "yes": "S6", "no": "D3", "trace_ids": ["FR-09", "UC-02"]},
+      {"id": "S6", "label": "Request and receive clarification", "next": "S5", "trace_ids": ["FR-09", "UC-02"]},
+      {"id": "D3", "label": "Confirm service path", "condition": "Request supported?", "yes": "S7", "no": "S8", "trace_ids": ["BR-01", "UC-02"]},
+      {"id": "S7", "label": "Assign service team and update status", "next": "END", "trace_ids": ["FR-08", "FR-10", "UC-02"]},
+      {"id": "S8", "label": "Record rejection reason after human confirmation", "next": "END", "trace_ids": ["FR-12", "BR-01", "UC-02"]}
     ]
   },
   "wireframe": {

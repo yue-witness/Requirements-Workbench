@@ -19,6 +19,16 @@ RequestBridge helps a person explain a service need, submit it safely, and follo
 | activity | Check workflow order, decisions, guards, rejection paths, and end states. | `activity.mmd` | `eb1fe7c2a4cc84e349f5bf02e7782d73a2ca22339a0641fe28369f668b00764f` |
 | wireframe | Check whether the proposed screens support the traced requirements and use-case steps. | `wireframe.html` | `1b55bd60496de4f5d198b3802e7a42c0ddc7169a09ad9cc5952fb9288e5f3669` |
 
+## TraceGuard
+
+**Decision state:** `abstain`
+
+- Exact source spans: 18
+- Errors: 0
+- Warnings: 1
+- Abstentions awaiting named approval: 2
+- Review `traceguard.md` for human-readable findings and `traceguard.json` for automation.
+
 ## Glossary
 
 | Term | Plain-language meaning |

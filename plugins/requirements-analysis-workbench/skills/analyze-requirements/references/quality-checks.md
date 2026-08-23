@@ -19,6 +19,8 @@ Apply these checks before returning any module.
 - Avoid subjective terms such as "fast", "easy", "appropriate", or "user-friendly" without a measurable criterion.
 - Keep design choices out of requirements unless the client explicitly mandates them.
 - Trace every diagram element and use case to the scenario, an assumption, or a requirement.
+- Resolve explicit evidence to an exact quote in a stored source record; do not
+  substitute a generated evidence summary for a source span.
 
 These rules follow general documentation principles: clear wording for the intended audience, direct active language, rationale, implementation neutrality, ambiguity and consistency review, and unique identifiers. Project-specific minimum counts belong in `project.minimum_requirements`, not in the reusable skill.
 
@@ -29,6 +31,10 @@ These rules follow general documentation principles: clear wording for the inten
 - Wireframe controls must trace to a requirement or use-case step.
 - Fishbone causes are hypotheses for validation, not confirmed facts.
 - Any revision that changes a shared concept must identify potentially affected modules even when only one module is regenerated.
+- Run TraceGuard after materialisation. Keep its `abstain` state visible until
+  a named reviewer approves each configured high-impact item.
+- Preserve the pre-change canonical analysis as a rollback snapshot whenever a
+  targeted revision changes shared data.
 
 ## Human validation
 

@@ -1,0 +1,43 @@
+{
+  "name": "requirements-analysis-workbench",
+  "version": "0.3.0",
+  "description": "Create selectable requirements artefacts with visual configuration and TraceGuard auditing.",
+  "author": {
+    "name": "Requirements Analysis Workbench contributors",
+    "url": "https://github.com/yue-witness"
+  },
+  "homepage": "https://github.com/yue-witness/Requirements-Workbench",
+  "repository": "https://github.com/yue-witness/Requirements-Workbench",
+  "license": "MIT",
+  "keywords": [
+    "requirements-engineering",
+    "requirements-analysis",
+    "traceability",
+    "wireframe",
+    "traceguard",
+    "mcp-apps"
+  ],
+  "skills": "./skills/",
+  "mcpServers": "./.mcp.json",
+  "interface": {
+    "displayName": "Requirements Analysis Workbench",
+    "shortDescription": "Configure, generate, and audit requirements artefacts.",
+    "longDescription": "Requirements Analysis Workbench provides a visual Guided, Standard, or Professional mode selector, independent switches for six output modules, deterministic generation, targeted revision, and TraceGuard evidence, consistency, impact, rollback, and approval controls.",
+    "developerName": "Requirements Analysis Workbench contributors",
+    "category": "Productivity",
+    "capabilities": [
+      "requirements-analysis",
+      "diagram-generation",
+      "module-revision",
+      "interactive-configuration",
+      "traceguard-audit"
+    ],
+    "websiteURL": "https://github.com/yue-witness/Requirements-Workbench",
+    "defaultPrompt": [
+      "Open the visual requirements workbench.",
+      "Analyse this scenario with TraceGuard enabled.",
+      "Preview the impact of changing a shared requirement."
+    ],
+    "brandColor": "#0F766E"
+  }
+}

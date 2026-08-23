@@ -1,14 +1,14 @@
 {
-  "name": "requirements-workbench",
+  "name": "requirements-analysis-workbench",
   "interface": {
-    "displayName": "Requirements Workbench"
+    "displayName": "Requirements Analysis Workbench"
   },
   "plugins": [
     {
-      "name": "requirements-workbench",
+      "name": "requirements-analysis-workbench",
       "source": {
         "source": "local",
-        "path": "./plugins/requirements-workbench"
+        "path": "./plugins/requirements-analysis-workbench"
       },
       "policy": {
         "installation": "AVAILABLE",

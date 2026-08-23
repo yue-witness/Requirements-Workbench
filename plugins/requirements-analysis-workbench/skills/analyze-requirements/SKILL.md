@@ -7,6 +7,14 @@ description: Turn a software idea, problem statement, user story collection, or 
 
 Turn informal software ideas into traceable review artefacts without assuming the user knows requirements-engineering terminology.
 
+## Visual configuration
+
+When the user asks for a GUI, visual selector, mode choice, or module switches,
+call `open_workbench` before analysis. Treat the saved selection as the source
+of truth for `project.review_mode` and `selected_modules`. If the host does not
+render MCP Apps UI, present the same three modes and six modules in conversation;
+the workflow must remain usable without the component.
+
 ## Choose the level of guidance
 
 Infer the lightest suitable mode from the request, or ask once if the choice materially changes the interaction:
@@ -46,13 +54,17 @@ If no modules are selected, present friendly descriptions: requirements (what th
    - evidence or source;
    - acceptance criterion;
    - confidence (`explicit`, `inferred`, or `proposed`).
+   - one or more exact source-span references when source text is available.
 4. Phrase each requirement as `The [system] must/shall [behaviour] when/unless/while [condition]` when a condition is relevant. State whether `must` and `shall` are binding. Avoid vague words and implementation assumptions.
 5. Never present an inferred or proposed detail as a confirmed stakeholder requirement.
 6. Create one canonical JSON file that follows `references/output-contract.md`.
 7. Resolve the plugin root (the directory containing `.codex-plugin/`) and run
    `scripts/materialize_analysis.py` from that directory to create only the
    modules selected by the user.
-8. Review every generated file for consistency with the canonical JSON and report unresolved questions in language suitable for the chosen review mode.
+8. Review `traceguard.md` and `traceguard.json`. Report errors, warnings, and
+   abstained high-impact items; do not treat an abstained item as accepted until
+   a named reviewer is recorded.
+9. Review every generated file for consistency with the canonical JSON and report unresolved questions in language suitable for the chosen review mode.
 
 ## Commands
 
@@ -64,8 +76,9 @@ python scripts/materialize_analysis.py assets/demo_analysis.json --out demo-outp
 
 Use the Python executable available in the active workspace. The script uses
 only the Python standard library. In addition to the selected module files, it
-creates `analysis.json`, `manifest.json`, `review-index.md`, and
-`traceability.csv` as supporting review files.
+creates `analysis.json`, `manifest.json`, `review-index.md`,
+`traceability.csv`, `traceguard.md`, and `traceguard.json` as supporting review
+files.
 
 ## References and quality boundary
 
