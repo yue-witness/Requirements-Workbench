@@ -2,6 +2,18 @@
 
 All notable changes to Requirements Analysis Workbench are documented here.
 
+## [0.3.2] - 2026-08-23
+
+### Fixed
+
+- Made MCP stdio explicitly UTF-8 and serialized responses as ASCII-safe JSON so the visual workbench loads under legacy Windows code pages.
+- Added regression coverage for Unicode round-tripping and UI resource serialization.
+
+### Changed
+
+- Opening the workbench now leaves analysis blocked until the user explicitly applies a valid mode and at least one output module.
+- Updated the MCP Apps bridge, intrinsic-size notification, and responsive selector layout.
+
 ## [0.3.1] - 2026-08-23
 
 ### Changed
@@ -46,3 +58,4 @@ All notable changes to Requirements Analysis Workbench are documented here.
 [0.2.0]: https://github.com/yue-witness/Requirements-Workbench/releases/tag/v0.2.0
 [0.3.0]: https://github.com/yue-witness/Requirements-Workbench/releases/tag/v0.3.0
 [0.3.1]: https://github.com/yue-witness/Requirements-Workbench/releases/tag/v0.3.1
+[0.3.2]: https://github.com/yue-witness/Requirements-Workbench/releases/tag/v0.3.2

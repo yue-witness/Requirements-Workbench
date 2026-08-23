@@ -40,19 +40,19 @@ Requirements Analysis Workbench 是一个适用于 ChatGPT 和 Codex 的插件�
 请使用支持插件的当前版 ChatGPT 桌面应用或 Codex。先将本仓库添加为 marketplace 来源：
 
 ```powershell
-codex plugin marketplace add yue-witness/Requirements-Workbench --ref v0.3.1
+codex plugin marketplace add yue-witness/Requirements-Workbench --ref v0.3.2
 ```
 
 重启桌面应用，打开 Plugins Directory，选择 **Requirements Analysis Workbench** 来源，然后安装或启用 `requirements-analysis-workbench`。安装后请新建一个任务，使三个内置技能和 MCP 工具正确加载。
 
-如需跟随最新 `main` 分支，可省略 `--ref v0.3.1`。
+如需跟随最新 `main` 分支，可省略 `--ref v0.3.2`。
 
 ## 从 Release 包安装
 
-从 GitHub Release 下载 `requirements-analysis-workbench-v0.3.1.zip` 并解压，然后添加解压后的 marketplace 根目录：
+从 GitHub Release 下载 `requirements-analysis-workbench-v0.3.2.zip` 并解压，然后添加解压后的 marketplace 根目录：
 
 ```powershell
-codex plugin marketplace add C:\path\to\requirements-analysis-workbench-v0.3.1
+codex plugin marketplace add C:\path\to\requirements-analysis-workbench-v0.3.2
 ```
 
 随后重启桌面应用，并在 Plugins Directory 中安装插件。

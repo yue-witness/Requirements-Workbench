@@ -14,7 +14,7 @@ from typing import Any
 
 
 SERVER_NAME = "requirements-analysis-workbench"
-SERVER_VERSION = "0.3.1"
+SERVER_VERSION = "0.3.2"
 RESOURCE_URI = "ui://requirements-analysis-workbench/workbench.html"
 PLUGIN_ROOT = Path(__file__).resolve().parents[1]
 UI_PATH = PLUGIN_ROOT / "ui" / "workbench.html"

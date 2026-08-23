@@ -40,19 +40,19 @@ For example, `project.minimum_requirements` is optional and defaults to no count
 Use a current ChatGPT desktop/Codex installation that supports plugins. Add this repository as a marketplace source:
 
 ```powershell
-codex plugin marketplace add yue-witness/Requirements-Workbench --ref v0.3.1
+codex plugin marketplace add yue-witness/Requirements-Workbench --ref v0.3.2
 ```
 
 Restart the desktop app, open the Plugins Directory, select the **Requirements Analysis Workbench** source, and install or enable `requirements-analysis-workbench`. Start a new task after installation so the three bundled skills and MCP tools are loaded.
 
-To follow the latest `main` branch instead of a tagged release, omit `--ref v0.3.1`.
+To follow the latest `main` branch instead of a tagged release, omit `--ref v0.3.2`.
 
 ## Install from the release package
 
-Download `requirements-analysis-workbench-v0.3.1.zip` from the GitHub Release and extract it. Add the extracted marketplace root:
+Download `requirements-analysis-workbench-v0.3.2.zip` from the GitHub Release and extract it. Add the extracted marketplace root:
 
 ```powershell
-codex plugin marketplace add C:\path\to\requirements-analysis-workbench-v0.3.1
+codex plugin marketplace add C:\path\to\requirements-analysis-workbench-v0.3.2
 ```
 
 Then restart the desktop app and install the plugin from the Plugins Directory.

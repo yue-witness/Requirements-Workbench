@@ -1,6 +1,6 @@
 {
   "name": "requirements-analysis-workbench",
-  "version": "0.3.1",
+  "version": "0.3.2",
   "description": "Create selectable requirements artefacts with visual configuration and TraceGuard auditing.",
   "author": {
     "name": "Requirements Analysis Workbench contributors",
