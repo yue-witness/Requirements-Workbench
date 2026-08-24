@@ -11,7 +11,7 @@
 
 ## Findings
 
-- **ABSTAIN TG-APPROVAL-ABSTAIN**: BR-02 is high-impact and remains abstained until a named reviewer approves it. Affected: activity, requirements, use-cases, wireframe.
+- **ABSTAIN TG-APPROVAL-ABSTAIN**: BR-02 is high-impact and remains abstained until a named reviewer approves it. Affected: activity, feasibility, lifecycle-roadmap, problem-vision-scope, requirements, use-cases, wireframe.
 
 ## Interpretation boundary
 

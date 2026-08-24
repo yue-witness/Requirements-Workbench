@@ -25,9 +25,13 @@ This transcript records the visible task-level dialogue used for the test. Local
 
 > Workbench confirmed. Mode: professional. Modules: requirements, fishbone, context, use-cases, activity, wireframe. TraceGuard: enabled. Begin analysis using exactly this selection.
 
+## User confirmation for the v0.4.0 re-run
+
+> 测试用例需要按照全部的11个模块内容进行生成
+
 ## Assistant feedback: completed v0.4.0 re-run
 
-> 已使用 Requirements Analysis Workbench v0.4.0 重新运行，所有结果已独立保存到 `test-cases/chemical-warehouse-order-verification/`。本次保留已确认的 professional 模式和六个指定模块；新版新增的五个模块未被擅自加入本次结果。
+> 已使用 Requirements Analysis Workbench v0.4.0 重新运行，所有结果已独立保存到 `test-cases/chemical-warehouse-order-verification/`。本次按最新确认使用 professional 模式和全部 11 个模块。
 >
 > 主要入口：
 >
@@ -39,9 +43,10 @@ This transcript records the visible task-level dialogue used for the test. Local
 >
 > 验证结果：
 >
-> - 六个指定模块全部生成，共 12 个生成文件，manifest schema 为 0.4
+> - 11 个指定模块全部生成，共 17 个生成文件，manifest schema 为 0.4
 > - 18/18 条需求均解析到精确原文证据
 > - TraceGuard：0 errors、0 warnings、1 abstention
 > - `BR-02`“证据不完整时阻止发货确认”为高影响 proposed 规则，尚待具名评审人批准
-> - 插件 24 项回归测试及测试用例一致性检查全部通过；其中插件测试覆盖全部 11 个模块
+> - 新增模块包含 6 个领域实体、4 个可行性维度、2 个数据实体、2 个输入、2 个输出、4 个里程碑和 6 个 backlog 项
+> - 插件 24 项回归测试及测试用例一致性检查全部通过
 > - Wireframe 的标签、追踪、唯一 ID 和响应式结构检查通过；浏览器安全策略阻止了本地 `file://` 视觉渲染，因此未宣称完成截图级视觉验证

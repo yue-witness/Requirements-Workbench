@@ -1,0 +1,31 @@
+classDiagram
+    class ENTITY_80ec6125["Order"] {
+        +Identifier orderIdentifier
+        +Status dispatchStatus
+    }
+    class ENTITY_3e622aa6["Order Evidence Record"] {
+        +Status evidenceStatus
+        ~Version confirmedVersion
+    }
+    class ENTITY_facb9beb["Product Line"] {
+        +Identifier productIdentifier
+        +Quantity shippedQuantity
+    }
+    class ENTITY_18c0f806["Lot"] {
+        +Identifier lotNumber
+    }
+    class ENTITY_71faf396["Order Photograph"] {
+        +MediaReference imageReference
+        ~DateTime capturedAt
+    }
+    class ENTITY_a98cb0dd["Order Report"] {
+        +Format reportFormat
+        +DateTime generatedAt
+    }
+    ENTITY_80ec6125 "1" --> "1" ENTITY_3e622aa6 : has one current evidence record
+    ENTITY_3e622aa6 "1" --> "1..*" ENTITY_facb9beb : contains
+    ENTITY_facb9beb "1" --> "1..*" ENTITY_18c0f806 : references applicable
+    ENTITY_3e622aa6 "1" --> "1..*" ENTITY_71faf396 : includes
+    ENTITY_3e622aa6 "1" --> "0..*" ENTITY_a98cb0dd : is exported as
+    %% The model describes stakeholder-domain concepts, not database tables.
+    %% The exact relationship among orders, shipments and pallets remains open.

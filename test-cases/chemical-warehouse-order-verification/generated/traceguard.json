@@ -1,6 +1,6 @@
 {
   "schema_version": "1.0",
-  "generated_utc": "2026-08-24T05:54:32.469976+00:00",
+  "generated_utc": "2026-08-24T06:03:07.754809+00:00",
   "project": "Chemical Warehouse Order Verification System",
   "status": "abstain",
   "summary": {
@@ -144,6 +144,9 @@
       "message": "BR-02 is high-impact and remains abstained until a named reviewer approves it.",
       "affected_modules": [
         "activity",
+        "feasibility",
+        "lifecycle-roadmap",
+        "problem-vision-scope",
         "requirements",
         "use-cases",
         "wireframe"

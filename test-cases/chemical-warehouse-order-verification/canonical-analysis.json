@@ -8,12 +8,17 @@
     "binding_terms": "Must and shall are binding in this draft only after stakeholder approval. Inferred and proposed requirements remain visibly unconfirmed; BR-02 is a high-impact proposed dispatch rule and must not be treated as approved while TraceGuard abstains."
   },
   "selected_modules": [
+    "problem-vision-scope",
     "requirements",
     "fishbone",
     "context",
+    "domain-model",
     "use-cases",
     "activity",
-    "wireframe"
+    "wireframe",
+    "feasibility",
+    "data-io",
+    "lifecycle-roadmap"
   ],
   "sources": [
     {
@@ -202,6 +207,114 @@
     "What workflow and evidence are required after a customer reports a discrepancy, and who records the final outcome?",
     "Which chemical-industry safety, privacy, recordkeeping, or audit obligations apply to this warehouse and jurisdiction?"
   ],
+  "problem_vision_scope": {
+    "problem_statement": "The warehouse records quantities and lot numbers in Google Sheets and stores pre-dispatch photographs on a separate mobile phone, so evidence for one order must be reconciled manually when a customer reports missing product.",
+    "vision_statement": "Provide one order-centred evidence workflow in which authorised warehouse staff capture, review, preserve and export quantities, lots and photographs without duplicating the same evidence across disconnected tools.",
+    "affected_stakeholders": [
+      "Warehouse Operator",
+      "Customer",
+      "Warehouse Operations Owner or Authorised Reviewer (role to be confirmed)"
+    ],
+    "pain_points": [
+      {
+        "id": "PP-01",
+        "statement": "Order evidence is split between Google Sheets and a separate mobile phone.",
+        "impact": "Staff must reconcile quantities, lots and photographs before an order can be verified.",
+        "evidence": "The scenario explicitly describes a manual fragmented system using Google Sheets and a dedicated phone.",
+        "confidence": "explicit",
+        "related_requirements": [
+          "FR-04",
+          "FR-07",
+          "BR-01"
+        ]
+      },
+      {
+        "id": "PP-02",
+        "statement": "Manual re-entry makes order verification inefficient and time-consuming.",
+        "impact": "The operator spends avoidable effort assembling evidence instead of reviewing one record.",
+        "evidence": "The scenario explicitly asks to eliminate manual entry and streamline verification.",
+        "confidence": "explicit",
+        "related_requirements": [
+          "FR-04",
+          "FR-07",
+          "FR-08"
+        ]
+      },
+      {
+        "id": "PP-03",
+        "statement": "Customer missing-product claims are difficult to investigate against consolidated dispatch evidence.",
+        "impact": "Discrepancy resolution may be slower and less consistent.",
+        "evidence": "The scenario identifies recurring customer claims and requests comprehensive order reports.",
+        "confidence": "explicit",
+        "related_requirements": [
+          "FR-08",
+          "FR-09",
+          "FR-11",
+          "FR-13"
+        ]
+      }
+    ],
+    "objectives": [
+      {
+        "id": "OBJ-01",
+        "statement": "Consolidate shipment evidence around one selected order.",
+        "success_measure": "A reviewer can see the order's quantities, lots and photographs together without consulting another tracking tool.",
+        "related_requirements": [
+          "FR-01",
+          "FR-07",
+          "BR-01",
+          "BR-03"
+        ]
+      },
+      {
+        "id": "OBJ-02",
+        "statement": "Reduce duplicate manual capture while retaining a stakeholder-approved method.",
+        "success_measure": "The approved capture flow records product and lot evidence without re-keying the same values between separate tools.",
+        "related_requirements": [
+          "FR-02",
+          "FR-03",
+          "FR-04",
+          "FR-05"
+        ]
+      },
+      {
+        "id": "OBJ-03",
+        "statement": "Make preserved order evidence available for shipment-discrepancy review.",
+        "success_measure": "An authorised operator can retrieve one preserved order record and export its comprehensive report.",
+        "related_requirements": [
+          "FR-08",
+          "FR-09",
+          "FR-10",
+          "FR-11",
+          "FR-13"
+        ]
+      }
+    ],
+    "scope": {
+      "in": [
+        "Order-centred capture of quantities, lot numbers and photographs",
+        "Consolidated evidence review and correction before dispatch confirmation",
+        "Preservation, retrieval and export of shipment evidence",
+        "Human review support for customer shipment discrepancies"
+      ],
+      "out": [
+        "Automatic decisions about customer liability or claim outcomes",
+        "Unconfirmed integration with ERP, WMS, carrier or customer-service systems",
+        "Historical Google Sheets and phone-photo migration unless later approved",
+        "Unverified chemical-industry regulatory or safety rules"
+      ]
+    },
+    "constraints": [
+      "The current workload is 25 to 30 pallet shipments per week.",
+      "Barcode scanning, a centralized mobile application, or both remains a stakeholder choice.",
+      "BR-02 must remain proposed until a named reviewer approves the dispatch-blocking rule."
+    ],
+    "open_questions": [
+      "Which capture method and barcode standards are approved for the first release?",
+      "Which roles may confirm dispatch, correct preserved evidence and export reports?",
+      "Which report format, performance target, retention rule and legal obligations apply?"
+    ]
+  },
   "requirements": [
     {
       "id": "FR-01",
@@ -469,6 +582,204 @@
         "to": "Mobile Camera or Device",
         "label": "Camera or upload request and association prompt"
       }
+    ]
+  },
+  "domain_model": {
+    "entities": [
+      {
+        "id": "DM-ORDER",
+        "name": "Order",
+        "description": "The primary unit around which shipment evidence is organised.",
+        "attributes": [
+          {
+            "name": "orderIdentifier",
+            "type": "Identifier",
+            "required": true
+          },
+          {
+            "name": "dispatchStatus",
+            "type": "Status",
+            "required": true
+          }
+        ],
+        "related_requirements": [
+          "FR-01",
+          "FR-10",
+          "BR-01"
+        ]
+      },
+      {
+        "id": "DM-EVIDENCE",
+        "name": "Order Evidence Record",
+        "description": "The consolidated and preservable evidence for one order.",
+        "attributes": [
+          {
+            "name": "evidenceStatus",
+            "type": "Status",
+            "required": true
+          },
+          {
+            "name": "confirmedVersion",
+            "type": "Version",
+            "required": false
+          }
+        ],
+        "related_requirements": [
+          "FR-01",
+          "FR-07",
+          "FR-13",
+          "QR-01"
+        ]
+      },
+      {
+        "id": "DM-LINE",
+        "name": "Product Line",
+        "description": "A product and its shipped quantity within an order.",
+        "attributes": [
+          {
+            "name": "productIdentifier",
+            "type": "Identifier",
+            "required": true
+          },
+          {
+            "name": "shippedQuantity",
+            "type": "Quantity",
+            "required": true
+          }
+        ],
+        "related_requirements": [
+          "FR-02",
+          "FR-04"
+        ]
+      },
+      {
+        "id": "DM-LOT",
+        "name": "Lot",
+        "description": "A lot identifier applicable to a captured product line.",
+        "attributes": [
+          {
+            "name": "lotNumber",
+            "type": "Identifier",
+            "required": true
+          }
+        ],
+        "related_requirements": [
+          "FR-03",
+          "FR-04"
+        ]
+      },
+      {
+        "id": "DM-PHOTO",
+        "name": "Order Photograph",
+        "description": "Photographic documentation captured for an order before dispatch.",
+        "attributes": [
+          {
+            "name": "imageReference",
+            "type": "MediaReference",
+            "required": true
+          },
+          {
+            "name": "capturedAt",
+            "type": "DateTime",
+            "required": false
+          }
+        ],
+        "related_requirements": [
+          "FR-05",
+          "FR-06"
+        ]
+      },
+      {
+        "id": "DM-REPORT",
+        "name": "Order Report",
+        "description": "A portable export of evidence for one selected order.",
+        "attributes": [
+          {
+            "name": "reportFormat",
+            "type": "Format",
+            "required": true
+          },
+          {
+            "name": "generatedAt",
+            "type": "DateTime",
+            "required": true
+          }
+        ],
+        "related_requirements": [
+          "FR-08",
+          "FR-09",
+          "BR-03"
+        ]
+      }
+    ],
+    "relationships": [
+      {
+        "id": "REL-01",
+        "from": "DM-ORDER",
+        "to": "DM-EVIDENCE",
+        "label": "has one current evidence record",
+        "from_cardinality": "1",
+        "to_cardinality": "1",
+        "related_requirements": [
+          "FR-01",
+          "BR-01"
+        ]
+      },
+      {
+        "id": "REL-02",
+        "from": "DM-EVIDENCE",
+        "to": "DM-LINE",
+        "label": "contains",
+        "from_cardinality": "1",
+        "to_cardinality": "1..*",
+        "related_requirements": [
+          "FR-02",
+          "FR-07",
+          "QR-01"
+        ]
+      },
+      {
+        "id": "REL-03",
+        "from": "DM-LINE",
+        "to": "DM-LOT",
+        "label": "references applicable",
+        "from_cardinality": "1",
+        "to_cardinality": "1..*",
+        "related_requirements": [
+          "FR-03",
+          "QR-01"
+        ]
+      },
+      {
+        "id": "REL-04",
+        "from": "DM-EVIDENCE",
+        "to": "DM-PHOTO",
+        "label": "includes",
+        "from_cardinality": "1",
+        "to_cardinality": "1..*",
+        "related_requirements": [
+          "FR-05",
+          "FR-06",
+          "QR-01"
+        ]
+      },
+      {
+        "id": "REL-05",
+        "from": "DM-EVIDENCE",
+        "to": "DM-REPORT",
+        "label": "is exported as",
+        "from_cardinality": "1",
+        "to_cardinality": "0..*",
+        "related_requirements": [
+          "FR-08",
+          "FR-09",
+          "QR-01"
+        ]
+      }
+    ],
+    "notes": [
+      "The model describes stakeholder-domain concepts, not database tables.",
+      "The exact relationship among orders, shipments and pallets remains open."
     ]
   },
   "use_cases": [
@@ -1017,6 +1328,503 @@
           }
         ]
       }
+    ]
+  },
+  "feasibility": {
+    "recommendation": "conditional",
+    "dimensions": [
+      {
+        "type": "technical",
+        "status": "conditional",
+        "findings": [
+          "Order-centred records, media association, search and report export use established application patterns."
+        ],
+        "risks": [
+          "Barcode content, supported devices, offline operation, storage volume and external integrations are not confirmed."
+        ],
+        "constraints": [
+          "The first release must use a stakeholder-approved capture method and preserve cross-order evidence integrity."
+        ],
+        "evidence": [
+          "The scenario proposes barcode scanning or a centralized mobile application and requires consolidated evidence."
+        ],
+        "confidence": "inferred",
+        "related_requirements": [
+          "FR-04",
+          "FR-05",
+          "FR-07",
+          "QR-01",
+          "QR-02"
+        ]
+      },
+      {
+        "type": "operational",
+        "status": "conditional",
+        "findings": [
+          "One primary Warehouse Operator role and a known current workload provide an initial operating context."
+        ],
+        "risks": [
+          "Permissions, evidence correction after dispatch, override authority and discrepancy workflow are unresolved."
+        ],
+        "constraints": [
+          "BR-02 cannot become a binding dispatch control without named approval."
+        ],
+        "evidence": [
+          "The scenario describes the operator's current capture process and recurring customer discrepancies."
+        ],
+        "confidence": "explicit",
+        "related_requirements": [
+          "FR-11",
+          "FR-12",
+          "FR-13",
+          "BR-02"
+        ]
+      },
+      {
+        "type": "schedule",
+        "status": "unknown",
+        "findings": [
+          "No delivery date, staff capacity or dependency lead time was supplied."
+        ],
+        "risks": [
+          "Any committed schedule would be unsupported before integration and policy decisions are made."
+        ],
+        "constraints": [],
+        "evidence": [
+          "The source scenario contains no schedule evidence."
+        ],
+        "confidence": "explicit",
+        "related_requirements": []
+      },
+      {
+        "type": "legal-and-safety",
+        "status": "unknown",
+        "findings": [
+          "The warehouse handles chemicals, but no jurisdiction or authoritative obligation was supplied."
+        ],
+        "risks": [
+          "Invented retention, privacy, audit or safety rules could be incorrect."
+        ],
+        "constraints": [
+          "Qualified reviewers must identify applicable obligations before production approval."
+        ],
+        "evidence": [
+          "The scenario identifies a chemical warehouse but does not state governing rules."
+        ],
+        "confidence": "explicit",
+        "related_requirements": [
+          "FR-05",
+          "FR-13"
+        ]
+      }
+    ],
+    "costs": [
+      {
+        "item": "Capture devices, media storage and system integration",
+        "kind": "tangible",
+        "estimate": "Amount unknown until device, volume and integration choices are approved.",
+        "confidence": "proposed"
+      },
+      {
+        "item": "Operator training and evidence-governance effort",
+        "kind": "intangible",
+        "estimate": "Effort requires stakeholder estimation after the workflow is selected.",
+        "confidence": "inferred"
+      }
+    ],
+    "benefits": [
+      {
+        "item": "Reduced duplicate entry and evidence reconciliation",
+        "kind": "intangible",
+        "estimate": "Baseline time and target reduction are not yet measured.",
+        "confidence": "explicit"
+      },
+      {
+        "item": "Faster access to comprehensive order evidence",
+        "kind": "intangible",
+        "estimate": "A measurable retrieval and export target remains open.",
+        "confidence": "explicit"
+      }
+    ],
+    "conditions": [
+      "Approve the capture method, barcode standards and supported devices.",
+      "Approve role permissions, retention, correction and dispatch-override policy.",
+      "Confirm integration, workload, report and offline requirements before commitment.",
+      "Obtain qualified review of applicable legal, safety, privacy and recordkeeping obligations."
+    ],
+    "open_questions": [
+      "What budget and delivery window constrain the first release?",
+      "Which measurable outcomes justify proceeding from pilot to operational use?"
+    ]
+  },
+  "data_io": {
+    "data_entities": [
+      {
+        "id": "DATA-EVIDENCE",
+        "name": "Order Evidence Record",
+        "description": "The consolidated quantities, lots, photographs and dispatch-confirmed version for one order.",
+        "owner": "Warehouse operations; accountable owner to be confirmed",
+        "sensitivity": "Commercial shipment evidence that may require role-restricted access; classification is unconfirmed.",
+        "retention": "Unresolved; a named policy owner must approve the period and deletion rules.",
+        "fields": [
+          {
+            "name": "orderIdentifier",
+            "type": "Identifier",
+            "required": true,
+            "validation": "Must identify exactly one selected order."
+          },
+          {
+            "name": "productLines",
+            "type": "Collection",
+            "required": true,
+            "validation": "Each line must contain an approved product identifier and shipped quantity."
+          },
+          {
+            "name": "lotNumbers",
+            "type": "Collection",
+            "required": true,
+            "validation": "Each lot must be associated with an applicable product line."
+          },
+          {
+            "name": "photographs",
+            "type": "Media collection",
+            "required": true,
+            "validation": "Each saved photograph must remain associated with the current order."
+          },
+          {
+            "name": "confirmedVersion",
+            "type": "Version",
+            "required": false,
+            "validation": "Must represent the version preserved at dispatch confirmation."
+          }
+        ],
+        "related_requirements": [
+          "FR-01",
+          "FR-02",
+          "FR-03",
+          "FR-05",
+          "FR-06",
+          "FR-13",
+          "QR-01"
+        ]
+      },
+      {
+        "id": "DATA-REPORT",
+        "name": "Comprehensive Order Report",
+        "description": "A portable representation of evidence for one selected order.",
+        "owner": "Warehouse operations; distribution authority to be confirmed",
+        "sensitivity": "Inherits the sensitivity of the source Order Evidence Record.",
+        "retention": "Unresolved; must align with approved evidence and export policy.",
+        "fields": [
+          {
+            "name": "orderIdentifier",
+            "type": "Identifier",
+            "required": true,
+            "validation": "Must match the selected evidence record."
+          },
+          {
+            "name": "quantities",
+            "type": "Collection",
+            "required": true,
+            "validation": "Must reproduce the selected record's shipped quantities."
+          },
+          {
+            "name": "lotNumbers",
+            "type": "Collection",
+            "required": true,
+            "validation": "Must reproduce the selected record's applicable lots."
+          },
+          {
+            "name": "photographicDocumentation",
+            "type": "Media collection",
+            "required": true,
+            "validation": "Must include only photographs associated with the selected order."
+          }
+        ],
+        "related_requirements": [
+          "FR-08",
+          "FR-09",
+          "BR-03"
+        ]
+      }
+    ],
+    "inputs": [
+      {
+        "id": "IN-PRODUCT-LOT",
+        "name": "Product, quantity and lot capture",
+        "source": "Warehouse Operator using an approved integrated capture method",
+        "method": "Barcode scan, centralized mobile capture, or another stakeholder-approved integrated method",
+        "format": "Approved product identifier, numeric quantity and lot identifier",
+        "timing": "While preparing the selected order before dispatch review",
+        "verification_rules": [
+          "Verify that the capture is associated with the order currently selected by the authorised operator.",
+          "When scanning is used, verify that the symbology and identifier source are approved."
+        ],
+        "validation_rules": [
+          "Require an approved product identifier, an allowed quantity and an applicable lot identifier.",
+          "Reject or flag data that cannot be associated with the selected order and product line."
+        ],
+        "error_feedback": "Keep the order visibly incomplete, identify the affected field and do not represent rejected data as saved.",
+        "related_requirements": [
+          "FR-02",
+          "FR-03",
+          "FR-04",
+          "FR-12",
+          "BR-03"
+        ]
+      },
+      {
+        "id": "IN-PHOTO",
+        "name": "Order photograph capture",
+        "source": "Warehouse Operator using an approved warehouse mobile device",
+        "method": "Camera capture or upload through the centralized order workflow",
+        "format": "Approved image type and metadata; exact limits remain open",
+        "timing": "Before dispatch review for the selected order",
+        "verification_rules": [
+          "Verify the operator and selected order before accepting the photograph.",
+          "Verify that the device or upload channel is approved when such policy exists."
+        ],
+        "validation_rules": [
+          "Require the image to be readable and stored successfully.",
+          "Require an association with the current order and applicable product evidence."
+        ],
+        "error_feedback": "Report the failed image check or storage operation and do not show the photograph as saved.",
+        "related_requirements": [
+          "FR-05",
+          "FR-06",
+          "FR-12",
+          "BR-03"
+        ]
+      }
+    ],
+    "outputs": [
+      {
+        "id": "OUT-REVIEW",
+        "name": "Consolidated order evidence view",
+        "audience": "Authorised Warehouse Operator",
+        "destination": "Order-verification workspace",
+        "format": "Structured on-screen quantities, lots, photographs and completeness indicators",
+        "timing": "Before dispatch confirmation and during later discrepancy review",
+        "content": [
+          "Order identifier",
+          "Product quantities",
+          "Applicable lot numbers",
+          "Associated photographs",
+          "Evidence status"
+        ],
+        "accessibility": [
+          "Use programmatic labels and keyboard-operable controls.",
+          "Present validation status in text rather than colour alone."
+        ],
+        "failure_behaviour": "Identify unavailable evidence without substituting data from another order or presenting the view as complete.",
+        "related_requirements": [
+          "FR-07",
+          "FR-11",
+          "FR-12",
+          "BR-03"
+        ]
+      },
+      {
+        "id": "OUT-REPORT",
+        "name": "Comprehensive order report",
+        "audience": "Authorised Warehouse Operator and approved human discrepancy reviewer",
+        "destination": "Approved export location or delivery channel; exact destination is open",
+        "format": "Stakeholder-approved portable report format",
+        "timing": "On request for a selected Order Evidence Record",
+        "content": [
+          "Order identifier",
+          "Product quantities",
+          "Applicable lot numbers",
+          "Photographic documentation"
+        ],
+        "accessibility": [
+          "Use a navigable reading order and meaningful labels for photographic evidence.",
+          "Do not rely on images alone to identify products, quantities or lots."
+        ],
+        "failure_behaviour": "Report the export failure or missing content and do not substitute evidence from another order.",
+        "related_requirements": [
+          "FR-08",
+          "FR-09",
+          "BR-03"
+        ]
+      }
+    ]
+  },
+  "lifecycle_roadmap": {
+    "recommended_lifecycle": "iterative",
+    "rationale": [
+      "Core evidence goals are explicit, but capture technology, permissions, retention, performance and integrations remain unresolved.",
+      "Order capture, review and export can be piloted in bounded increments with warehouse feedback before operational commitment."
+    ],
+    "decision_factors": [
+      {
+        "factor": "Requirements certainty",
+        "assessment": "The desired consolidated evidence outcome is clear, while multiple policy and technical choices remain open.",
+        "evidence": "The scenario requires a unified system but offers barcode scanning or a centralized mobile application as alternatives.",
+        "confidence": "explicit"
+      },
+      {
+        "factor": "Operational feedback",
+        "assessment": "The primary operator can review whether capture and evidence retrieval reduce current manual effort.",
+        "evidence": "The scenario describes one current operator workflow and calls it inefficient and time-consuming.",
+        "confidence": "explicit"
+      },
+      {
+        "factor": "High-impact decision",
+        "assessment": "Dispatch blocking and override authority require named stakeholder approval before implementation.",
+        "evidence": "BR-02 is proposed because the source does not specify the required dispatch-control policy.",
+        "confidence": "proposed"
+      }
+    ],
+    "tradeoffs": [
+      {
+        "decision": "Pilot order-centred capture, review and export before adding unconfirmed external integrations.",
+        "scope_effect": "Defers ERP, WMS, carrier and customer-service integration until evidence confirms need and feasibility.",
+        "cost_effect": "Reduces initial integration effort but may require later interface work.",
+        "time_effect": "Enables earlier workflow feedback without inventing external-system contracts.",
+        "quality_effect": "Prioritises evidence integrity and reviewability while leaving integration scalability for later validation.",
+        "approval_status": "proposed",
+        "approver": ""
+      }
+    ],
+    "milestones": [
+      {
+        "id": "MS-01",
+        "name": "Policy and boundary review",
+        "goal": "Approve first-release capture method, roles, dispatch rule, retention and evidence boundary.",
+        "depends_on": [],
+        "related_requirements": [
+          "FR-04",
+          "FR-13",
+          "BR-02",
+          "BR-03"
+        ]
+      },
+      {
+        "id": "MS-02",
+        "name": "Capture and review pilot",
+        "goal": "Validate product, lot and photograph capture plus consolidated pre-dispatch review with representative orders.",
+        "depends_on": [
+          "MS-01"
+        ],
+        "related_requirements": [
+          "FR-01",
+          "FR-02",
+          "FR-03",
+          "FR-05",
+          "FR-06",
+          "FR-07",
+          "FR-12"
+        ]
+      },
+      {
+        "id": "MS-03",
+        "name": "Preservation and report pilot",
+        "goal": "Validate dispatch-version preservation, retrieval and comprehensive report export for human discrepancy review.",
+        "depends_on": [
+          "MS-02"
+        ],
+        "related_requirements": [
+          "FR-08",
+          "FR-09",
+          "FR-10",
+          "FR-11",
+          "FR-13",
+          "QR-01"
+        ]
+      },
+      {
+        "id": "MS-04",
+        "name": "Operational readiness decision",
+        "goal": "Review pilot evidence, unresolved risks and named approvals before any production commitment.",
+        "depends_on": [
+          "MS-03"
+        ],
+        "related_requirements": [
+          "QR-02",
+          "BR-02"
+        ]
+      }
+    ],
+    "backlog": [
+      {
+        "id": "BL-01",
+        "title": "Confirm barcode and mobile capture method",
+        "type": "research",
+        "priority": "must",
+        "status": "open",
+        "related_requirements": [
+          "FR-04"
+        ]
+      },
+      {
+        "id": "BL-02",
+        "title": "Approve evidence completeness and dispatch override policy",
+        "type": "research",
+        "priority": "must",
+        "status": "open",
+        "related_requirements": [
+          "BR-02",
+          "FR-12"
+        ]
+      },
+      {
+        "id": "BL-03",
+        "title": "Prototype consolidated evidence capture and review",
+        "type": "delivery",
+        "priority": "must",
+        "status": "planned",
+        "related_requirements": [
+          "FR-01",
+          "FR-02",
+          "FR-03",
+          "FR-05",
+          "FR-06",
+          "FR-07"
+        ]
+      },
+      {
+        "id": "BL-04",
+        "title": "Define and test the approved report format",
+        "type": "delivery",
+        "priority": "should",
+        "status": "planned",
+        "related_requirements": [
+          "FR-08",
+          "FR-09"
+        ]
+      },
+      {
+        "id": "BL-05",
+        "title": "Measure retrieval, export and workload performance",
+        "type": "delivery",
+        "priority": "should",
+        "status": "open",
+        "related_requirements": [
+          "FR-10",
+          "QR-02"
+        ]
+      },
+      {
+        "id": "BL-06",
+        "title": "Confirm retention, correction and external integration requirements",
+        "type": "research",
+        "priority": "should",
+        "status": "open",
+        "related_requirements": [
+          "FR-13",
+          "QR-01"
+        ]
+      }
+    ],
+    "risks": [
+      "Unresolved capture and barcode choices may delay or invalidate a prototype.",
+      "Unapproved dispatch controls or unclear roles may make operational use unsafe.",
+      "Storage, retention, offline and integration requirements may materially change cost and design."
+    ],
+    "open_questions": [
+      "Who approves each milestone exit and the final operational-readiness decision?",
+      "Which measurable reductions in capture and discrepancy-review effort justify progression?"
     ]
   }
 }

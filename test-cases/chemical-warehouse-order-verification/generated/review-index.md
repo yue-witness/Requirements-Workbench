@@ -12,12 +12,17 @@ The proposed system replaces the fragmented Google Sheets and separate-phone wor
 
 | Module | What to review | File | SHA-256 |
 |---|---|---|---|
+| problem-vision-scope | Check the problem, vision, objectives, scope boundaries, constraints, and unresolved decisions. | `problem-vision-scope.md` | `cc5d2473552ec67955a4b6b1400ae9d486fde7345bfcae2781bbf6dac035019d` |
 | requirements | Check what the software must do, why each item exists, and how it can be tested. | `requirements.md` | `6329eafb1133de814fd77ca99905f87ef02065c2400a5963dbd28261789b09cf` |
 | fishbone | Check whether the possible causes are plausible hypotheses rather than confirmed facts. | `fishbone.mmd` | `55f54f12095abfe91cd6ecc65c367aacae553fbace2453f8b065f4c7da192970` |
 | context | Check the system boundary, external people and systems, and labelled information flows. | `context.mmd` | `1f868c8b748cc7ddedec040525ded19698e36fbf146389108f67050db6514426` |
+| domain-model | Check domain concepts, attributes, relationships, multiplicities, and requirement links. | `domain-model.mmd` | `ef80f2f11d33e4e8dd09422bd6a9b6157f771994c078b54c751da5615346d1cb` |
 | use-cases | Check goals, main steps, alternatives, exceptions, and linked requirements. | `use-cases.md` | `32555533dadff470db0dd0ef0c5f4f2ec98af60bd4786c5f712733b4ded2b322` |
 | activity | Check workflow order, decisions, guards, rejection paths, and end states. | `activity.mmd` | `b955dd4e6e22e1aede26e31a3496e12bc20d6d7af6a27b1f669b055d81f946a2` |
 | wireframe | Check whether the proposed screens support the traced requirements and use-case steps. | `wireframe.html` | `633d3e69677187f4eae1db2f62b414fecd77665ce37b5187b109d236b41cc04d` |
+| feasibility | Check feasibility evidence, costs, benefits, risks, conditions, and the recommendation boundary. | `feasibility.md` | `85502cb439db8579d22d373e9c4b6f4c946b3be610c6070e8375ff4c453dcea2` |
+| data-io | Check owned data, input verification and validation, outputs, privacy, and requirement links. | `data-io.md` | `1225f6f52b768fe08379e4e0d4bb4a34de46239a171e19d757c87fadaa8c89b2` |
+| lifecycle-roadmap | Check the lifecycle choice, trade-offs, milestones, backlog, dependencies, and approvals. | `lifecycle-roadmap.md` | `e8f023d26ae25918c86b5629ef3d7d902083d7b8a9e6770154129d58eb9be71d` |
 
 ## TraceGuard
 

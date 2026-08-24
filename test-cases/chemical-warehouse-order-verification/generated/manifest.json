@@ -1,14 +1,19 @@
 {
   "schema_version": "0.4",
   "project": "Chemical Warehouse Order Verification System",
-  "generated_utc": "2026-08-24T05:54:32.503718+00:00",
+  "generated_utc": "2026-08-24T06:03:07.666305+00:00",
   "selected_modules": [
+    "problem-vision-scope",
     "requirements",
     "fishbone",
     "context",
+    "domain-model",
     "use-cases",
     "activity",
-    "wireframe"
+    "wireframe",
+    "feasibility",
+    "data-io",
+    "lifecycle-roadmap"
   ],
   "revision_target": null,
   "untouched_modules_verified": [],
@@ -26,6 +31,10 @@
     "rollback_snapshot": null
   },
   "files": {
+    "problem-vision-scope": {
+      "path": "problem-vision-scope.md",
+      "sha256": "cc5d2473552ec67955a4b6b1400ae9d486fde7345bfcae2781bbf6dac035019d"
+    },
     "requirements": {
       "path": "requirements.md",
       "sha256": "6329eafb1133de814fd77ca99905f87ef02065c2400a5963dbd28261789b09cf"
@@ -38,6 +47,10 @@
       "path": "context.mmd",
       "sha256": "1f868c8b748cc7ddedec040525ded19698e36fbf146389108f67050db6514426"
     },
+    "domain-model": {
+      "path": "domain-model.mmd",
+      "sha256": "ef80f2f11d33e4e8dd09422bd6a9b6157f771994c078b54c751da5615346d1cb"
+    },
     "use-cases": {
       "path": "use-cases.md",
       "sha256": "32555533dadff470db0dd0ef0c5f4f2ec98af60bd4786c5f712733b4ded2b322"
@@ -49,6 +62,18 @@
     "wireframe": {
       "path": "wireframe.html",
       "sha256": "633d3e69677187f4eae1db2f62b414fecd77665ce37b5187b109d236b41cc04d"
+    },
+    "feasibility": {
+      "path": "feasibility.md",
+      "sha256": "85502cb439db8579d22d373e9c4b6f4c946b3be610c6070e8375ff4c453dcea2"
+    },
+    "data-io": {
+      "path": "data-io.md",
+      "sha256": "1225f6f52b768fe08379e4e0d4bb4a34de46239a171e19d757c87fadaa8c89b2"
+    },
+    "lifecycle-roadmap": {
+      "path": "lifecycle-roadmap.md",
+      "sha256": "e8f023d26ae25918c86b5629ef3d7d902083d7b8a9e6770154129d58eb9be71d"
     }
   }
 }
