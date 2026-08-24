@@ -63,6 +63,66 @@ class MaterialiseAnalysisTests(unittest.TestCase):
                 if module != "use-cases":
                     self.assertEqual(before[module], after[module], module)
 
+    def test_new_module_revision_preserves_all_other_module_hashes(self) -> None:
+        original = self.load_demo()
+        revised = copy.deepcopy(original)
+        revised["lifecycle_roadmap"]["backlog"][0]["status"] = "in-review"
+
+        with tempfile.TemporaryDirectory() as temporary_directory:
+            output = Path(temporary_directory)
+            materialize_analysis.materialise(original, output, only=None)
+            before = materialize_analysis.existing_module_hashes(
+                output, original["selected_modules"]
+            )
+
+            materialize_analysis.materialise(
+                revised, output, only="lifecycle-roadmap"
+            )
+            after = materialize_analysis.existing_module_hashes(
+                output, original["selected_modules"]
+            )
+
+            self.assertNotEqual(
+                before["lifecycle-roadmap"], after["lifecycle-roadmap"]
+            )
+            for module in original["selected_modules"]:
+                if module != "lifecycle-roadmap":
+                    self.assertEqual(before[module], after[module], module)
+
+    def test_new_module_relationships_and_links_are_validated(self) -> None:
+        data = self.load_demo()
+        data["domain_model"]["relationships"][0]["to"] = "DM-MISSING"
+        with self.assertRaisesRegex(
+            materialize_analysis.AnalysisError, "unknown entity ID"
+        ):
+            materialize_analysis.validate_analysis(data)
+
+        data = self.load_demo()
+        data["data_io"]["outputs"][0]["related_requirements"] = ["FR-404"]
+        with self.assertRaisesRegex(
+            materialize_analysis.AnalysisError, "unknown requirement"
+        ):
+            materialize_analysis.validate_analysis(data)
+
+        data = self.load_demo()
+        data["feasibility"]["costs"][0].pop("confidence")
+        with self.assertRaisesRegex(
+            materialize_analysis.AnalysisError, "confidence"
+        ):
+            materialize_analysis.validate_analysis(data)
+
+    def test_traceability_includes_links_from_extended_modules(self) -> None:
+        data = self.load_demo()
+        with tempfile.TemporaryDirectory() as temporary_directory:
+            output = Path(temporary_directory)
+            materialize_analysis.materialise(data, output, only=None)
+            traceability = (output / "traceability.csv").read_text(encoding="utf-8")
+
+            self.assertIn("problem-vision-scope:PP-01", traceability)
+            self.assertIn("domain-model:DM-REQUEST", traceability)
+            self.assertIn("data-io:OUT-STATUS", traceability)
+            self.assertIn("lifecycle-roadmap:MS-02", traceability)
+
     def test_unknown_module_is_rejected(self) -> None:
         data = self.load_demo()
         data["selected_modules"] = ["context", "unknown-module"]

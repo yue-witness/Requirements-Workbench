@@ -1,7 +1,7 @@
 {
-  "schema_version": "0.3",
+  "schema_version": "0.4",
   "project": "Chemical Warehouse Order Verification System",
-  "generated_utc": "2026-08-23T10:48:05.322195+00:00",
+  "generated_utc": "2026-08-24T05:54:32.503718+00:00",
   "selected_modules": [
     "requirements",
     "fishbone",

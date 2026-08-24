@@ -103,15 +103,20 @@
       <fieldset>
         <legend>2. Output modules</legend>
         <div class="grid">
+          <label><input type="checkbox" name="modules" value="problem-vision-scope" checked>Problem, vision &amp; scope</label>
           <label><input type="checkbox" name="modules" value="requirements" checked>Requirements</label>
           <label><input type="checkbox" name="modules" value="fishbone" checked>Fishbone</label>
           <label><input type="checkbox" name="modules" value="context" checked>Context</label>
+          <label><input type="checkbox" name="modules" value="domain-model" checked>Domain model</label>
           <label><input type="checkbox" name="modules" value="use-cases" checked>Use cases</label>
           <label><input type="checkbox" name="modules" value="activity" checked>Activity</label>
           <label><input type="checkbox" name="modules" value="wireframe" checked>Wireframe</label>
+          <label><input type="checkbox" name="modules" value="feasibility" checked>Feasibility</label>
+          <label><input type="checkbox" name="modules" value="data-io" checked>Data I/O</label>
+          <label><input type="checkbox" name="modules" value="lifecycle-roadmap" checked>Lifecycle &amp; roadmap</label>
         </div>
         <div class="bar">
-          <span id="summary">Guided | 6 modules | TraceGuard on</span>
+          <span id="summary">Guided | 11 modules | TraceGuard on</span>
           <button id="apply" type="submit">Apply selection</button>
         </div>
         <div id="status" role="status" aria-live="polite">Waiting for your selection.</div>
@@ -169,7 +174,7 @@
 
     async function connect() {
       await request("ui/initialize", {
-        appInfo: { name: "Requirements Analysis Workbench", version: "0.3.2" },
+        appInfo: { name: "Requirements Analysis Workbench", version: "0.4.0" },
         appCapabilities: {},
         protocolVersion: "2026-01-26"
       });

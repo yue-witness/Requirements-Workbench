@@ -1,6 +1,6 @@
 {
   "name": "requirements-analysis-workbench",
-  "version": "0.3.2",
+  "version": "0.4.0",
   "description": "Create selectable requirements artefacts with visual configuration and TraceGuard auditing.",
   "author": {
     "name": "Requirements Analysis Workbench contributors",
@@ -22,7 +22,7 @@
   "interface": {
     "displayName": "Requirements Analysis Workbench",
     "shortDescription": "Configure, generate, and audit requirements artefacts.",
-    "longDescription": "Requirements Analysis Workbench provides a visual Guided, Standard, or Professional mode selector, independent switches for six output modules, deterministic generation, targeted revision, and TraceGuard evidence, consistency, impact, rollback, and approval controls.",
+    "longDescription": "Requirements Analysis Workbench provides a visual Guided, Standard, or Professional mode selector, independent switches for eleven output modules, deterministic generation, targeted revision, and TraceGuard evidence, consistency, impact, rollback, and approval controls.",
     "developerName": "Requirements Analysis Workbench contributors",
     "category": "Productivity",
     "capabilities": [

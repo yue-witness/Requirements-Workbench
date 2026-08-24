@@ -2,6 +2,14 @@
 
 All notable changes to Requirements Analysis Workbench are documented here.
 
+## [0.4.0] - 2026-08-24
+
+### Added
+
+- Added independently selectable `problem-vision-scope`, `domain-model`, `feasibility`, `data-io`, and `lifecycle-roadmap` modules.
+- Added deterministic validation, renderers, traceability links, targeted-revision coverage, canonical demo data, and GUI switches for all eleven modules.
+- Added routed output contracts and quality checks for scope, domain concepts, feasibility evidence, data verification and validation, lifecycle trade-offs, milestones, and backlog dependencies.
+
 ## [0.3.2] - 2026-08-23
 
 ### Fixed
@@ -59,3 +67,4 @@ All notable changes to Requirements Analysis Workbench are documented here.
 [0.3.0]: https://github.com/yue-witness/Requirements-Workbench/releases/tag/v0.3.0
 [0.3.1]: https://github.com/yue-witness/Requirements-Workbench/releases/tag/v0.3.1
 [0.3.2]: https://github.com/yue-witness/Requirements-Workbench/releases/tag/v0.3.2
+[0.4.0]: https://github.com/yue-witness/Requirements-Workbench/releases/tag/v0.4.0

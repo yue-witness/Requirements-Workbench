@@ -12,8 +12,8 @@
 ## Findings
 
 - **WARNING TG-EVIDENCE-MISSING**: QR-03 has no exact source-span evidence. Affected: requirements, traceability.
-- **ABSTAIN TG-APPROVAL-ABSTAIN**: BR-01 is high-impact and remains abstained until a named reviewer approves it. Affected: activity, requirements, use-cases, wireframe.
-- **ABSTAIN TG-APPROVAL-ABSTAIN**: QR-01 is high-impact and remains abstained until a named reviewer approves it. Affected: activity, requirements, use-cases.
+- **ABSTAIN TG-APPROVAL-ABSTAIN**: BR-01 is high-impact and remains abstained until a named reviewer approves it. Affected: activity, domain-model, feasibility, lifecycle-roadmap, problem-vision-scope, requirements, use-cases, wireframe.
+- **ABSTAIN TG-APPROVAL-ABSTAIN**: QR-01 is high-impact and remains abstained until a named reviewer approves it. Affected: activity, data-io, feasibility, lifecycle-roadmap, requirements, use-cases.
 
 ## Interpretation boundary
 

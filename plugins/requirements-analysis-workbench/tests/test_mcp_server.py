@@ -42,7 +42,7 @@ class WorkbenchMcpServerTests(unittest.TestCase):
         )
         self.assertIn("hard stop", initialize["result"]["instructions"])
 
-    def test_ui_resource_contains_modes_and_six_module_checkboxes(self) -> None:
+    def test_ui_resource_contains_modes_and_eleven_module_checkboxes(self) -> None:
         response = server.handle(
             {
                 "jsonrpc": "2.0",
@@ -56,7 +56,15 @@ class WorkbenchMcpServerTests(unittest.TestCase):
         self.assertIn('value="guided"', html)
         self.assertIn('value="standard"', html)
         self.assertIn('value="professional"', html)
-        self.assertEqual(6, html.count('type="checkbox" name="modules"'))
+        self.assertEqual(11, html.count('type="checkbox" name="modules"'))
+        for module in (
+            "problem-vision-scope",
+            "domain-model",
+            "feasibility",
+            "data-io",
+            "lifecycle-roadmap",
+        ):
+            self.assertIn(f'value="{module}"', html)
         self.assertIn('"ui/initialize"', html)
         self.assertIn('"ui/notifications/initialized"', html)
         self.assertIn('"ui/notifications/size-changed"', html)

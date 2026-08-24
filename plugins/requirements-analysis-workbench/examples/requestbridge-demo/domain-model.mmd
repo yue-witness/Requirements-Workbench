@@ -1,0 +1,23 @@
+classDiagram
+    class ENTITY_da51140e["Requester"] {
+        +Identifier requesterId
+        ~ContactChannel preferredContact
+    }
+    class ENTITY_e4452a4b["Service Request"] {
+        +Identifier trackingReference
+        +Text description
+        +RequestStatus status
+    }
+    class ENTITY_5ae0baf3["Assignment"] {
+        +DateTime assignedAt
+        +Text decisionBasis
+    }
+    class ENTITY_2e052bd6["Routing Rule"] {
+        +Version version
+        +DateTime effectiveFrom
+    }
+    ENTITY_da51140e "1" --> "0..*" ENTITY_e4452a4b : submits
+    ENTITY_e4452a4b "1" --> "0..*" ENTITY_5ae0baf3 : has current and historical
+    ENTITY_2e052bd6 "0..1" --> "0..*" ENTITY_5ae0baf3 : supports decision
+    %% The model shows domain concepts, not database tables.
+    %% External identity and notification services remain outside the domain ownership boundary.

@@ -30,7 +30,7 @@ Opening the workbench is a hard interaction gate:
 Skip the automatic GUI only when the user explicitly asks not to open it **and**
 provides both a mode and at least one module. If a native structured user-input
 tool is available, use it as the first fallback because it waits for a response.
-Otherwise, present the same three modes and six modules in conversation and end
+Otherwise, present the same three modes and eleven modules in conversation and end
 the turn with a direct selection question. Do not begin analysis in the fallback
 path until the user replies with an explicit selection.
 
@@ -53,22 +53,37 @@ Collect or infer only what the user has actually supplied:
 
 1. A software idea, problem statement, scenario, user stories, meeting notes, or draft requirements.
 2. One or more selected modules from:
+   - `problem-vision-scope`
    - `requirements`
    - `fishbone`
    - `context`
+   - `domain-model`
    - `use-cases`
    - `activity`
    - `wireframe`
+   - `feasibility`
+   - `data-io`
+   - `lifecycle-roadmap`
 3. An optional review mode: `guided`, `standard`, or `professional`.
 4. An output directory. Default to `requirements-analysis-output/` in the active workspace.
 
-If no modules are confirmed, present friendly descriptions: requirements (what the software must do and why), fishbone (possible causes of the problem), context (what is inside and outside the system), use cases (how people achieve goals), activity (workflow and decisions), and wireframe (a low-fidelity screen concept). Ask the user to select one or more, end the turn, and wait for the reply; do not silently generate every module.
+If no modules are confirmed, present friendly descriptions: problem, vision and
+scope (why change is needed and what is included), requirements (what the
+software must do and why), fishbone (possible causes), context (what is inside
+and outside), domain model (important concepts and relationships), use cases
+(how people achieve goals), activity (workflow and decisions), wireframe (a
+low-fidelity screen concept), feasibility (whether the proposal is viable and
+under what conditions), data I/O (owned data, inputs, checks, and outputs), and
+lifecycle roadmap (delivery approach, trade-offs, milestones, and backlog). Ask
+the user to select one or more, end the turn, and wait for the reply; do not
+silently generate every module.
 
 ## Analysis workflow
 
 1. Read the supplied material and separate explicit statements, assumptions, proposals, conflicts, and open questions.
-2. Identify stakeholders, goals, system boundary, external systems, business rules, data, constraints, quality attributes, ambiguities, conflicts, and open questions.
-3. Write atomic requirement candidates with stable IDs. Follow `references/output-contract.md`. Each requirement contains:
+2. Read `references/knowledge-index.md`, then load only the knowledge references routed for the supplied scenario and confirmed modules. Use them as analysis heuristics, never as evidence for a project-specific claim.
+3. Identify stakeholders, goals, system boundary, external systems, business rules, data, constraints, quality attributes, ambiguities, conflicts, and open questions.
+4. Write atomic requirement candidates with stable IDs. Follow `references/output-contract.md`. Each requirement contains:
    - statement;
    - category (`functional`, `quality`, or `business`);
    - rationale;
@@ -77,16 +92,16 @@ If no modules are confirmed, present friendly descriptions: requirements (what t
    - acceptance criterion;
    - confidence (`explicit`, `inferred`, or `proposed`).
    - one or more exact source-span references when source text is available.
-4. Phrase each requirement as `The [system] must/shall [behaviour] when/unless/while [condition]` when a condition is relevant. State whether `must` and `shall` are binding. Avoid vague words and implementation assumptions.
-5. Never present an inferred or proposed detail as a confirmed stakeholder requirement.
-6. Create one canonical JSON file that follows `references/output-contract.md`.
-7. Resolve the plugin root (the directory containing `.codex-plugin/`) and run
+5. Phrase each requirement as `The [system] must/shall [behaviour] when/unless/while [condition]` when a condition is relevant. State whether `must` and `shall` are binding. Avoid vague words and implementation assumptions.
+6. Never present an inferred or proposed detail as a confirmed stakeholder requirement.
+7. Create one canonical JSON file that follows `references/output-contract.md`.
+8. Resolve the plugin root (the directory containing `.codex-plugin/`) and run
    `scripts/materialize_analysis.py` from that directory to create only the
    modules selected by the user.
-8. Review `traceguard.md` and `traceguard.json`. Report errors, warnings, and
+9. Review `traceguard.md` and `traceguard.json`. Report errors, warnings, and
    abstained high-impact items; do not treat an abstained item as accepted until
    a named reviewer is recorded.
-9. Review every generated file for consistency with the canonical JSON and report unresolved questions in language suitable for the chosen review mode.
+10. Review every generated file for consistency with the canonical JSON and report unresolved questions in language suitable for the chosen review mode.
 
 ## Commands
 
@@ -104,4 +119,9 @@ files.
 
 ## References and quality boundary
 
-Read `references/output-contract.md` before creating canonical JSON and `references/quality-checks.md` before finalising. The workbench supports elicitation and modelling; it does not replace stakeholder validation, domain review, safety analysis, legal review, or formal verification.
+After a valid selection is confirmed, use `references/knowledge-index.md` to
+route domain-method guidance without loading unrelated references. Read
+`references/output-contract.md` before creating canonical JSON and
+`references/quality-checks.md` before finalising. The workbench supports
+elicitation and modelling; it does not replace stakeholder validation, domain
+review, safety analysis, legal review, or formal verification.

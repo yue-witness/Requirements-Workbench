@@ -10,12 +10,17 @@ It supports first-time contributors with plain-language guidance and experienced
 
 Choose one or more independent modules:
 
+- `problem-vision-scope`: problem, desired future state, objectives, scope boundaries, and constraints;
 - `requirements`: atomic functional, quality, and business requirements;
 - `fishbone`: possible causes behind the stated problem;
 - `context`: the system boundary, actors, external systems, and flows;
+- `domain-model`: domain concepts, attributes, relationships, and multiplicities;
 - `use-cases`: actor goals, main flows, alternatives, and exceptions;
 - `activity`: workflow decisions, failure paths, and outcomes;
-- `wireframe`: accessible low-fidelity HTML screens with trace labels.
+- `wireframe`: accessible low-fidelity HTML screens with trace labels;
+- `feasibility`: evidence-based viability, risks, costs, benefits, and conditions;
+- `data-io`: data ownership, input verification and validation, outputs, privacy, and accessibility;
+- `lifecycle-roadmap`: delivery approach, trade-offs, milestones, dependencies, and backlog.
 
 Every run also creates a canonical `analysis.json`, a reviewer-oriented `review-index.md`, `traceability.csv`, `traceguard.md`, `traceguard.json`, and a SHA-256 `manifest.json`.
 
@@ -23,7 +28,7 @@ Every run also creates a canonical `analysis.json`, a reviewer-oriented `review-
 
 - When the plugin is directly `@`-mentioned with a matching requirements description, it opens the visual workbench by default so the user can confirm the review mode and output modules. Opening the panel does not accept its displayed defaults: the workflow remains blocked until the user applies a valid selection. Users can explicitly decline the GUI only when they already provide a mode and at least one module; hosts without MCP Apps support fall back to the same blocking choices in conversation.
 - A visual Guided, Standard, and Professional mode selector.
-- Independent checkboxes for all six output modules.
+- Independent checkboxes for all eleven output modules.
 - Explicit separation of stakeholder evidence, inference, assumptions, proposals, conflicts, and open questions.
 - Stable IDs and trace links across generated artefacts.
 - Deterministic validation before files are materialised.
@@ -40,19 +45,19 @@ For example, `project.minimum_requirements` is optional and defaults to no count
 Use a current ChatGPT desktop/Codex installation that supports plugins. Add this repository as a marketplace source:
 
 ```powershell
-codex plugin marketplace add yue-witness/Requirements-Workbench --ref v0.3.2
+codex plugin marketplace add yue-witness/Requirements-Workbench --ref v0.4.0
 ```
 
 Restart the desktop app, open the Plugins Directory, select the **Requirements Analysis Workbench** source, and install or enable `requirements-analysis-workbench`. Start a new task after installation so the three bundled skills and MCP tools are loaded.
 
-To follow the latest `main` branch instead of a tagged release, omit `--ref v0.3.2`.
+To follow the latest `main` branch instead of a tagged release, omit `--ref v0.4.0`.
 
 ## Install from the release package
 
-Download `requirements-analysis-workbench-v0.3.2.zip` from the GitHub Release and extract it. Add the extracted marketplace root:
+Download `requirements-analysis-workbench-v0.4.0.zip` from the GitHub Release and extract it. Add the extracted marketplace root:
 
 ```powershell
-codex plugin marketplace add C:\path\to\requirements-analysis-workbench-v0.3.2
+codex plugin marketplace add C:\path\to\requirements-analysis-workbench-v0.4.0
 ```
 
 Then restart the desktop app and install the plugin from the Plugins Directory.
@@ -73,7 +78,7 @@ Direct plugin invocation also opens the workbench by default when the request in
 
 Professional analysis:
 
-> Analyse these stakeholder notes in professional mode. Generate all six modules, preserve supplied terminology, label inference, and include acceptance checks and traceability.
+> Analyse these stakeholder notes in professional mode. Generate all eleven modules, preserve supplied terminology, label inference, and include acceptance checks and traceability.
 
 Targeted revision:
 

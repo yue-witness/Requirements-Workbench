@@ -8,7 +8,9 @@
 - `revise-requirements-module`：只修改一个现有模块，同时保留其他模块文件。
 - `traceguard-audit`：审计精确证据片段、跨工件约束、变更影响、回滚和审批门槛。
 
-可视化工作台区分引导、标准和专业模式，并为 `requirements`、`fishbone`、`context`、`use-cases`、`activity` 和 `wireframe` 六个模块分别提供勾选框。辅助文件包括作为单一事实来源的 `analysis.json`、`review-index.md`、`traceability.csv`、`traceguard.md`、`traceguard.json` 和 `manifest.json`。
+可视化工作台区分引导、标准和专业模式，并为十一个模块分别提供勾选框：`problem-vision-scope`、`requirements`、`fishbone`、`context`、`domain-model`、`use-cases`、`activity`、`wireframe`、`feasibility`、`data-io` 和 `lifecycle-roadmap`。辅助文件包括作为单一事实来源的 `analysis.json`、`review-index.md`、`traceability.csv`、`traceguard.md`、`traceguard.json` 和 `manifest.json`。
+
+分析技能还内置了按需加载的需求工程知识库。用户确认 GUI 选择后，技能只会调用与当前任务相关的知识：问题界定与领域模型、需求质量与追踪、利益相关者与行为模型，或交付规划与移交。方法知识用于指导分析，但绝不会被当作用户项目事实的证据。
 
 当用户通过 `@` 直接调用插件并提供匹配的需求描述时，`analyze-requirements` 技能默认在分析前打开此工作台。仅打开面板不会接受界面中显示的默认值：用户必须点击 **Apply selection**，且服务端确认已保存模式与模块后，分析才会解锁。只有在请求同时给出模式和至少一个模块时，插件才接受“不打开 GUI”的明确要求；不兼容 MCP Apps 的宿主则回退为同样具有等待门禁的结构化或对话式选择。
 

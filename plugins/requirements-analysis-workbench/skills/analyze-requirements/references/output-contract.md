@@ -13,12 +13,17 @@ The canonical `analysis.json` is the single source of truth. Keep top-level keys
   "stakeholders": [],
   "assumptions": [],
   "open_questions": [],
+  "problem_vision_scope": {},
   "requirements": [],
   "fishbone": {},
   "context": {},
+  "domain_model": {},
   "use_cases": [],
   "activity": {},
-  "wireframe": {}
+  "wireframe": {},
+  "feasibility": {},
+  "data_io": {},
+  "lifecycle_roadmap": {}
 }
 ```
 
@@ -26,16 +31,21 @@ The canonical `analysis.json` is the single source of truth. Keep top-level keys
 
 | Module | Output file | Purpose |
 |---|---|---|
+| `problem-vision-scope` | `problem-vision-scope.md` | Problem, vision, objectives, scope, constraints, and questions |
 | `requirements` | `requirements.md` | Atomic, traceable requirements specification |
 | `fishbone` | `fishbone.mmd` | Root-cause categories and candidate causes |
 | `context` | `context.mmd` | System boundary, external actors, and flows |
+| `domain-model` | `domain-model.mmd` | Domain concepts, attributes, relationships, and multiplicities |
 | `use-cases` | `use-cases.md` | Structured use-case descriptions |
 | `activity` | `activity.mmd` | Main workflow, decisions, and exceptions |
 | `wireframe` | `wireframe.html` | Low-fidelity interface review page |
+| `feasibility` | `feasibility.md` | Feasibility dimensions, costs, benefits, risks, and conditions |
+| `data-io` | `data-io.md` | Data catalogue, inputs, checks, outputs, privacy, and accessibility |
+| `lifecycle-roadmap` | `lifecycle-roadmap.md` | Lifecycle choice, trade-offs, milestones, dependencies, and backlog |
 
 Support files are always generated: `analysis.json`, `review-index.md`,
 `traceability.csv`, `traceguard.md`, `traceguard.json`, and `manifest.json`.
-Selecting modules controls the six module files, not these support files.
+Selecting modules controls the eleven module files, not these support files.
 
 ## Sources and exact evidence spans
 
@@ -105,6 +115,73 @@ Requirement wording should follow `The [system] must/shall [perform behaviour] w
 - Context: `system`, `actors[]`, and `flows[]` with `from`, `to`, and `label`.
 - Activity: `title`, `start`, `steps[]`, and optional decision nodes. Each step has `id`, `label`, and `next`; a decision also has `condition`, `yes`, and `no`.
 - Wireframe: `title`, `screens[]`, and components. Supported component kinds are `heading`, `text`, `input`, `select`, `button`, `list`, and `note`. An `input` is multiline by default; set `input_type` to `text`, `email`, `tel`, `url`, `number`, `date`, or `time` when native single-line semantics are more appropriate. Add `trace_ids[]` to connect a component to requirement or use-case IDs.
+
+## Problem, vision and scope record
+
+`problem_vision_scope` contains:
+
+- non-empty `problem_statement`, `vision_statement`, and `affected_stakeholders[]`;
+- `pain_points[]` with `id`, `statement`, `impact`, `evidence`, `confidence`, and `related_requirements[]`;
+- `objectives[]` with `id`, `statement`, `success_measure`, and `related_requirements[]`;
+- `scope.in[]` and `scope.out[]`;
+- `constraints[]` and `open_questions[]`.
+
+Keep the problem statement solution-neutral. The vision may describe the desired
+future state, but it must not silently make an unapproved scope, policy, or
+implementation decision.
+
+## Domain model record
+
+`domain_model.entities[]` contains `id`, `name`, `description`, `attributes[]`,
+and `related_requirements[]`. Each attribute contains `name`, `type`, and a
+boolean `required`. `domain_model.relationships[]` contains `id`, `from`, `to`,
+`label`, `from_cardinality`, `to_cardinality`, and `related_requirements[]`.
+Relationship endpoints must reference entity IDs. Optional `notes[]` may explain
+modelling boundaries. Model domain concepts rather than database tables.
+
+## Feasibility record
+
+`feasibility.recommendation` is `go`, `conditional`, `no-go`, or
+`undetermined`. Each item in `dimensions[]` contains `type`, `status`
+(`feasible`, `conditional`, `not-feasible`, or `unknown`), `findings[]`,
+`risks[]`, `constraints[]`, `evidence[]`, `confidence`, and
+`related_requirements[]`. Also include `costs[]`, `benefits[]`, `conditions[]`,
+and `open_questions[]`. A cost or benefit item uses `item`, `kind`, `estimate`,
+and `confidence`. Do not fabricate amounts, schedules, legal conclusions, or
+approval decisions when evidence is absent.
+
+## Data, inputs and outputs record
+
+`data_io.data_entities[]` contains `id`, `name`, `description`, `owner`,
+`sensitivity`, `retention`, `fields[]`, and `related_requirements[]`. Each field
+uses `name`, `type`, boolean `required`, and `validation`.
+
+Each `inputs[]` item contains `id`, `name`, `source`, `method`, `format`,
+`timing`, `verification_rules[]`, `validation_rules[]`, `error_feedback`, and
+`related_requirements[]`. Verification checks whether the source or claim is
+genuine; validation checks whether the value is complete, well-formed, and
+allowed.
+
+Each `outputs[]` item contains `id`, `name`, `audience`, `destination`, `format`,
+`timing`, `content[]`, `accessibility[]`, `failure_behaviour`, and
+`related_requirements[]`.
+
+## Lifecycle and roadmap record
+
+`lifecycle_roadmap.recommended_lifecycle` is one of `predictive`, `parallel`,
+`iterative`, `throwaway-prototyping`, `evolutionary-prototyping`, `agile`,
+`hybrid`, or `undetermined`. Include:
+
+- `rationale[]`;
+- `decision_factors[]` with `factor`, `assessment`, `evidence`, and `confidence`;
+- `tradeoffs[]` with `decision`, `scope_effect`, `cost_effect`, `time_effect`,
+  and `quality_effect`, plus `approval_status` (`proposed`, `approved`, or `rejected`) and
+  `approver`; an approved trade-off requires a named approver;
+- `milestones[]` with stable `id`, `name`, `goal`, `depends_on[]`, and
+  `related_requirements[]`;
+- `backlog[]` with stable `id`, `title`, `type`, `priority`, `status`, and
+  `related_requirements[]`;
+- `risks[]` and `open_questions[]`.
 
 ## Use-case record
 

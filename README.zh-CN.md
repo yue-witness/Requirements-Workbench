@@ -10,12 +10,17 @@ Requirements Analysis Workbench 是一个适用于 ChatGPT 和 Codex 的插件�
 
 用户可以选择一个或多个彼此独立的模块：
 
+- `problem-vision-scope`：问题、目标状态、目标、范围边界和约束；
 - `requirements`：原子化的功能、质量和业务需求；
 - `fishbone`：问题背后的潜在原因；
 - `context`：系统边界、参与者、外部系统和信息流；
+- `domain-model`：领域概念、属性、关系和多重性；
 - `use-cases`：参与者目标、主流程、备选流程和异常流程；
 - `activity`：工作流决策、失败路径和结果；
-- `wireframe`：带追踪标签、可访问的低保真 HTML 界面。
+- `wireframe`：带追踪标签、可访问的低保真 HTML 界面；
+- `feasibility`：基于证据的可行性、风险、成本、收益和前置条件；
+- `data-io`：数据所有权、输入验证与核验、输出、隐私和可访问性；
+- `lifecycle-roadmap`：交付方法、权衡、里程碑、依赖关系和待办列表。
 
 每次运行还会生成作为单一事实来源的 `analysis.json`、面向评审者的 `review-index.md`、`traceability.csv`、`traceguard.md`、`traceguard.json` 和带 SHA-256 文件哈希的 `manifest.json`。
 
@@ -23,7 +28,7 @@ Requirements Analysis Workbench 是一个适用于 ChatGPT 和 Codex 的插件�
 
 - 当用户通过 `@` 直接调用插件并提供匹配的需求描述时，默认打开可视化工作台，让用户确认评审模式和输出模块。仅打开面板不会接受界面中显示的默认值；用户应用有效选择前，工作流保持阻塞。只有在已提供模式和至少一个模块时，用户才可明确要求不打开 GUI；不支持 MCP Apps 的宿主则在对话中提供同样具有等待门禁的选项。
 - 可视化的引导、标准和专业三种模式选择器。
-- 六个输出模块分别提供独立勾选框。
+- 十一个输出模块分别提供独立勾选框。
 - 明确区分利益相关者证据、推断、假设、建议、冲突和待确认问题。
 - 使用稳定 ID 和追踪链接连接不同工件。
 - 在生成文件前执行确定性结构验证。
@@ -40,19 +45,19 @@ Requirements Analysis Workbench 是一个适用于 ChatGPT 和 Codex 的插件�
 请使用支持插件的当前版 ChatGPT 桌面应用或 Codex。先将本仓库添加为 marketplace 来源：
 
 ```powershell
-codex plugin marketplace add yue-witness/Requirements-Workbench --ref v0.3.2
+codex plugin marketplace add yue-witness/Requirements-Workbench --ref v0.4.0
 ```
 
 重启桌面应用，打开 Plugins Directory，选择 **Requirements Analysis Workbench** 来源，然后安装或启用 `requirements-analysis-workbench`。安装后请新建一个任务，使三个内置技能和 MCP 工具正确加载。
 
-如需跟随最新 `main` 分支，可省略 `--ref v0.3.2`。
+如需跟随最新 `main` 分支，可省略 `--ref v0.4.0`。
 
 ## 从 Release 包安装
 
-从 GitHub Release 下载 `requirements-analysis-workbench-v0.3.2.zip` 并解压，然后添加解压后的 marketplace 根目录：
+从 GitHub Release 下载 `requirements-analysis-workbench-v0.4.0.zip` 并解压，然后添加解压后的 marketplace 根目录：
 
 ```powershell
-codex plugin marketplace add C:\path\to\requirements-analysis-workbench-v0.3.2
+codex plugin marketplace add C:\path\to\requirements-analysis-workbench-v0.4.0
 ```
 
 随后重启桌面应用，并在 Plugins Directory 中安装插件。
@@ -73,7 +78,7 @@ codex plugin marketplace add C:\path\to\requirements-analysis-workbench-v0.3.2
 
 专业模式：
 
-> 请用专业模式分析这些利益相关者记录。生成全部六个模块，保留原有术语，标记推断，并包含验收条件和可追踪关系。
+> 请用专业模式分析这些利益相关者记录。生成全部十一个模块，保留原有术语，标记推断，并包含验收条件和可追踪关系。
 
 定向修订：
 

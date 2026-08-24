@@ -46,6 +46,9 @@ The proposed system replaces the fragmented Google Sheets and separate-phone wor
 - Which open questions block a design or scope decision?
 - Does every requirement have a clear rationale, evidence, and acceptance check?
 - Are the system boundary, actors, flows, and terminology consistent across modules?
+- Do the problem, vision, scope, domain concepts, feasibility findings, data flows, and roadmap use the same approved facts?
+- Are verification rules separated from value validation rules for every important input?
+- Are lifecycle trade-offs, dependencies, and approvals explicit rather than implied?
 - Does the wireframe support the required user goals without introducing unsupported features?
 
 ## Assumptions

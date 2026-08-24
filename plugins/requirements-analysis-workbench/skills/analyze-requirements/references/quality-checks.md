@@ -27,8 +27,12 @@ These rules follow general documentation principles: clear wording for the inten
 ## Cross-module consistency
 
 - Actor names must match between the context diagram and use cases.
+- Problem, vision, scope, objectives, and feasibility findings must not contradict the requirement set.
+- Domain entities and relationships must use stable IDs and trace to the requirements they explain.
 - Activity steps must not introduce functions absent from the requirements.
 - Wireframe controls must trace to a requirement or use-case step.
+- Data inputs must separate source verification from value validation; outputs must identify audience, failure behaviour, privacy, and accessibility needs.
+- Lifecycle trade-offs must expose scope, cost, time, and quality effects, while milestones and backlog items keep requirement links and explicit dependencies.
 - Fishbone causes are hypotheses for validation, not confirmed facts.
 - Any revision that changes a shared concept must identify potentially affected modules even when only one module is regenerated.
 - Run TraceGuard after materialisation. Keep its `abstain` state visible until

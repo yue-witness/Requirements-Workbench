@@ -31,25 +31,48 @@ from traceguard import write_audit
 
 
 MODULE_FILES = {
+    "problem-vision-scope": "problem-vision-scope.md",
     "requirements": "requirements.md",
     "fishbone": "fishbone.mmd",
     "context": "context.mmd",
+    "domain-model": "domain-model.mmd",
     "use-cases": "use-cases.md",
     "activity": "activity.mmd",
     "wireframe": "wireframe.html",
+    "feasibility": "feasibility.md",
+    "data-io": "data-io.md",
+    "lifecycle-roadmap": "lifecycle-roadmap.md",
 }
 MODULE_DESCRIPTIONS = {
+    "problem-vision-scope": "Check the problem, vision, objectives, scope boundaries, constraints, and unresolved decisions.",
     "requirements": "Check what the software must do, why each item exists, and how it can be tested.",
     "fishbone": "Check whether the possible causes are plausible hypotheses rather than confirmed facts.",
     "context": "Check the system boundary, external people and systems, and labelled information flows.",
+    "domain-model": "Check domain concepts, attributes, relationships, multiplicities, and requirement links.",
     "use-cases": "Check goals, main steps, alternatives, exceptions, and linked requirements.",
     "activity": "Check workflow order, decisions, guards, rejection paths, and end states.",
     "wireframe": "Check whether the proposed screens support the traced requirements and use-case steps.",
+    "feasibility": "Check feasibility evidence, costs, benefits, risks, conditions, and the recommendation boundary.",
+    "data-io": "Check owned data, input verification and validation, outputs, privacy, and requirement links.",
+    "lifecycle-roadmap": "Check the lifecycle choice, trade-offs, milestones, backlog, dependencies, and approvals.",
 }
 
 CONFIDENCE_VALUES = {"explicit", "inferred", "proposed"}
 REQUIREMENT_CATEGORIES = {"functional", "quality", "business"}
 REVIEW_MODES = {"guided", "standard", "professional"}
+FEASIBILITY_RECOMMENDATIONS = {"go", "conditional", "no-go", "undetermined"}
+FEASIBILITY_STATUSES = {"feasible", "conditional", "not-feasible", "unknown"}
+LIFECYCLE_VALUES = {
+    "predictive",
+    "parallel",
+    "iterative",
+    "throwaway-prototyping",
+    "evolutionary-prototyping",
+    "agile",
+    "hybrid",
+    "undetermined",
+}
+APPROVAL_STATUSES = {"proposed", "approved", "rejected"}
 REQUIRED_REQUIREMENT_FIELDS = {
     "id",
     "category",
@@ -121,6 +144,42 @@ def require_object(data: dict[str, Any], key: str) -> dict[str, Any]:
     if not isinstance(value, dict):
         raise AnalysisError(f"'{key}' must be an object.")
     return value
+
+
+def require_non_empty_text(record: dict[str, Any], key: str, path: str) -> str:
+    value = str(record.get(key, "")).strip()
+    if not value:
+        raise AnalysisError(f"'{path}.{key}' must not be empty.")
+    return value
+
+
+def require_record_list(record: dict[str, Any], key: str, path: str) -> list[Any]:
+    value = record.get(key)
+    if not isinstance(value, list):
+        raise AnalysisError(f"'{path}.{key}' must be a list.")
+    return value
+
+
+def validate_requirement_links(
+    values: Any,
+    known_requirement_ids: set[str],
+    path: str,
+) -> None:
+    if not isinstance(values, list):
+        raise AnalysisError(f"'{path}' must be a list.")
+    dangling = sorted({str(value) for value in values} - known_requirement_ids)
+    if dangling:
+        raise AnalysisError(
+            f"'{path}' references unknown requirement(s): " + ", ".join(dangling)
+        )
+
+
+def validate_confidence(record: dict[str, Any], path: str) -> None:
+    confidence = str(record.get("confidence", "")).strip().lower()
+    if confidence not in CONFIDENCE_VALUES:
+        raise AnalysisError(
+            f"'{path}.confidence' must be explicit, inferred, or proposed."
+        )
 
 
 def validate_analysis(data: dict[str, Any]) -> list[str]:
@@ -199,6 +258,92 @@ def validate_analysis(data: dict[str, Any]) -> list[str]:
             "records when the requirements module is selected."
         )
 
+    if "problem-vision-scope" in selected:
+        framing = require_object(data, "problem_vision_scope")
+        require_non_empty_text(framing, "problem_statement", "problem_vision_scope")
+        require_non_empty_text(framing, "vision_statement", "problem_vision_scope")
+        stakeholders = require_record_list(
+            framing, "affected_stakeholders", "problem_vision_scope"
+        )
+        if not stakeholders:
+            raise AnalysisError(
+                "'problem_vision_scope.affected_stakeholders' must not be empty."
+            )
+
+        seen_framing_ids: set[str] = set()
+        for collection_name, required_fields in (
+            (
+                "pain_points",
+                {"id", "statement", "impact", "evidence", "confidence", "related_requirements"},
+            ),
+            (
+                "objectives",
+                {"id", "statement", "success_measure", "related_requirements"},
+            ),
+        ):
+            records = require_record_list(
+                framing, collection_name, "problem_vision_scope"
+            )
+            if not records:
+                raise AnalysisError(
+                    f"'problem_vision_scope.{collection_name}' must not be empty."
+                )
+            for index, record in enumerate(records, start=1):
+                if not isinstance(record, dict):
+                    raise AnalysisError(
+                        f"problem_vision_scope.{collection_name}[{index}] must be an object."
+                    )
+                missing = required_fields - set(record)
+                if missing:
+                    raise AnalysisError(
+                        f"problem_vision_scope.{collection_name}[{index}] is missing: "
+                        + ", ".join(sorted(missing))
+                    )
+                record_id = require_non_empty_text(
+                    record, "id", f"problem_vision_scope.{collection_name}[{index}]"
+                )
+                if record_id in seen_framing_ids:
+                    raise AnalysisError(f"Duplicate problem-framing ID: {record_id}")
+                seen_framing_ids.add(record_id)
+                require_non_empty_text(
+                    record,
+                    "statement",
+                    f"problem_vision_scope.{collection_name}[{index}]",
+                )
+                if collection_name == "pain_points":
+                    require_non_empty_text(
+                        record,
+                        "impact",
+                        f"problem_vision_scope.{collection_name}[{index}]",
+                    )
+                    require_non_empty_text(
+                        record,
+                        "evidence",
+                        f"problem_vision_scope.{collection_name}[{index}]",
+                    )
+                    validate_confidence(
+                        record, f"problem_vision_scope.{collection_name}[{index}]"
+                    )
+                else:
+                    require_non_empty_text(
+                        record,
+                        "success_measure",
+                        f"problem_vision_scope.{collection_name}[{index}]",
+                    )
+                validate_requirement_links(
+                    record["related_requirements"],
+                    seen_ids,
+                    f"problem_vision_scope.{collection_name}[{index}].related_requirements",
+                )
+
+        scope = require_object(framing, "scope")
+        in_scope = require_record_list(scope, "in", "problem_vision_scope.scope")
+        require_record_list(scope, "out", "problem_vision_scope.scope")
+        if not in_scope:
+            raise AnalysisError("'problem_vision_scope.scope.in' must not be empty.")
+        require_record_list(framing, "constraints", "problem_vision_scope")
+        require_record_list(framing, "open_questions", "problem_vision_scope")
+
     if "fishbone" in selected:
         fishbone = require_object(data, "fishbone")
         categories = fishbone.get("categories")
@@ -220,6 +365,111 @@ def validate_analysis(data: dict[str, Any]) -> list[str]:
             raise AnalysisError("'context.actors' must contain at least one actor.")
         if not isinstance(context.get("flows"), list) or not context["flows"]:
             raise AnalysisError("'context.flows' must contain at least one flow.")
+
+    if "domain-model" in selected:
+        domain_model = require_object(data, "domain_model")
+        entities = require_record_list(domain_model, "entities", "domain_model")
+        relationships = require_record_list(
+            domain_model, "relationships", "domain_model"
+        )
+        if not entities:
+            raise AnalysisError("'domain_model.entities' must contain at least one entity.")
+
+        entity_ids: set[str] = set()
+        for index, entity in enumerate(entities, start=1):
+            if not isinstance(entity, dict):
+                raise AnalysisError(f"domain_model.entities[{index}] must be an object.")
+            entity_id = require_non_empty_text(
+                entity, "id", f"domain_model.entities[{index}]"
+            )
+            if entity_id in entity_ids:
+                raise AnalysisError(f"Duplicate domain entity ID: {entity_id}")
+            entity_ids.add(entity_id)
+            require_non_empty_text(entity, "name", f"domain_model.entities[{index}]")
+            require_non_empty_text(
+                entity, "description", f"domain_model.entities[{index}]"
+            )
+            attributes = require_record_list(
+                entity, "attributes", f"domain_model.entities[{index}]"
+            )
+            for attribute_index, attribute in enumerate(attributes, start=1):
+                if not isinstance(attribute, dict):
+                    raise AnalysisError(
+                        f"domain_model.entities[{index}].attributes[{attribute_index}] must be an object."
+                    )
+                require_non_empty_text(
+                    attribute,
+                    "name",
+                    f"domain_model.entities[{index}].attributes[{attribute_index}]",
+                )
+                require_non_empty_text(
+                    attribute,
+                    "type",
+                    f"domain_model.entities[{index}].attributes[{attribute_index}]",
+                )
+                if not isinstance(attribute.get("required"), bool):
+                    raise AnalysisError(
+                        f"'domain_model.entities[{index}].attributes[{attribute_index}].required' must be boolean."
+                    )
+            entity_links = require_record_list(
+                entity, "related_requirements", f"domain_model.entities[{index}]"
+            )
+            validate_requirement_links(
+                entity_links,
+                seen_ids,
+                f"domain_model.entities[{index}].related_requirements",
+            )
+
+        relationship_ids: set[str] = set()
+        for index, relationship in enumerate(relationships, start=1):
+            if not isinstance(relationship, dict):
+                raise AnalysisError(
+                    f"domain_model.relationships[{index}] must be an object."
+                )
+            relationship_id = require_non_empty_text(
+                relationship, "id", f"domain_model.relationships[{index}]"
+            )
+            if relationship_id in relationship_ids:
+                raise AnalysisError(
+                    f"Duplicate domain relationship ID: {relationship_id}"
+                )
+            relationship_ids.add(relationship_id)
+            source = require_non_empty_text(
+                relationship, "from", f"domain_model.relationships[{index}]"
+            )
+            target = require_non_empty_text(
+                relationship, "to", f"domain_model.relationships[{index}]"
+            )
+            unknown_entities = sorted({source, target} - entity_ids)
+            if unknown_entities:
+                raise AnalysisError(
+                    f"domain_model.relationships[{index}] references unknown entity ID(s): "
+                    + ", ".join(unknown_entities)
+                )
+            require_non_empty_text(
+                relationship, "label", f"domain_model.relationships[{index}]"
+            )
+            require_non_empty_text(
+                relationship,
+                "from_cardinality",
+                f"domain_model.relationships[{index}]",
+            )
+            require_non_empty_text(
+                relationship,
+                "to_cardinality",
+                f"domain_model.relationships[{index}]",
+            )
+            relationship_links = require_record_list(
+                relationship,
+                "related_requirements",
+                f"domain_model.relationships[{index}]",
+            )
+            validate_requirement_links(
+                relationship_links,
+                seen_ids,
+                f"domain_model.relationships[{index}].related_requirements",
+            )
+        require_record_list(domain_model, "notes", "domain_model")
 
     if "use-cases" in selected:
         use_cases = require_list(data, "use_cases")
@@ -268,6 +518,313 @@ def validate_analysis(data: dict[str, Any]) -> list[str]:
                         + ", ".join(dangling)
                     )
 
+    if "feasibility" in selected:
+        feasibility = require_object(data, "feasibility")
+        recommendation = require_non_empty_text(
+            feasibility, "recommendation", "feasibility"
+        ).lower()
+        if recommendation not in FEASIBILITY_RECOMMENDATIONS:
+            raise AnalysisError(
+                "'feasibility.recommendation' must be go, conditional, no-go, or undetermined."
+            )
+        dimensions = require_record_list(feasibility, "dimensions", "feasibility")
+        if not dimensions:
+            raise AnalysisError("'feasibility.dimensions' must not be empty.")
+        seen_dimensions: set[str] = set()
+        for index, dimension in enumerate(dimensions, start=1):
+            if not isinstance(dimension, dict):
+                raise AnalysisError(f"feasibility.dimensions[{index}] must be an object.")
+            dimension_type = require_non_empty_text(
+                dimension, "type", f"feasibility.dimensions[{index}]"
+            )
+            if dimension_type in seen_dimensions:
+                raise AnalysisError(f"Duplicate feasibility dimension: {dimension_type}")
+            seen_dimensions.add(dimension_type)
+            status = require_non_empty_text(
+                dimension, "status", f"feasibility.dimensions[{index}]"
+            ).lower()
+            if status not in FEASIBILITY_STATUSES:
+                raise AnalysisError(
+                    f"feasibility dimension '{dimension_type}' has invalid status '{status}'."
+                )
+            validate_confidence(dimension, f"feasibility.dimensions[{index}]")
+            for key in ("findings", "risks", "constraints", "evidence"):
+                require_record_list(
+                    dimension, key, f"feasibility.dimensions[{index}]"
+                )
+            dimension_links = require_record_list(
+                dimension,
+                "related_requirements",
+                f"feasibility.dimensions[{index}]",
+            )
+            validate_requirement_links(
+                dimension_links,
+                seen_ids,
+                f"feasibility.dimensions[{index}].related_requirements",
+            )
+        for key in ("costs", "benefits", "conditions", "open_questions"):
+            require_record_list(feasibility, key, "feasibility")
+        for collection_name in ("costs", "benefits"):
+            for index, item in enumerate(feasibility[collection_name], start=1):
+                if not isinstance(item, dict):
+                    raise AnalysisError(
+                        f"feasibility.{collection_name}[{index}] must be an object."
+                    )
+                for key in ("item", "kind", "estimate"):
+                    require_non_empty_text(
+                        item, key, f"feasibility.{collection_name}[{index}]"
+                    )
+                validate_confidence(
+                    item, f"feasibility.{collection_name}[{index}]"
+                )
+
+    if "data-io" in selected:
+        data_io = require_object(data, "data_io")
+        data_entities = require_record_list(data_io, "data_entities", "data_io")
+        inputs = require_record_list(data_io, "inputs", "data_io")
+        outputs = require_record_list(data_io, "outputs", "data_io")
+        if not data_entities:
+            raise AnalysisError("'data_io.data_entities' must not be empty.")
+        if not inputs and not outputs:
+            raise AnalysisError("'data_io' must define at least one input or output.")
+
+        data_ids: set[str] = set()
+        for index, entity in enumerate(data_entities, start=1):
+            if not isinstance(entity, dict):
+                raise AnalysisError(f"data_io.data_entities[{index}] must be an object.")
+            entity_id = require_non_empty_text(
+                entity, "id", f"data_io.data_entities[{index}]"
+            )
+            if entity_id in data_ids:
+                raise AnalysisError(f"Duplicate data-I/O ID: {entity_id}")
+            data_ids.add(entity_id)
+            for key in ("name", "description", "owner", "sensitivity", "retention"):
+                require_non_empty_text(entity, key, f"data_io.data_entities[{index}]")
+            fields = require_record_list(
+                entity, "fields", f"data_io.data_entities[{index}]"
+            )
+            if not fields:
+                raise AnalysisError(
+                    f"'data_io.data_entities[{index}].fields' must not be empty."
+                )
+            for field_index, field in enumerate(fields, start=1):
+                if not isinstance(field, dict):
+                    raise AnalysisError(
+                        f"data_io.data_entities[{index}].fields[{field_index}] must be an object."
+                    )
+                for key in ("name", "type", "validation"):
+                    require_non_empty_text(
+                        field,
+                        key,
+                        f"data_io.data_entities[{index}].fields[{field_index}]",
+                    )
+                if not isinstance(field.get("required"), bool):
+                    raise AnalysisError(
+                        f"'data_io.data_entities[{index}].fields[{field_index}].required' must be boolean."
+                    )
+            entity_links = require_record_list(
+                entity,
+                "related_requirements",
+                f"data_io.data_entities[{index}]",
+            )
+            validate_requirement_links(
+                entity_links,
+                seen_ids,
+                f"data_io.data_entities[{index}].related_requirements",
+            )
+
+        for collection_name, records in (("inputs", inputs), ("outputs", outputs)):
+            for index, record in enumerate(records, start=1):
+                if not isinstance(record, dict):
+                    raise AnalysisError(f"data_io.{collection_name}[{index}] must be an object.")
+                record_id = require_non_empty_text(
+                    record, "id", f"data_io.{collection_name}[{index}]"
+                )
+                if record_id in data_ids:
+                    raise AnalysisError(f"Duplicate data-I/O ID: {record_id}")
+                data_ids.add(record_id)
+                for key in ("name", "format", "timing"):
+                    require_non_empty_text(
+                        record, key, f"data_io.{collection_name}[{index}]"
+                    )
+                if collection_name == "inputs":
+                    for key in ("source", "method", "error_feedback"):
+                        require_non_empty_text(
+                            record, key, f"data_io.{collection_name}[{index}]"
+                        )
+                    require_record_list(
+                        record,
+                        "verification_rules",
+                        f"data_io.{collection_name}[{index}]",
+                    )
+                    require_record_list(
+                        record,
+                        "validation_rules",
+                        f"data_io.{collection_name}[{index}]",
+                    )
+                else:
+                    for key in ("audience", "destination", "failure_behaviour"):
+                        require_non_empty_text(
+                            record, key, f"data_io.{collection_name}[{index}]"
+                        )
+                    require_record_list(
+                        record, "content", f"data_io.{collection_name}[{index}]"
+                    )
+                    require_record_list(
+                        record,
+                        "accessibility",
+                        f"data_io.{collection_name}[{index}]",
+                    )
+                record_links = require_record_list(
+                    record,
+                    "related_requirements",
+                    f"data_io.{collection_name}[{index}]",
+                )
+                validate_requirement_links(
+                    record_links,
+                    seen_ids,
+                    f"data_io.{collection_name}[{index}].related_requirements",
+                )
+
+    if "lifecycle-roadmap" in selected:
+        roadmap = require_object(data, "lifecycle_roadmap")
+        lifecycle = require_non_empty_text(
+            roadmap, "recommended_lifecycle", "lifecycle_roadmap"
+        ).lower()
+        if lifecycle not in LIFECYCLE_VALUES:
+            raise AnalysisError(
+                "'lifecycle_roadmap.recommended_lifecycle' has an unsupported value."
+            )
+        for key in (
+            "rationale",
+            "decision_factors",
+            "tradeoffs",
+            "milestones",
+            "backlog",
+            "risks",
+            "open_questions",
+        ):
+            require_record_list(roadmap, key, "lifecycle_roadmap")
+
+        for index, factor in enumerate(roadmap["decision_factors"], start=1):
+            if not isinstance(factor, dict):
+                raise AnalysisError(
+                    f"lifecycle_roadmap.decision_factors[{index}] must be an object."
+                )
+            for key in ("factor", "assessment", "evidence"):
+                require_non_empty_text(
+                    factor, key, f"lifecycle_roadmap.decision_factors[{index}]"
+                )
+            validate_confidence(
+                factor, f"lifecycle_roadmap.decision_factors[{index}]"
+            )
+
+        for index, tradeoff in enumerate(roadmap["tradeoffs"], start=1):
+            if not isinstance(tradeoff, dict):
+                raise AnalysisError(
+                    f"lifecycle_roadmap.tradeoffs[{index}] must be an object."
+                )
+            for key in (
+                "decision",
+                "scope_effect",
+                "cost_effect",
+                "time_effect",
+                "quality_effect",
+            ):
+                require_non_empty_text(
+                    tradeoff, key, f"lifecycle_roadmap.tradeoffs[{index}]"
+                )
+            approval_status = require_non_empty_text(
+                tradeoff,
+                "approval_status",
+                f"lifecycle_roadmap.tradeoffs[{index}]",
+            ).lower()
+            if approval_status not in APPROVAL_STATUSES:
+                raise AnalysisError(
+                    f"lifecycle_roadmap.tradeoffs[{index}] has invalid approval_status."
+                )
+            if "approver" not in tradeoff:
+                raise AnalysisError(
+                    f"lifecycle_roadmap.tradeoffs[{index}] is missing: approver"
+                )
+            if approval_status == "approved" and not str(
+                tradeoff.get("approver", "")
+            ).strip():
+                raise AnalysisError(
+                    f"lifecycle_roadmap.tradeoffs[{index}] requires a named approver."
+                )
+
+        milestone_ids: set[str] = set()
+        for index, milestone in enumerate(roadmap["milestones"], start=1):
+            if not isinstance(milestone, dict):
+                raise AnalysisError(
+                    f"lifecycle_roadmap.milestones[{index}] must be an object."
+                )
+            milestone_id = require_non_empty_text(
+                milestone, "id", f"lifecycle_roadmap.milestones[{index}]"
+            )
+            if milestone_id in milestone_ids:
+                raise AnalysisError(f"Duplicate milestone ID: {milestone_id}")
+            milestone_ids.add(milestone_id)
+            for key in ("name", "goal"):
+                require_non_empty_text(
+                    milestone, key, f"lifecycle_roadmap.milestones[{index}]"
+                )
+            require_record_list(
+                milestone,
+                "depends_on",
+                f"lifecycle_roadmap.milestones[{index}]",
+            )
+            milestone_links = require_record_list(
+                milestone,
+                "related_requirements",
+                f"lifecycle_roadmap.milestones[{index}]",
+            )
+            validate_requirement_links(
+                milestone_links,
+                seen_ids,
+                f"lifecycle_roadmap.milestones[{index}].related_requirements",
+            )
+        for index, milestone in enumerate(roadmap["milestones"], start=1):
+            dependencies = {str(item) for item in milestone["depends_on"]}
+            unknown_dependencies = sorted(dependencies - milestone_ids)
+            if unknown_dependencies:
+                raise AnalysisError(
+                    f"lifecycle_roadmap.milestones[{index}] references unknown milestone(s): "
+                    + ", ".join(unknown_dependencies)
+                )
+            if str(milestone["id"]) in dependencies:
+                raise AnalysisError(
+                    f"Milestone {milestone['id']} cannot depend on itself."
+                )
+
+        backlog_ids: set[str] = set()
+        for index, item in enumerate(roadmap["backlog"], start=1):
+            if not isinstance(item, dict):
+                raise AnalysisError(
+                    f"lifecycle_roadmap.backlog[{index}] must be an object."
+                )
+            item_id = require_non_empty_text(
+                item, "id", f"lifecycle_roadmap.backlog[{index}]"
+            )
+            if item_id in backlog_ids:
+                raise AnalysisError(f"Duplicate backlog ID: {item_id}")
+            backlog_ids.add(item_id)
+            for key in ("title", "type", "priority", "status"):
+                require_non_empty_text(
+                    item, key, f"lifecycle_roadmap.backlog[{index}]"
+                )
+            item_links = require_record_list(
+                item,
+                "related_requirements",
+                f"lifecycle_roadmap.backlog[{index}]",
+            )
+            validate_requirement_links(
+                item_links,
+                seen_ids,
+                f"lifecycle_roadmap.backlog[{index}].related_requirements",
+            )
+
     return selected
 
 
@@ -286,6 +843,83 @@ def node_id(prefix: str, value: Any) -> str:
 def markdown_cell(value: Any) -> str:
     text = " ".join(str(value).split())
     return text.replace("|", "\\|")
+
+
+def markdown_list(values: Iterable[Any], empty_text: str = "None recorded.") -> list[str]:
+    items = [str(value).strip() for value in values if str(value).strip()]
+    return [f"- {item}" for item in items] or [f"- {empty_text}"]
+
+
+def render_problem_vision_scope(data: dict[str, Any]) -> str:
+    framing = data["problem_vision_scope"]
+    lines = [
+        f"# {data['project']['name']} - Problem, Vision and Scope",
+        "",
+        "## Problem statement",
+        "",
+        framing["problem_statement"],
+        "",
+        "## Vision statement",
+        "",
+        framing["vision_statement"],
+        "",
+        "## Affected stakeholders",
+        "",
+        *markdown_list(framing["affected_stakeholders"]),
+        "",
+        "## Pain points",
+        "",
+        "| ID | Pain point | Impact | Evidence | Confidence | Related requirements |",
+        "|---|---|---|---|---|---|",
+    ]
+    for pain_point in framing["pain_points"]:
+        lines.append(
+            "| "
+            + " | ".join(
+                [
+                    markdown_cell(pain_point["id"]),
+                    markdown_cell(pain_point["statement"]),
+                    markdown_cell(pain_point["impact"]),
+                    markdown_cell(pain_point["evidence"]),
+                    markdown_cell(pain_point["confidence"]),
+                    markdown_cell(", ".join(pain_point["related_requirements"])),
+                ]
+            )
+            + " |"
+        )
+
+    lines.extend(
+        [
+            "",
+            "## Objectives and success measures",
+            "",
+            "| ID | Objective | Success measure | Related requirements |",
+            "|---|---|---|---|",
+        ]
+    )
+    for objective in framing["objectives"]:
+        lines.append(
+            "| "
+            + " | ".join(
+                [
+                    markdown_cell(objective["id"]),
+                    markdown_cell(objective["statement"]),
+                    markdown_cell(objective["success_measure"]),
+                    markdown_cell(", ".join(objective["related_requirements"])),
+                ]
+            )
+            + " |"
+        )
+
+    for heading, values in (
+        ("In scope", framing["scope"]["in"]),
+        ("Out of scope", framing["scope"]["out"]),
+        ("Constraints", framing["constraints"]),
+        ("Open questions", framing["open_questions"]),
+    ):
+        lines.extend(["", f"## {heading}", "", *markdown_list(values)])
+    lines.append("")
+    return "\n".join(lines)
 
 
 def render_requirements(data: dict[str, Any]) -> str:
@@ -395,6 +1029,41 @@ def render_context(data: dict[str, Any]) -> str:
         lines.append(
             f'    {source} -->|"{safe_mermaid_text(flow.get("label", "flow"))}"| {target}'
         )
+    lines.append("")
+    return "\n".join(lines)
+
+
+def render_domain_model(data: dict[str, Any]) -> str:
+    domain_model = data["domain_model"]
+    identifiers = {
+        str(entity["id"]): node_id("ENTITY", entity["id"])
+        for entity in domain_model["entities"]
+    }
+    lines = ["classDiagram"]
+    for entity in domain_model["entities"]:
+        entity_id = identifiers[str(entity["id"])]
+        entity_name = safe_mermaid_text(entity["name"])
+        lines.append(f'    class {entity_id}["{entity_name}"] {{')
+        for attribute in entity.get("attributes", []):
+            marker = "+" if attribute.get("required") else "~"
+            attribute_type = safe_mermaid_text(attribute["type"])
+            attribute_name = safe_mermaid_text(attribute["name"])
+            lines.append(f"        {marker}{attribute_type} {attribute_name}")
+        lines.append("    }")
+
+    for relationship in domain_model["relationships"]:
+        source = identifiers[str(relationship["from"])]
+        target = identifiers[str(relationship["to"])]
+        source_cardinality = safe_mermaid_text(relationship["from_cardinality"])
+        target_cardinality = safe_mermaid_text(relationship["to_cardinality"])
+        label = safe_mermaid_text(relationship["label"])
+        lines.append(
+            f'    {source} "{source_cardinality}" --> "{target_cardinality}" '
+            f"{target} : {label}"
+        )
+
+    for note in domain_model.get("notes", []):
+        lines.append(f"    %% {safe_mermaid_text(note)}")
     lines.append("")
     return "\n".join(lines)
 
@@ -608,13 +1277,281 @@ def render_wireframe(data: dict[str, Any]) -> str:
 """
 
 
+def render_feasibility(data: dict[str, Any]) -> str:
+    feasibility = data["feasibility"]
+    lines = [
+        f"# {data['project']['name']} - Feasibility Assessment",
+        "",
+        f"**Recommendation:** `{feasibility['recommendation']}`",
+        "",
+        "A recommendation is a review input, not an automatic approval decision.",
+        "",
+        "## Feasibility dimensions",
+        "",
+    ]
+    for dimension in feasibility["dimensions"]:
+        lines.extend(
+            [
+                f"### {dimension['type']}",
+                "",
+                f"**Status:** `{dimension['status']}`",
+                f"**Confidence:** `{dimension['confidence']}`",
+                "**Related requirements:** "
+                + (", ".join(dimension["related_requirements"]) or "None"),
+                "",
+                "**Findings**",
+                "",
+                *markdown_list(dimension["findings"]),
+                "",
+                "**Evidence**",
+                "",
+                *markdown_list(dimension["evidence"]),
+                "",
+                "**Constraints**",
+                "",
+                *markdown_list(dimension["constraints"]),
+                "",
+                "**Risks**",
+                "",
+                *markdown_list(dimension["risks"]),
+                "",
+            ]
+        )
+
+    for heading, key in (("Costs", "costs"), ("Benefits", "benefits")):
+        lines.extend(
+            [
+                f"## {heading}",
+                "",
+                "| Item | Kind | Estimate or description | Confidence |",
+                "|---|---|---|---|",
+            ]
+        )
+        for item in feasibility[key]:
+            lines.append(
+                "| "
+                + " | ".join(
+                    markdown_cell(item.get(field, ""))
+                    for field in ("item", "kind", "estimate", "confidence")
+                )
+                + " |"
+            )
+
+    for heading, key in (("Conditions", "conditions"), ("Open questions", "open_questions")):
+        lines.extend(["", f"## {heading}", "", *markdown_list(feasibility[key])])
+    lines.append("")
+    return "\n".join(lines)
+
+
+def render_data_io(data: dict[str, Any]) -> str:
+    data_io = data["data_io"]
+    lines = [
+        f"# {data['project']['name']} - Data, Inputs and Outputs",
+        "",
+        "## Data catalogue",
+        "",
+    ]
+    for entity in data_io["data_entities"]:
+        lines.extend(
+            [
+                f"### {entity['id']} - {entity['name']}",
+                "",
+                entity["description"],
+                "",
+                f"**Owner:** {entity['owner']}",
+                f"**Sensitivity:** {entity['sensitivity']}",
+                f"**Retention:** {entity['retention']}",
+                "**Related requirements:** "
+                + (", ".join(entity.get("related_requirements", [])) or "None"),
+                "",
+                "| Field | Type | Required | Validation |",
+                "|---|---|---|---|",
+            ]
+        )
+        for field in entity["fields"]:
+            lines.append(
+                "| "
+                + " | ".join(
+                    [
+                        markdown_cell(field["name"]),
+                        markdown_cell(field["type"]),
+                        "yes" if field["required"] else "no",
+                        markdown_cell(field["validation"]),
+                    ]
+                )
+                + " |"
+            )
+
+    lines.extend(["", "## Inputs", ""])
+    for item in data_io["inputs"]:
+        lines.extend(
+            [
+                f"### {item['id']} - {item['name']}",
+                "",
+                f"- Source: {item['source']}",
+                f"- Method: {item['method']}",
+                f"- Format: {item['format']}",
+                f"- Timing: {item['timing']}",
+                f"- Error feedback: {item['error_feedback']}",
+                f"- Related requirements: {', '.join(item['related_requirements']) or 'None'}",
+                "",
+                "**Verification rules** (is the input genuine and from the claimed source?)",
+                "",
+                *markdown_list(item["verification_rules"]),
+                "",
+                "**Validation rules** (is the value complete, well-formed, and allowed?)",
+                "",
+                *markdown_list(item["validation_rules"]),
+                "",
+            ]
+        )
+
+    lines.extend(["## Outputs", ""])
+    for item in data_io["outputs"]:
+        lines.extend(
+            [
+                f"### {item['id']} - {item['name']}",
+                "",
+                f"- Audience: {item['audience']}",
+                f"- Destination: {item['destination']}",
+                f"- Format: {item['format']}",
+                f"- Timing: {item['timing']}",
+                f"- Failure behaviour: {item['failure_behaviour']}",
+                f"- Related requirements: {', '.join(item['related_requirements']) or 'None'}",
+                "",
+                "**Content**",
+                "",
+                *markdown_list(item["content"]),
+                "",
+                "**Accessibility**",
+                "",
+                *markdown_list(item["accessibility"]),
+                "",
+            ]
+        )
+    return "\n".join(lines)
+
+
+def render_lifecycle_roadmap(data: dict[str, Any]) -> str:
+    roadmap = data["lifecycle_roadmap"]
+    lines = [
+        f"# {data['project']['name']} - Lifecycle and Roadmap",
+        "",
+        f"**Recommended lifecycle:** `{roadmap['recommended_lifecycle']}`",
+        "",
+        "## Rationale",
+        "",
+        *markdown_list(roadmap["rationale"]),
+        "",
+        "## Decision factors",
+        "",
+        "| Factor | Assessment | Evidence | Confidence |",
+        "|---|---|---|---|",
+    ]
+    for factor in roadmap["decision_factors"]:
+        lines.append(
+            "| "
+            + " | ".join(
+                markdown_cell(factor[field])
+                for field in ("factor", "assessment", "evidence", "confidence")
+            )
+            + " |"
+        )
+
+    lines.extend(
+        [
+            "",
+            "## Trade-off register",
+            "",
+            "| Decision | Scope | Cost | Time | Quality | Status | Approver |",
+            "|---|---|---|---|---|---|---|",
+        ]
+    )
+    for tradeoff in roadmap["tradeoffs"]:
+        lines.append(
+            "| "
+            + " | ".join(
+                markdown_cell(tradeoff.get(field, ""))
+                for field in (
+                    "decision",
+                    "scope_effect",
+                    "cost_effect",
+                    "time_effect",
+                    "quality_effect",
+                    "approval_status",
+                    "approver",
+                )
+            )
+            + " |"
+        )
+
+    lines.extend(
+        [
+            "",
+            "## Milestones",
+            "",
+            "| ID | Milestone | Goal | Depends on | Related requirements |",
+            "|---|---|---|---|---|",
+        ]
+    )
+    for milestone in roadmap["milestones"]:
+        lines.append(
+            "| "
+            + " | ".join(
+                [
+                    markdown_cell(milestone["id"]),
+                    markdown_cell(milestone["name"]),
+                    markdown_cell(milestone["goal"]),
+                    markdown_cell(", ".join(milestone["depends_on"])),
+                    markdown_cell(", ".join(milestone["related_requirements"])),
+                ]
+            )
+            + " |"
+        )
+
+    lines.extend(
+        [
+            "",
+            "## Backlog",
+            "",
+            "| ID | Item | Type | Priority | Status | Related requirements |",
+            "|---|---|---|---|---|---|",
+        ]
+    )
+    for item in roadmap["backlog"]:
+        lines.append(
+            "| "
+            + " | ".join(
+                [
+                    markdown_cell(item["id"]),
+                    markdown_cell(item["title"]),
+                    markdown_cell(item["type"]),
+                    markdown_cell(item["priority"]),
+                    markdown_cell(item["status"]),
+                    markdown_cell(", ".join(item["related_requirements"])),
+                ]
+            )
+            + " |"
+        )
+
+    for heading, key in (("Risks", "risks"), ("Open questions", "open_questions")):
+        lines.extend(["", f"## {heading}", "", *markdown_list(roadmap[key])])
+    lines.append("")
+    return "\n".join(lines)
+
+
 RENDERERS = {
+    "problem-vision-scope": render_problem_vision_scope,
     "requirements": render_requirements,
     "fishbone": render_fishbone,
     "context": render_context,
+    "domain-model": render_domain_model,
     "use-cases": render_use_cases,
     "activity": render_activity,
     "wireframe": render_wireframe,
+    "feasibility": render_feasibility,
+    "data-io": render_data_io,
+    "lifecycle-roadmap": render_lifecycle_roadmap,
 }
 
 
@@ -631,10 +1568,49 @@ def write_text(path: Path, content: str) -> None:
 
 
 def write_traceability(data: dict[str, Any], output_path: Path) -> None:
-    use_case_links: dict[str, list[str]] = {}
+    requirement_links: dict[str, list[str]] = {}
+
+    def add_links(module: str, element_id: str, requirement_ids: Iterable[Any]) -> None:
+        for requirement_id in requirement_ids:
+            requirement_links.setdefault(str(requirement_id), []).append(
+                f"{module}:{element_id}"
+            )
+
     for use_case in data.get("use_cases", []):
-        for requirement_id in use_case.get("related_requirements", []):
-            use_case_links.setdefault(str(requirement_id), []).append(str(use_case["id"]))
+        add_links("use-cases", str(use_case["id"]), use_case.get("related_requirements", []))
+    for collection in ("pain_points", "objectives"):
+        for item in data.get("problem_vision_scope", {}).get(collection, []):
+            add_links(
+                "problem-vision-scope",
+                str(item.get("id", collection)),
+                item.get("related_requirements", []),
+            )
+    for entity in data.get("domain_model", {}).get("entities", []):
+        add_links("domain-model", str(entity.get("id", "entity")), entity.get("related_requirements", []))
+    for index, relationship in enumerate(
+        data.get("domain_model", {}).get("relationships", []), start=1
+    ):
+        add_links(
+            "domain-model",
+            str(relationship.get("id", f"relationship-{index}")),
+            relationship.get("related_requirements", []),
+        )
+    for dimension in data.get("feasibility", {}).get("dimensions", []):
+        add_links(
+            "feasibility",
+            str(dimension.get("type", "dimension")),
+            dimension.get("related_requirements", []),
+        )
+    for collection in ("data_entities", "inputs", "outputs"):
+        for item in data.get("data_io", {}).get(collection, []):
+            add_links("data-io", str(item.get("id", collection)), item.get("related_requirements", []))
+    for collection in ("milestones", "backlog"):
+        for item in data.get("lifecycle_roadmap", {}).get(collection, []):
+            add_links(
+                "lifecycle-roadmap",
+                str(item.get("id", collection)),
+                item.get("related_requirements", []),
+            )
 
     with output_path.open("w", encoding="utf-8", newline="") as stream:
         writer = csv.writer(stream)
@@ -643,7 +1619,7 @@ def write_traceability(data: dict[str, Any], output_path: Path) -> None:
                 "requirement_id",
                 "category",
                 "evidence",
-                "use_cases",
+                "linked_elements",
                 "selected_artefacts",
                 "confidence",
             ]
@@ -656,7 +1632,7 @@ def write_traceability(data: dict[str, Any], output_path: Path) -> None:
                     requirement_id,
                     requirement["category"],
                     requirement["evidence"],
-                    ";".join(use_case_links.get(requirement_id, [])),
+                    ";".join(sorted(requirement_links.get(requirement_id, []))),
                     selected_artefacts,
                     requirement["confidence"],
                 ]
@@ -729,6 +1705,9 @@ def write_review_index(
             "- Which open questions block a design or scope decision?",
             "- Does every requirement have a clear rationale, evidence, and acceptance check?",
             "- Are the system boundary, actors, flows, and terminology consistent across modules?",
+            "- Do the problem, vision, scope, domain concepts, feasibility findings, data flows, and roadmap use the same approved facts?",
+            "- Are verification rules separated from value validation rules for every important input?",
+            "- Are lifecycle trade-offs, dependencies, and approvals explicit rather than implied?",
             "- Does the wireframe support the required user goals without introducing unsupported features?",
         ]
     )
@@ -821,7 +1800,7 @@ def materialise(data: dict[str, Any], out_dir: Path, only: str | None) -> None:
             untouched.append(module)
 
     manifest = {
-        "schema_version": "0.3",
+        "schema_version": "0.4",
         "project": data["project"]["name"],
         "generated_utc": datetime.now(timezone.utc).isoformat(),
         "selected_modules": selected,

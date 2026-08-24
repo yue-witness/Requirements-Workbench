@@ -14,17 +14,22 @@ from typing import Any
 
 
 SERVER_NAME = "requirements-analysis-workbench"
-SERVER_VERSION = "0.3.2"
+SERVER_VERSION = "0.4.0"
 RESOURCE_URI = "ui://requirements-analysis-workbench/workbench.html"
 PLUGIN_ROOT = Path(__file__).resolve().parents[1]
 UI_PATH = PLUGIN_ROOT / "ui" / "workbench.html"
 MODULES = [
+    "problem-vision-scope",
     "requirements",
     "fishbone",
     "context",
+    "domain-model",
     "use-cases",
     "activity",
     "wireframe",
+    "feasibility",
+    "data-io",
+    "lifecycle-roadmap",
 ]
 
 

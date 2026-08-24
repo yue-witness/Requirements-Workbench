@@ -1,6 +1,6 @@
 {
   "schema_version": "1.0",
-  "generated_utc": "2026-08-23T05:40:48.159157+00:00",
+  "generated_utc": "2026-08-24T05:54:32.306520+00:00",
   "project": "RequestBridge",
   "status": "abstain",
   "summary": {
@@ -154,6 +154,10 @@
       "message": "BR-01 is high-impact and remains abstained until a named reviewer approves it.",
       "affected_modules": [
         "activity",
+        "domain-model",
+        "feasibility",
+        "lifecycle-roadmap",
+        "problem-vision-scope",
         "requirements",
         "use-cases",
         "wireframe"
@@ -166,6 +170,9 @@
       "message": "QR-01 is high-impact and remains abstained until a named reviewer approves it.",
       "affected_modules": [
         "activity",
+        "data-io",
+        "feasibility",
+        "lifecycle-roadmap",
         "requirements",
         "use-cases"
       ],

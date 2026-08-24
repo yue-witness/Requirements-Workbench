@@ -8,12 +8,17 @@
     "binding_terms": "Must and shall are binding in this specification. Proposed requirements remain subject to stakeholder approval."
   },
   "selected_modules": [
+    "problem-vision-scope",
     "requirements",
     "fishbone",
     "context",
+    "domain-model",
     "use-cases",
     "activity",
-    "wireframe"
+    "wireframe",
+    "feasibility",
+    "data-io",
+    "lifecycle-roadmap"
   ],
   "sources": [
     {
@@ -196,6 +201,85 @@
     "When may a requester cancel or update a submitted request?",
     "Which languages and accessibility conformance target must the first release support?"
   ],
+  "problem_vision_scope": {
+    "problem_statement": "Community members cannot consistently express, route, and track service needs through one understandable and accountable process, so requests may be delayed, misrouted, or handled without visible status.",
+    "vision_statement": "Provide an accessible RequestBridge service in which a requester can explain a need in ordinary language and follow its progress while authorised staff make transparent, auditable service decisions.",
+    "affected_stakeholders": [
+      "Requester",
+      "Service Staff",
+      "Service Manager"
+    ],
+    "pain_points": [
+      {
+        "id": "PP-01",
+        "statement": "Requesters may not know the organisation's categories or service terminology.",
+        "impact": "Incomplete or misclassified requests create clarification work and slower routing.",
+        "evidence": "The scenario asks requesters to explain needs in everyday language and says the interface must suit first-time non-technical users.",
+        "confidence": "explicit",
+        "related_requirements": [
+          "FR-02",
+          "QR-02"
+        ]
+      },
+      {
+        "id": "PP-02",
+        "statement": "Request status, responsibility, and next steps may be difficult to see across the service process.",
+        "impact": "Requesters may repeat enquiries and staff may lose accountable hand-offs.",
+        "evidence": "The scenario requires a tracking reference, status viewing, triage, assignment, and auditable significant actions.",
+        "confidence": "inferred",
+        "related_requirements": [
+          "FR-07",
+          "FR-08",
+          "FR-10"
+        ]
+      }
+    ],
+    "objectives": [
+      {
+        "id": "OBJ-01",
+        "statement": "Enable a requester to submit a complete and understandable service request.",
+        "success_measure": "A requester can reach a validated review summary and receive one tracking reference after consent.",
+        "related_requirements": [
+          "FR-02",
+          "FR-05",
+          "FR-06",
+          "FR-07"
+        ]
+      },
+      {
+        "id": "OBJ-02",
+        "statement": "Make staff routing and high-impact outcomes accountable.",
+        "success_measure": "Every assignment or outcome records the responsible human decision and supporting rule or reason.",
+        "related_requirements": [
+          "FR-10",
+          "FR-12",
+          "BR-01"
+        ]
+      }
+    ],
+    "scope": {
+      "in": [
+        "Requester identity and request submission",
+        "Clarification, triage, assignment, appointment, status, and closure",
+        "Managed categories and routing rules",
+        "Aggregate demand reporting"
+      ],
+      "out": [
+        "Automatic high-impact eligibility decisions",
+        "Operation of external identity, email, SMS, or file-storage services",
+        "Unapproved urgency, retention, service-target, cancellation, or notification policies"
+      ]
+    },
+    "constraints": [
+      "Sensitive information is limited to authorised roles.",
+      "Significant actions are auditable.",
+      "Unresolved policy choices remain open rather than being invented."
+    ],
+    "open_questions": [
+      "Which service categories belong in the first release?",
+      "Which policy owner approves urgency, retention, cancellation, and notification rules?"
+    ]
+  },
   "requirements": [
     {
       "id": "FR-01",
@@ -485,6 +569,139 @@
         "to": "File Storage Service",
         "label": "Protected attachment storage and retrieval"
       }
+    ]
+  },
+  "domain_model": {
+    "entities": [
+      {
+        "id": "DM-REQUESTER",
+        "name": "Requester",
+        "description": "A verified person seeking help from the service organisation.",
+        "attributes": [
+          {
+            "name": "requesterId",
+            "type": "Identifier",
+            "required": true
+          },
+          {
+            "name": "preferredContact",
+            "type": "ContactChannel",
+            "required": false
+          }
+        ],
+        "related_requirements": [
+          "FR-01",
+          "FR-03"
+        ]
+      },
+      {
+        "id": "DM-REQUEST",
+        "name": "Service Request",
+        "description": "The accountable record of a requester's service need and its progress.",
+        "attributes": [
+          {
+            "name": "trackingReference",
+            "type": "Identifier",
+            "required": true
+          },
+          {
+            "name": "description",
+            "type": "Text",
+            "required": true
+          },
+          {
+            "name": "status",
+            "type": "RequestStatus",
+            "required": true
+          }
+        ],
+        "related_requirements": [
+          "FR-02",
+          "FR-07",
+          "FR-08"
+        ]
+      },
+      {
+        "id": "DM-ASSIGNMENT",
+        "name": "Assignment",
+        "description": "A recorded link between a service request and the responsible team.",
+        "attributes": [
+          {
+            "name": "assignedAt",
+            "type": "DateTime",
+            "required": true
+          },
+          {
+            "name": "decisionBasis",
+            "type": "Text",
+            "required": true
+          }
+        ],
+        "related_requirements": [
+          "FR-10",
+          "BR-01"
+        ]
+      },
+      {
+        "id": "DM-RULE",
+        "name": "Routing Rule",
+        "description": "A manager-controlled and time-bounded rule used to support routing.",
+        "attributes": [
+          {
+            "name": "version",
+            "type": "Version",
+            "required": true
+          },
+          {
+            "name": "effectiveFrom",
+            "type": "DateTime",
+            "required": true
+          }
+        ],
+        "related_requirements": [
+          "FR-14"
+        ]
+      }
+    ],
+    "relationships": [
+      {
+        "id": "REL-01",
+        "from": "DM-REQUESTER",
+        "to": "DM-REQUEST",
+        "label": "submits",
+        "from_cardinality": "1",
+        "to_cardinality": "0..*",
+        "related_requirements": [
+          "FR-07"
+        ]
+      },
+      {
+        "id": "REL-02",
+        "from": "DM-REQUEST",
+        "to": "DM-ASSIGNMENT",
+        "label": "has current and historical",
+        "from_cardinality": "1",
+        "to_cardinality": "0..*",
+        "related_requirements": [
+          "FR-10"
+        ]
+      },
+      {
+        "id": "REL-03",
+        "from": "DM-RULE",
+        "to": "DM-ASSIGNMENT",
+        "label": "supports decision",
+        "from_cardinality": "0..1",
+        "to_cardinality": "0..*",
+        "related_requirements": [
+          "FR-10",
+          "FR-14"
+        ]
+      }
+    ],
+    "notes": [
+      "The model shows domain concepts, not database tables.",
+      "External identity and notification services remain outside the domain ownership boundary."
     ]
   },
   "use_cases": [
@@ -969,6 +1186,325 @@
           }
         ]
       }
+    ]
+  },
+  "feasibility": {
+    "recommendation": "conditional",
+    "dimensions": [
+      {
+        "type": "technical",
+        "status": "conditional",
+        "findings": [
+          "The core request, workflow, and audit capabilities use established web-application patterns."
+        ],
+        "risks": [
+          "Identity, notification, and storage integrations may fail or impose limits not supplied in the scenario."
+        ],
+        "constraints": [
+          "Protected information requires role-based access and auditable significant actions."
+        ],
+        "evidence": [
+          "The scenario identifies external identity, email, SMS, and file-storage dependencies."
+        ],
+        "confidence": "inferred",
+        "related_requirements": [
+          "FR-01",
+          "FR-04",
+          "FR-13",
+          "QR-01"
+        ]
+      },
+      {
+        "type": "operational",
+        "status": "conditional",
+        "findings": [
+          "Named requester, staff, and manager roles provide an initial operating model."
+        ],
+        "risks": [
+          "Urgency, retention, cancellation, and notification rules are not yet agreed."
+        ],
+        "constraints": [
+          "A human must confirm every high-impact decision."
+        ],
+        "evidence": [
+          "The scenario assigns triage and configuration responsibilities but leaves several policies unresolved."
+        ],
+        "confidence": "explicit",
+        "related_requirements": [
+          "FR-10",
+          "FR-14",
+          "BR-01"
+        ]
+      },
+      {
+        "type": "schedule",
+        "status": "unknown",
+        "findings": [
+          "No delivery deadline, team capacity, or dependency lead times were supplied."
+        ],
+        "risks": [
+          "A schedule commitment would be fabricated without estimates and external-service readiness."
+        ],
+        "constraints": [],
+        "evidence": [
+          "No schedule evidence appears in the source scenario."
+        ],
+        "confidence": "explicit",
+        "related_requirements": []
+      }
+    ],
+    "costs": [
+      {
+        "item": "External service integration and operations",
+        "kind": "tangible",
+        "estimate": "Amount unknown until service choices and volumes are approved.",
+        "confidence": "proposed"
+      },
+      {
+        "item": "Staff adoption and rule maintenance",
+        "kind": "intangible",
+        "estimate": "Training and governance effort require stakeholder estimation.",
+        "confidence": "inferred"
+      }
+    ],
+    "benefits": [
+      {
+        "item": "Reduced avoidable clarification and status enquiries",
+        "kind": "intangible",
+        "estimate": "Baseline and target are not yet measured.",
+        "confidence": "inferred"
+      },
+      {
+        "item": "More accountable routing and outcomes",
+        "kind": "intangible",
+        "estimate": "Audit coverage can be measured after policy approval.",
+        "confidence": "explicit"
+      }
+    ],
+    "conditions": [
+      "Approve the first-release service categories and policy owners.",
+      "Confirm external service capabilities and security responsibilities.",
+      "Estimate delivery effort before committing to a date or budget."
+    ],
+    "open_questions": [
+      "What budget and delivery window constrain the first release?",
+      "Which integration service levels and data-processing terms are acceptable?"
+    ]
+  },
+  "data_io": {
+    "data_entities": [
+      {
+        "id": "DATA-REQUEST",
+        "name": "Service request record",
+        "description": "The requester's submitted need, preferences, consent, status, and accountable history.",
+        "owner": "Service organisation",
+        "sensitivity": "May contain sensitive personal and service information; access is role-restricted.",
+        "retention": "Unresolved; a named policy owner must approve the period.",
+        "fields": [
+          {
+            "name": "trackingReference",
+            "type": "Identifier",
+            "required": true,
+            "validation": "Unique and immutable after submission."
+          },
+          {
+            "name": "requestType",
+            "type": "Category reference",
+            "required": true,
+            "validation": "Must reference an active approved category."
+          },
+          {
+            "name": "description",
+            "type": "Text",
+            "required": true,
+            "validation": "Must contain non-whitespace content within the approved size limit."
+          },
+          {
+            "name": "consentRecordedAt",
+            "type": "DateTime",
+            "required": true,
+            "validation": "Must be recorded before final submission."
+          }
+        ],
+        "related_requirements": [
+          "FR-02",
+          "FR-05",
+          "FR-06",
+          "FR-07",
+          "QR-01"
+        ]
+      }
+    ],
+    "inputs": [
+      {
+        "id": "IN-REQUEST",
+        "name": "Requester submission",
+        "source": "Verified requester",
+        "method": "Accessible web form",
+        "format": "Structured fields, plain text, and optional approved attachment",
+        "timing": "Before a service request is created",
+        "verification_rules": [
+          "Verify the organisational account or email-link identity before protected details are displayed.",
+          "Record the requester identity associated with consent."
+        ],
+        "validation_rules": [
+          "Require request type, description, and consent.",
+          "Display field-specific errors and a complete review summary before submission.",
+          "Validate attachment type and size against approved configuration."
+        ],
+        "error_feedback": "Keep the draft, identify each failed check in plain language, and do not create a submitted request.",
+        "related_requirements": [
+          "FR-01",
+          "FR-02",
+          "FR-04",
+          "FR-05",
+          "FR-06"
+        ]
+      }
+    ],
+    "outputs": [
+      {
+        "id": "OUT-STATUS",
+        "name": "Requester-visible reference and status history",
+        "audience": "Verified requester",
+        "destination": "RequestBridge status page and approved notification channels",
+        "format": "Plain-language web content plus configured email or SMS message",
+        "timing": "After submission and after configured status events",
+        "content": [
+          "Tracking reference",
+          "Current status",
+          "Requester-visible history and next action"
+        ],
+        "accessibility": [
+          "Label status and action controls.",
+          "Support keyboard operation and visible focus.",
+          "Avoid exposing internal-only notes."
+        ],
+        "failure_behaviour": "Preserve the status update, record notification failure, and expose a retry or alternative channel to authorised staff.",
+        "related_requirements": [
+          "FR-07",
+          "FR-08",
+          "FR-13",
+          "QR-02"
+        ]
+      }
+    ]
+  },
+  "lifecycle_roadmap": {
+    "recommended_lifecycle": "iterative",
+    "rationale": [
+      "Important policy and integration choices remain unresolved, so feedback should refine the model before broad implementation.",
+      "The requester and staff workflows can be reviewed in bounded increments while stable IDs preserve traceability."
+    ],
+    "decision_factors": [
+      {
+        "factor": "Requirements certainty",
+        "assessment": "Core goals are clear but policy thresholds and service targets remain open.",
+        "evidence": "The scenario explicitly lists unresolved urgency, retention, service target, cancellation, and notification rules.",
+        "confidence": "explicit"
+      },
+      {
+        "factor": "Stakeholder feedback",
+        "assessment": "Requester usability and staff efficiency both need early review.",
+        "evidence": "The interface must serve first-time non-technical users and experienced staff.",
+        "confidence": "explicit"
+      }
+    ],
+    "tradeoffs": [
+      {
+        "decision": "Pilot request submission and staff triage before aggregate reporting.",
+        "scope_effect": "Defers manager analytics detail.",
+        "cost_effect": "Reduces initial integration and reporting effort.",
+        "time_effect": "Enables earlier workflow review.",
+        "quality_effect": "Creates earlier accessibility and traceability evidence.",
+        "approval_status": "proposed",
+        "approver": ""
+      }
+    ],
+    "milestones": [
+      {
+        "id": "MS-01",
+        "name": "Policy and boundary review",
+        "goal": "Approve first-release scope, role access, and owners for unresolved policies.",
+        "depends_on": [],
+        "related_requirements": [
+          "QR-01",
+          "BR-01"
+        ]
+      },
+      {
+        "id": "MS-02",
+        "name": "Requester flow pilot",
+        "goal": "Validate identity, request capture, consent, and status with representative users.",
+        "depends_on": [
+          "MS-01"
+        ],
+        "related_requirements": [
+          "FR-01",
+          "FR-02",
+          "FR-05",
+          "FR-06",
+          "FR-07",
+          "QR-02"
+        ]
+      },
+      {
+        "id": "MS-03",
+        "name": "Staff workflow pilot",
+        "goal": "Validate clarification, routing, accountable outcomes, and appointment handling.",
+        "depends_on": [
+          "MS-02"
+        ],
+        "related_requirements": [
+          "FR-09",
+          "FR-10",
+          "FR-11",
+          "FR-12",
+          "BR-01"
+        ]
+      }
+    ],
+    "backlog": [
+      {
+        "id": "BL-01",
+        "title": "Confirm retention and notification policy",
+        "type": "research",
+        "priority": "must",
+        "status": "open",
+        "related_requirements": [
+          "FR-13",
+          "QR-01"
+        ]
+      },
+      {
+        "id": "BL-02",
+        "title": "Test the guided requester flow at a 480-pixel viewport",
+        "type": "delivery",
+        "priority": "must",
+        "status": "planned",
+        "related_requirements": [
+          "QR-02"
+        ]
+      },
+      {
+        "id": "BL-03",
+        "title": "Prototype accountable routing-rule changes",
+        "type": "delivery",
+        "priority": "should",
+        "status": "planned",
+        "related_requirements": [
+          "FR-10",
+          "FR-14"
+        ]
+      }
+    ],
+    "risks": [
+      "External-service readiness may change milestone timing.",
+      "Policy approval delays may block safe production use."
+    ],
+    "open_questions": [
+      "Who approves each milestone exit?",
+      "Which measurable pilot outcomes permit progression to the next increment?"
     ]
   }
 }

@@ -1,6 +1,6 @@
 ---
 name: revise-requirements-module
-description: Revise one existing Requirements Workbench module while preserving other generated module files. Use when the user names an existing requirements, fishbone, context, use-cases, activity, or wireframe output and asks to change only that module.
+description: Revise one existing Requirements Workbench module while preserving other generated module files. Use when the user names an existing problem-vision-scope, requirements, fishbone, context, domain-model, use-cases, activity, wireframe, feasibility, data-io, or lifecycle-roadmap output and asks to change only that module.
 ---
 
 # Revise One Requirements Module

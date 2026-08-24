@@ -19,12 +19,17 @@ from typing import Any, Iterable
 
 ACTIONABLE_COMPONENTS = {"button", "input", "list", "select"}
 MODULE_KEYS = {
+    "problem-vision-scope": "problem_vision_scope",
     "requirements": "requirements",
     "fishbone": "fishbone",
     "context": "context",
+    "domain-model": "domain_model",
     "use-cases": "use_cases",
     "activity": "activity",
     "wireframe": "wireframe",
+    "feasibility": "feasibility",
+    "data-io": "data_io",
+    "lifecycle-roadmap": "lifecycle_roadmap",
 }
 
 
