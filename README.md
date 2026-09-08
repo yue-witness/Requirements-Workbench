@@ -1,4 +1,4 @@
-# Requirements Analysis Workbench
+# Requirements Analysis Workbench (Useful for Deakin Students)
 
 [简体中文](README.zh-CN.md) | English
 
