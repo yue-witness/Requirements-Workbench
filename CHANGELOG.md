@@ -9,7 +9,7 @@ All notable changes to Requirements Analysis Workbench are documented here.
 - Claude Code support: a `.claude-plugin/plugin.json` plugin manifest and a repository `.claude-plugin/marketplace.json`, with the MCP server started from `${CLAUDE_PLUGIN_ROOT}`.
 - Gemini CLI support through a bundled `gemini-extension.json`.
 - DeepSeek Harness (DSH) support: the installer adds a marked `@deepseek-ai/dsh-mcp-client` row to the home-level Cordis patch layer and copies the skills to `$DSH_HOME/skills`. Verified against `@deepseek-ai/dsh` 0.2.0-rc.2.
-- A tag-triggered GitHub Actions workflow that tests, packages, and publishes each release.
+- A GitHub Actions release workflow, run by pushing a version tag or manually on main, that tests, packages, tags, and publishes each release.
 - `scripts/install_agent.py`, which merges the MCP server into Google Antigravity, DeepSeek Harness (DSH), Gemini CLI, Cursor, VS Code, Windsurf, Claude Desktop, Claude Code, or any MCP host configuration and copies the skills into the host's skills folder, with backups, dry runs, and uninstall.
 - MCP prompts and `workbench://skills/` resources for the three workflows, plus `get_workflow_instructions` and `read_workflow_reference` tools for hosts without Agent Skills support.
 - `materialize_analysis`, `traceguard_audit`, and `traceguard_impact` MCP tools that run the bundled scripts in-process, so agents no longer need to locate the plugin folder.

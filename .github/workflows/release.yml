@@ -1,10 +1,13 @@
 name: Release
 
-# Push a tag such as v0.5.0 to test, package, and publish that version.
+# Push a tag such as v0.5.0, or run this workflow manually on main, to test,
+# package, and publish that version. A manual run tags the current commit with
+# the version from the plugin manifests.
 on:
   push:
     tags:
       - "v*"
+  workflow_dispatch:
 
 permissions:
   contents: write
@@ -19,14 +22,35 @@ jobs:
         with:
           python-version: "3.12"
 
+      - name: Choose the release tag
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          plugin=plugins/requirements-analysis-workbench
+          if [ "$GITHUB_EVENT_NAME" = "workflow_dispatch" ]; then
+            if [ "$GITHUB_REF_NAME" != "${{ github.event.repository.default_branch }}" ]; then
+              echo "::error::Run manual releases from the default branch, not $GITHUB_REF_NAME"
+              exit 1
+            fi
+            version=$(python -c "import json; print(json.load(open('$plugin/.codex-plugin/plugin.json'))['version'])")
+            tag="v$version"
+            if gh release view "$tag" >/dev/null 2>&1; then
+              echo "::error::Release $tag already exists; bump the version first"
+              exit 1
+            fi
+          else
+            tag="$GITHUB_REF_NAME"
+          fi
+          echo "TAG=$tag" >> "$GITHUB_ENV"
+
       - name: Check the tag matches every host manifest
         run: |
-          version="${GITHUB_REF_NAME#v}"
+          version="${TAG#v}"
           plugin=plugins/requirements-analysis-workbench
           for manifest in "$plugin/.codex-plugin/plugin.json" "$plugin/.claude-plugin/plugin.json" "$plugin/gemini-extension.json"; do
             found=$(python -c "import json,sys; print(json.load(open(sys.argv[1]))['version'])" "$manifest")
             if [ "$found" != "$version" ]; then
-              echo "::error file=$manifest::version $found does not match tag $GITHUB_REF_NAME"
+              echo "::error file=$manifest::version $found does not match tag $TAG"
               exit 1
             fi
           done
@@ -39,7 +63,7 @@ jobs:
 
       - name: Write release notes from CHANGELOG
         run: |
-          version="${GITHUB_REF_NAME#v}"
+          version="${TAG#v}"
           awk -v heading="## [$version]" '
             index($0, heading) == 1 { found = 1; next }
             found && /^## \[/ { exit }
@@ -49,7 +73,7 @@ jobs:
             echo
             echo "## Install"
             echo
-            echo "- Codex / ChatGPT desktop: \`codex plugin marketplace add ${GITHUB_REPOSITORY} --ref ${GITHUB_REF_NAME}\`"
+            echo "- Codex / ChatGPT desktop: \`codex plugin marketplace add ${GITHUB_REPOSITORY} --ref ${TAG}\`"
             echo "- Claude Code: \`/plugin install requirements-analysis-workbench --marketplace ${GITHUB_REPOSITORY}\`"
             echo "- Antigravity, DeepSeek Harness, Gemini CLI, Cursor, VS Code, Windsurf, Claude Desktop: extract the ZIP and run \`python plugins/requirements-analysis-workbench/scripts/install_agent.py --target <host>\`"
             echo
@@ -61,9 +85,14 @@ jobs:
         env:
           GH_TOKEN: ${{ github.token }}
         run: |
-          gh release create "$GITHUB_REF_NAME" \
-            dist/requirements-analysis-workbench-"$GITHUB_REF_NAME".zip \
+          if [ "$GITHUB_EVENT_NAME" = "workflow_dispatch" ]; then
+            target=(--target "$GITHUB_SHA")
+          else
+            target=(--verify-tag)
+          fi
+          gh release create "$TAG" \
+            dist/requirements-analysis-workbench-"$TAG".zip \
             dist/SHA256SUMS.txt \
-            --title "Requirements Analysis Workbench $GITHUB_REF_NAME" \
+            --title "Requirements Analysis Workbench $TAG" \
             --notes-file release-notes.md \
-            --verify-tag
+            "${target[@]}"
