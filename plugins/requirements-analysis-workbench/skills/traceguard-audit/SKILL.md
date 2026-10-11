@@ -11,7 +11,10 @@ artefacts visible without claiming semantic verification.
 ## Audit an existing bundle
 
 1. Locate `analysis.json` in the existing output directory.
-2. From the plugin root, run:
+2. Call the `traceguard_audit` MCP tool with absolute paths or, from the
+   plugin root (the directory that contains `scripts/traceguard.py`; a
+   standalone install records it in `plugin-root.txt` beside this `SKILL.md`),
+   run:
 
 ```powershell
 python scripts/traceguard.py audit analysis.json --out requirements-analysis-output
@@ -26,7 +29,8 @@ python scripts/traceguard.py audit analysis.json --out requirements-analysis-out
 
 ## Preview a change
 
-Before changing a shared stable ID, run:
+Before changing a shared stable ID, call the `traceguard_impact` MCP tool or
+run:
 
 ```powershell
 python scripts/traceguard.py impact analysis.json `

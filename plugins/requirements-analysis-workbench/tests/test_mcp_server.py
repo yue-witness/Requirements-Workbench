@@ -4,12 +4,14 @@ from __future__ import annotations
 
 import importlib.util
 import json
+import tempfile
 import unittest
 from pathlib import Path
 
 
 PLUGIN_ROOT = Path(__file__).resolve().parents[1]
 SERVER_PATH = PLUGIN_ROOT / "mcp" / "server.py"
+DEMO_ANALYSIS = PLUGIN_ROOT / "assets" / "demo_analysis.json"
 
 spec = importlib.util.spec_from_file_location("workbench_mcp_server", SERVER_PATH)
 assert spec and spec.loader
@@ -149,6 +151,138 @@ class WorkbenchMcpServerTests(unittest.TestCase):
         )
 
         self.assertEqual(-32602, response["error"]["code"])
+
+
+    def call_tool(self, name: str, arguments: dict) -> dict:
+        return server.handle(
+            {
+                "jsonrpc": "2.0",
+                "id": name,
+                "method": "tools/call",
+                "params": {"name": name, "arguments": arguments},
+            }
+        )
+
+    def test_prompts_publish_every_skill_with_host_notes(self) -> None:
+        listed = server.handle({"jsonrpc": "2.0", "id": 6, "method": "prompts/list"})
+        names = [prompt["name"] for prompt in listed["result"]["prompts"]]
+        self.assertEqual(
+            ["analyze-requirements", "revise-requirements-module", "traceguard-audit"],
+            names,
+        )
+
+        prompt = server.handle(
+            {
+                "jsonrpc": "2.0",
+                "id": 7,
+                "method": "prompts/get",
+                "params": {
+                    "name": "analyze-requirements",
+                    "arguments": {"request": "A booking system for clinics."},
+                },
+            }
+        )
+        text = prompt["result"]["messages"][0]["content"]["text"]
+        self.assertIn("open_workbench", text)
+        self.assertIn(str(server.PLUGIN_ROOT), text)
+        self.assertIn("A booking system for clinics.", text)
+
+    def test_workflow_tools_return_skills_and_references(self) -> None:
+        guide = self.call_tool("get_workflow_instructions", {"skill": "traceguard-audit"})
+        self.assertIn("TraceGuard Audit", guide["result"]["content"][0]["text"])
+
+        reference = self.call_tool(
+            "read_workflow_reference",
+            {"path": "analyze-requirements/references/output-contract.md"},
+        )
+        self.assertIn("Output contract", reference["result"]["content"][0]["text"])
+
+        resources = server.handle({"jsonrpc": "2.0", "id": 8, "method": "resources/list"})
+        uris = {item["uri"] for item in resources["result"]["resources"]}
+        self.assertIn(server.RESOURCE_URI, uris)
+        self.assertIn(
+            "workbench://skills/analyze-requirements/references/knowledge-index.md", uris
+        )
+
+    def test_workflow_reference_rejects_paths_outside_skills(self) -> None:
+        for path in (
+            "../mcp/server.py",
+            "../../README.md",
+            "analyze-requirements/../../ui/workbench.html",
+        ):
+            with self.subTest(path=path):
+                response = self.call_tool("read_workflow_reference", {"path": path})
+                self.assertEqual(-32602, response["error"]["code"])
+
+        response = server.handle(
+            {
+                "jsonrpc": "2.0",
+                "id": 9,
+                "method": "resources/read",
+                "params": {"uri": "workbench://skills/../mcp/server.py"},
+            }
+        )
+        self.assertEqual(-32002, response["error"]["code"])
+
+    def test_materialize_audit_and_impact_tools_write_bundle(self) -> None:
+        with tempfile.TemporaryDirectory() as temporary_directory:
+            output = Path(temporary_directory) / "bundle"
+            response = self.call_tool(
+                "materialize_analysis",
+                {"analysis_path": str(DEMO_ANALYSIS), "output_dir": str(output)},
+            )
+            structured = response["result"]["structuredContent"]
+            self.assertEqual(str(output.resolve()), structured["output_dir"])
+            self.assertIn("requirements.md", structured["module_files"])
+            self.assertTrue((output / "manifest.json").is_file())
+            server._serialize(response).encode("ascii")
+
+            revised = json.loads((output / "analysis.json").read_text(encoding="utf-8"))
+            revised["use_cases"][0]["goal"] += " Confirmation is visible."
+            response = self.call_tool(
+                "materialize_analysis",
+                {"analysis": revised, "output_dir": str(output), "only": "use-cases"},
+            )
+            structured = response["result"]["structuredContent"]
+            self.assertEqual("use-cases", structured["revision_target"])
+            self.assertIn("requirements", structured["untouched_modules_verified"])
+
+            audit = self.call_tool(
+                "traceguard_audit",
+                {
+                    "analysis_path": str(output / "analysis.json"),
+                    "output_dir": str(output),
+                },
+            )
+            self.assertIn(
+                audit["result"]["structuredContent"]["status"],
+                {"pass", "review_required", "abstain"},
+            )
+
+            preview_path = output / "impact-preview.json"
+            impact = self.call_tool(
+                "traceguard_impact",
+                {
+                    "analysis_path": str(output / "analysis.json"),
+                    "element_id": "FR-01",
+                    "change": "Clarify the trigger.",
+                    "output_path": str(preview_path),
+                },
+            )
+            self.assertIn(
+                "requirements", impact["result"]["structuredContent"]["affected_modules"]
+            )
+            self.assertTrue(preview_path.is_file())
+
+    def test_invalid_analysis_is_reported_as_tool_error(self) -> None:
+        with tempfile.TemporaryDirectory() as temporary_directory:
+            response = self.call_tool(
+                "materialize_analysis",
+                {"analysis": {}, "output_dir": temporary_directory},
+            )
+
+        self.assertTrue(response["result"]["isError"])
+        self.assertIn("ERROR:", response["result"]["content"][0]["text"])
 
 
 if __name__ == "__main__":

@@ -2,7 +2,7 @@
 
 [简体中文](README.zh-CN.md) | English
 
-Requirements Analysis Workbench is a plugin for ChatGPT and Codex that turns software ideas, problem statements, user stories, meeting notes, or draft requirements into selectable, traceable review artefacts. It combines three skills, deterministic Python tools, and an MCP Apps visual configuration panel.
+Requirements Analysis Workbench is a plugin for ChatGPT, Codex, and Claude Code, and also runs in Google Antigravity, DeepSeek Harness (DSH), Gemini CLI, Cursor, VS Code, Windsurf, Claude Desktop, and any other host that supports MCP servers or Agent Skills. It turns software ideas, problem statements, user stories, meeting notes, or draft requirements into selectable, traceable review artefacts. It combines three skills, deterministic Python tools, and an MCP server with an MCP Apps visual configuration panel.
 
 It supports first-time contributors with plain-language guidance and experienced analysts with evidence, confidence, acceptance, traceability, and change-scope controls. The plugin is domain-neutral, with project-specific constraints supplied as project data.
 
@@ -40,27 +40,100 @@ Every run also creates a canonical `analysis.json`, a reviewer-oriented `review-
 
 For example, `project.minimum_requirements` is optional and defaults to no count gate; the reusable plugin does not impose an organisation- or industry-wide minimum.
 
-## Install from GitHub
+## Supported hosts
+
+| Host | Install route | Skills | Visual panel |
+|---|---|---|---|
+| ChatGPT desktop / Codex | Codex plugin marketplace | Yes | Yes (MCP Apps) |
+| Claude Code | Claude Code plugin marketplace | Yes | Conversational fallback (`AskUserQuestion`) |
+| Google Antigravity | `install_agent.py --target antigravity` | Yes | Conversational fallback |
+| DeepSeek Harness (DSH) | `install_agent.py --target dsh` | Yes | Conversational fallback |
+| Gemini CLI | `gemini extensions install` or `install_agent.py --target gemini-cli` | Yes | Conversational fallback |
+| Cursor, VS Code (Copilot), Windsurf | `install_agent.py --target cursor`, `vscode`, or `windsurf` | Yes where the host reads Agent Skills | Conversational fallback |
+| Claude Desktop | `install_agent.py --target claude-desktop` | As MCP prompts | Yes where MCP Apps are enabled |
+| Any other MCP host | `install_agent.py --target generic --print` | As MCP prompts | Depends on the host |
+
+Every host gets the same workflow. The MCP server publishes the three skills as MCP prompts (`analyze-requirements`, `revise-requirements-module`, `traceguard-audit`) and as `get_workflow_instructions`, and runs generation and TraceGuard through the `materialize_analysis`, `traceguard_audit`, and `traceguard_impact` tools, so hosts without Agent Skills support still follow the full process. Hosts that cannot render the visual panel ask for the mode and modules in conversation and wait for an explicit answer.
+
+All routes need Python 3.10 or later on the machine; no third-party package or API key is required.
+
+## Install in ChatGPT desktop or Codex
 
 Use a current ChatGPT desktop/Codex installation that supports plugins. Add this repository as a marketplace source:
 
 ```powershell
-codex plugin marketplace add yue-witness/Requirements-Workbench --ref v0.4.0
+codex plugin marketplace add yue-witness/Requirements-Workbench --ref v0.5.0
 ```
 
 Restart the desktop app, open the Plugins Directory, select the **Requirements Analysis Workbench** source, and install or enable `requirements-analysis-workbench`. Start a new task after installation so the three bundled skills and MCP tools are loaded.
 
-To follow the latest `main` branch instead of a tagged release, omit `--ref v0.4.0`.
+To follow the latest `main` branch instead of a tagged release, omit `--ref v0.5.0`.
+
+## Install in Claude Code
+
+Inside Claude Code:
+
+```text
+/plugin marketplace add yue-witness/Requirements-Workbench
+/plugin install requirements-analysis-workbench@requirements-analysis-workbench
+```
+
+Or install in one step on Claude Code 2.1.275 or later:
+
+```text
+/plugin install requirements-analysis-workbench --marketplace yue-witness/Requirements-Workbench
+```
+
+Restart Claude Code. The skills appear as `/requirements-analysis-workbench:analyze-requirements`, `/requirements-analysis-workbench:revise-requirements-module`, and `/requirements-analysis-workbench:traceguard-audit`, and Claude also selects them automatically from matching requests. The plugin starts its MCP server with `python`; if your machine only provides `python3`, edit `plugins/requirements-analysis-workbench/.claude-plugin/plugin.json` in your copy or use the installer route below.
+
+## Install in Antigravity, DeepSeek Harness, Gemini CLI, Cursor, VS Code, Windsurf, or Claude Desktop
+
+Clone the repository (or extract the release ZIP) to a folder you will keep, then run the installer with the Python you want the host to use:
+
+```powershell
+git clone https://github.com/yue-witness/Requirements-Workbench.git
+cd Requirements-Workbench
+python plugins/requirements-analysis-workbench/scripts/install_agent.py --target antigravity
+```
+
+Replace `antigravity` with `dsh`, `gemini-cli`, `cursor`, `vscode`, `windsurf`, `claude-desktop`, `claude-code`, or `generic`. The installer:
+
+- merges a `requirements_analysis_workbench` entry into the host's MCP configuration, keeping every other server and saving a `.bak` copy first;
+- copies the three skills into the host's skills folder and records the plugin location in `plugin-root.txt` beside each `SKILL.md`;
+- uses the absolute path of the Python that ran it, so GUI hosts that do not inherit your shell `PATH` still start the server.
+
+| Target | User scope (default) | `--scope workspace` |
+|---|---|---|
+| `antigravity` | `~/.gemini/antigravity/mcp_config.json`, `~/.gemini/antigravity/skills/` | `.agents/skills/` (MCP stays global) |
+| `dsh` | `$DSH_HOME/cordis.patch.yml` (default `~/.dsh`), `$DSH_HOME/skills/` | `.dsh/skills/` (MCP stays in the home patch layer) |
+| `gemini-cli` | `~/.gemini/settings.json`, `~/.gemini/skills/` | `.gemini/settings.json`, `.gemini/skills/` |
+| `cursor` | `~/.cursor/mcp.json`, `~/.cursor/skills/` | `.cursor/mcp.json`, `.cursor/skills/` |
+| `vscode` | — | `.vscode/mcp.json`, `.github/skills/` |
+| `windsurf` | `~/.codeium/windsurf/mcp_config.json` | `.windsurf/skills/` |
+| `claude-desktop` | `claude_desktop_config.json` in the Claude app data folder | — |
+| `claude-code` | `~/.claude/skills/` and a printed `claude mcp add` command | `.mcp.json`, `.claude/skills/` |
+
+Useful options: `--print` shows the JSON snippet without writing anything, `--dry-run` lists planned changes, `--config PATH` and `--skills-dir PATH` target any other host or a newer config location, `--no-skills` or `--no-mcp` installs one half only, and `--uninstall` removes exactly what the installer added. Restart the host afterwards.
+
+For DeepSeek Harness, the installer appends one marked `@deepseek-ai/dsh-mcp-client` row to the home-level Cordis patch layer, so every profile (`dsh web`, `dsh tui`, `dsh headless`, Desktop) loads the server; your existing patch rows are left untouched and `--uninstall` removes only the marked block. To enable it for one profile, pass `--config ~/.dsh/profiles/<profile>/cordis.patch.yml`. DSH does not list MCP prompts, so keep the skills installed; start a new DSH session afterwards. Tested with `@deepseek-ai/dsh` 0.2.0-rc.2.
+
+For Gemini CLI you can alternatively install the bundled extension, which loads the MCP server and skills together:
+
+```powershell
+gemini extensions install ./plugins/requirements-analysis-workbench
+```
+
+For any other MCP-capable tool, run `install_agent.py --target generic --print` and paste the snippet into that tool's MCP settings, then point its skills or rules folder (if any) at `plugins/requirements-analysis-workbench/skills/` with `--skills-dir`.
 
 ## Install from the release package
 
-Download `requirements-analysis-workbench-v0.4.0.zip` from the GitHub Release and extract it. Add the extracted marketplace root:
+Download `requirements-analysis-workbench-v0.5.0.zip` from the GitHub Release and extract it. For Codex, add the extracted marketplace root:
 
 ```powershell
-codex plugin marketplace add C:\path\to\requirements-analysis-workbench-v0.4.0
+codex plugin marketplace add C:\path\to\requirements-analysis-workbench-v0.5.0
 ```
 
-Then restart the desktop app and install the plugin from the Plugins Directory.
+Then restart the desktop app and install the plugin from the Plugins Directory. For Claude Code, run `/plugin marketplace add C:\path\to\requirements-analysis-workbench-v0.5.0`; for other hosts, run `install_agent.py` from the extracted folder as shown above.
 
 ## Try it
 
@@ -75,6 +148,8 @@ Visual configuration:
 Direct plugin invocation also opens the workbench by default when the request includes a matching requirements description:
 
 > @Requirements Analysis Workbench Analyse these stakeholder notes for a booking system.
+
+In Claude Code you can also type `/requirements-analysis-workbench:analyze-requirements` followed by the notes; in hosts that list MCP prompts (Gemini CLI, Claude Desktop, and others), choose the `analyze-requirements` prompt.
 
 Professional analysis:
 
@@ -102,7 +177,7 @@ python plugins/requirements-analysis-workbench/scripts/traceguard.py audit `
   --out demo-output
 ```
 
-The materialiser itself uses only the Python standard library and does not make network calls. Model-assisted analysis still occurs inside the host ChatGPT or Codex product.
+The materialiser itself uses only the Python standard library and does not make network calls. Model-assisted analysis still occurs inside the host AI product.
 
 ## Validate and package
 
@@ -111,20 +186,23 @@ python -m unittest discover -s plugins/requirements-analysis-workbench/tests -v
 python scripts/package_release.py
 ```
 
-Maintainers can additionally run the official Plugin Creator and Skill Creator validators. Those external validators require PyYAML in the Python environment used to run them.
+Maintainers can additionally run `claude plugin validate .` and the official Plugin Creator and Skill Creator validators. Those external validators require PyYAML in the Python environment used to run them.
 
 ## Repository layout
 
 ```text
 .
-|-- .agents/plugins/marketplace.json
+|-- .agents/plugins/marketplace.json      # Codex marketplace
+|-- .claude-plugin/marketplace.json       # Claude Code marketplace
 |-- plugins/requirements-analysis-workbench/
 |   |-- .codex-plugin/plugin.json
+|   |-- .claude-plugin/plugin.json
+|   |-- gemini-extension.json
 |   |-- .mcp.json
-|   |-- mcp/server.py
+|   |-- mcp/server.py                     # MCP tools, prompts, and UI for every host
 |   |-- ui/workbench.html
 |   |-- skills/
-|   |-- scripts/
+|   |-- scripts/                          # materialiser, TraceGuard, install_agent.py
 |   |-- assets/
 |   |-- examples/requestbridge-demo/
 |   `-- tests/

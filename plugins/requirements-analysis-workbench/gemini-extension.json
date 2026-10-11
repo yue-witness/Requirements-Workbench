@@ -1,0 +1,14 @@
+{
+  "name": "requirements-analysis-workbench",
+  "version": "0.5.0",
+  "description": "Create selectable requirements artefacts with visual configuration and TraceGuard auditing.",
+  "mcpServers": {
+    "requirements_analysis_workbench": {
+      "command": "python",
+      "args": [
+        "${extensionPath}${/}mcp${/}server.py"
+      ],
+      "cwd": "${extensionPath}"
+    }
+  }
+}

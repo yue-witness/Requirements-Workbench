@@ -1,0 +1,29 @@
+{
+  "name": "requirements-analysis-workbench",
+  "displayName": "Requirements Analysis Workbench",
+  "version": "0.5.0",
+  "description": "Create selectable requirements artefacts with visual configuration and TraceGuard auditing.",
+  "author": {
+    "name": "Requirements Analysis Workbench contributors",
+    "url": "https://github.com/yue-witness"
+  },
+  "homepage": "https://github.com/yue-witness/Requirements-Workbench",
+  "repository": "https://github.com/yue-witness/Requirements-Workbench",
+  "license": "MIT",
+  "keywords": [
+    "requirements-engineering",
+    "requirements-analysis",
+    "traceability",
+    "wireframe",
+    "traceguard",
+    "mcp-apps"
+  ],
+  "mcpServers": {
+    "requirements_analysis_workbench": {
+      "command": "python",
+      "args": [
+        "${CLAUDE_PLUGIN_ROOT}/mcp/server.py"
+      ]
+    }
+  }
+}

@@ -21,6 +21,7 @@ def release_files() -> list[tuple[Path, Path]]:
 
     top_level = [
         ROOT / ".agents" / "plugins" / "marketplace.json",
+        ROOT / ".claude-plugin" / "marketplace.json",
         ROOT / "README.md",
         ROOT / "README.zh-CN.md",
         ROOT / "CHANGELOG.md",

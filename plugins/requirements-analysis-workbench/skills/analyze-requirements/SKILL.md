@@ -9,8 +9,9 @@ Turn informal software ideas into traceable review artefacts without assuming th
 
 ## Visual configuration
 
-When the user directly invokes Requirements Analysis Workbench with an
-`@`-mention and supplies a matching software idea, problem statement, scenario,
+When the user directly invokes Requirements Analysis Workbench (an
+`@`-mention, a slash command such as `/analyze-requirements`, or by naming the
+workbench) and supplies a matching software idea, problem statement, scenario,
 user-story collection, meeting note, or requirements draft, call
 `open_workbench` before analysis by default. Do the same when the user asks for
 a GUI, visual selector, mode choice, or module switches.
@@ -28,14 +29,34 @@ Opening the workbench is a hard interaction gate:
    displayed in the form.
 
 Skip the automatic GUI only when the user explicitly asks not to open it **and**
-provides both a mode and at least one module. If a native structured user-input
-tool is available, use it as the first fallback because it waits for a response.
+provides both a mode and at least one module. Hosts that cannot render MCP Apps
+(for example terminal agents and most IDE agents) still return the blocking
+`open_workbench` result; treat it as the cue to use the fallback. If a native
+structured user-input tool is available (such as `AskUserQuestion` in Claude
+Code), use it as the first fallback because it waits for a response.
 Otherwise, present the same three modes and eleven modules in conversation and end
 the turn with a direct selection question. Do not begin analysis in the fallback
 path until the user replies with an explicit selection.
 
 Treat the confirmed saved selection as the source of truth for
 `project.review_mode` and `selected_modules`.
+
+## Locate the tools
+
+Work in whichever host loaded this skill (Codex, ChatGPT, Claude Code, Claude
+Desktop, Antigravity, DeepSeek Harness, Gemini CLI, Cursor, VS Code, Windsurf, or another
+Agent Skills or MCP host):
+
+- Prefer the `materialize_analysis`, `traceguard_audit`, and
+  `traceguard_impact` MCP tools when the `requirements_analysis_workbench`
+  server is connected. They run the bundled scripts with the same validation,
+  so you never need to locate them.
+- Otherwise run the scripts from the plugin root: the directory that contains
+  `scripts/materialize_analysis.py` (it also holds `mcp/` and `ui/`). For a
+  skill installed on its own by `scripts/install_agent.py`, the
+  `plugin-root.txt` file beside this `SKILL.md` records that directory.
+- Use the Python executable available in the active workspace (`python`,
+  `python3`, or `py -3`).
 
 ## Choose the level of guidance
 
@@ -95,9 +116,10 @@ silently generate every module.
 5. Phrase each requirement as `The [system] must/shall [behaviour] when/unless/while [condition]` when a condition is relevant. State whether `must` and `shall` are binding. Avoid vague words and implementation assumptions.
 6. Never present an inferred or proposed detail as a confirmed stakeholder requirement.
 7. Create one canonical JSON file that follows `references/output-contract.md`.
-8. Resolve the plugin root (the directory containing `.codex-plugin/`) and run
-   `scripts/materialize_analysis.py` from that directory to create only the
-   modules selected by the user.
+8. Create only the modules selected by the user with the
+   `materialize_analysis` MCP tool, or by running
+   `scripts/materialize_analysis.py` from the plugin root (see
+   *Locate the tools*).
 9. Review `traceguard.md` and `traceguard.json`. Report errors, warnings, and
    abstained high-impact items; do not treat an abstained item as accepted until
    a named reviewer is recorded.
@@ -105,15 +127,16 @@ silently generate every module.
 
 ## Commands
 
-From the plugin root, materialise all modules listed in the analysis:
+With the MCP server connected, call `materialize_analysis` with absolute
+`analysis_path` and `output_dir` values. Without it, from the plugin root,
+materialise all modules listed in the analysis:
 
 ```powershell
 python scripts/materialize_analysis.py assets/demo_analysis.json --out demo-output
 ```
 
-Use the Python executable available in the active workspace. The script uses
-only the Python standard library. In addition to the selected module files, it
-creates `analysis.json`, `manifest.json`, `review-index.md`,
+The script uses only the Python standard library. In addition to the selected
+module files, it creates `analysis.json`, `manifest.json`, `review-index.md`,
 `traceability.csv`, `traceguard.md`, and `traceguard.json` as supporting review
 files.
 
