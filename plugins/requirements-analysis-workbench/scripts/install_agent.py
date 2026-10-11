@@ -2,6 +2,8 @@
 """Install the workbench into AI coding hosts other than the plugin marketplaces.
 
 Codex and Claude Code install the plugin from their marketplaces. Other hosts
+(Antigravity, DeepSeek Harness, Gemini CLI, Cursor, VS Code, Windsurf, Claude
+Desktop, or any MCP host)
 load two portable pieces instead, and this script wires both up:
 
 - the MCP server (mcp/server.py), added to the host's MCP configuration; it
@@ -33,6 +35,11 @@ SERVER_KEY = "requirements_analysis_workbench"
 # marks the folder as ours, so reinstalling or uninstalling never touches a
 # same-named skill that came from somewhere else.
 MARKER_NAME = "plugin-root.txt"
+# DeepSeek Harness takes MCP servers as rows in a YAML patch layer. Without a
+# YAML library the installer owns one delimited block and never edits outside it.
+DSH_ENTRY_ID = "requirements-analysis-workbench"
+DSH_BLOCK_START = "# >>> requirements-analysis-workbench (managed by install_agent.py)"
+DSH_BLOCK_END = "# <<< requirements-analysis-workbench"
 
 
 @dataclass(frozen=True)
@@ -45,7 +52,13 @@ class Target:
     workspace_skills: Callable[[Path], Path] | None
     servers_key: str = "mcpServers"
     entry_type: str | None = None
+    config_format: str = "json"
     note: str = ""
+
+
+def _dsh_home(home: Path) -> Path:
+    configured = os.environ.get("DSH_HOME")
+    return Path(configured).expanduser() if configured else home / ".dsh"
 
 
 def _claude_desktop_config(home: Path) -> Path:
@@ -98,6 +111,20 @@ TARGETS: dict[str, Target] = {
         workspace_config=lambda ws: ws / ".cursor" / "mcp.json",
         user_skills=lambda home: home / ".cursor" / "skills",
         workspace_skills=lambda ws: ws / ".cursor" / "skills",
+    ),
+    "dsh": Target(
+        label="DeepSeek Harness (dsh)",
+        user_config=lambda home: _dsh_home(home) / "cordis.patch.yml",
+        workspace_config=None,
+        user_skills=lambda home: _dsh_home(home) / "skills",
+        workspace_skills=lambda ws: ws / ".dsh" / "skills",
+        config_format="dsh-yaml",
+        note=(
+            "DSH loads the server from the home-level patch layer for every profile. "
+            "For one profile only, rerun with "
+            "--config $DSH_HOME/profiles/<profile>/cordis.patch.yml. DSH does not list MCP "
+            "prompts, so keep the skills installed. Start a new DSH session to load them."
+        ),
     ),
     "gemini-cli": Target(
         label="Gemini CLI",
@@ -199,6 +226,72 @@ def update_config(
     write_config(path, config, dry_run)
 
 
+def dsh_block(entry: dict[str, Any]) -> str:
+    # JSON strings are valid YAML double-quoted scalars, so paths need no escaping rules.
+    args = ", ".join(json.dumps(arg) for arg in entry["args"])
+    return "\n".join(
+        [
+            DSH_BLOCK_START,
+            "- insert:",
+            f"    - id: {DSH_ENTRY_ID}",
+            "      name: '@deepseek-ai/dsh-mcp-client'",
+            "      config:",
+            f"        serverName: {SERVER_KEY}",
+            "        transport: stdio",
+            f"        command: {json.dumps(entry['command'])}",
+            f"        args: [{args}]",
+            "        cwd: !!js process.cwd()",
+            DSH_BLOCK_END,
+            "",
+        ]
+    )
+
+
+def _without_dsh_block(text: str) -> tuple[str, bool]:
+    start = text.find(DSH_BLOCK_START)
+    if start == -1:
+        return text, False
+    end = text.find(DSH_BLOCK_END, start)
+    if end == -1:
+        raise SystemExit("ERROR: the managed DSH block has no end marker; file left unchanged.")
+    end = text.find("\n", end)
+    end = len(text) if end == -1 else end + 1
+    return text[:start] + text[end:], True
+
+
+def update_dsh_patch(path: Path, entry: dict[str, Any] | None, dry_run: bool) -> None:
+    """Add (entry) or remove (None) the workbench row in a DSH Cordis patch layer."""
+
+    text = path.read_text(encoding="utf-8-sig") if path.exists() else ""
+    remaining, had_block = _without_dsh_block(text)
+    if entry is None and not had_block:
+        print(f"No {DSH_ENTRY_ID} entry in {path}")
+        return
+
+    meaningful = [
+        line for line in remaining.splitlines() if line.strip() and not line.lstrip().startswith("#")
+    ]
+    if entry is not None and meaningful and not meaningful[0].startswith("-"):
+        raise SystemExit(
+            f"ERROR: {path} is not a block list of patch operations; it was left unchanged. "
+            "Add the snippet printed by --print manually."
+        )
+    if entry is not None:
+        if remaining and not remaining.endswith("\n"):
+            remaining += "\n"
+        remaining += dsh_block(entry)
+    if dry_run:
+        print(f"[dry-run] would write {path}")
+        return
+    path.parent.mkdir(parents=True, exist_ok=True)
+    if path.exists():
+        backup = path.with_name(path.name + ".bak")
+        shutil.copy2(path, backup)
+        print(f"Backed up {path} -> {backup}")
+    path.write_text(remaining, encoding="utf-8")
+    print(f"Updated {path}")
+
+
 def _owned(skill_dir: Path) -> bool:
     return (skill_dir / MARKER_NAME).is_file()
 
@@ -285,7 +378,10 @@ def main(argv: list[str] | None = None) -> int:
     home = args.home.expanduser()
     workspace = args.workspace.expanduser().resolve()
     entry = server_entry(args.python, target.entry_type)
-    snippet = json.dumps({target.servers_key: {SERVER_KEY: entry}}, indent=2)
+    if target.config_format == "dsh-yaml":
+        snippet = dsh_block(entry).rstrip()
+    else:
+        snippet = json.dumps({target.servers_key: {SERVER_KEY: entry}}, indent=2)
 
     print(f"Target: {target.label} ({args.scope} scope)")
     if args.print_only:
@@ -303,7 +399,11 @@ def main(argv: list[str] | None = None) -> int:
     skills_dir = args.skills_dir or (skills_factory(base) if skills_factory else None)
 
     if not args.no_mcp:
-        if config_path:
+        if config_path and target.config_format == "dsh-yaml":
+            update_dsh_patch(
+                config_path.expanduser(), None if args.uninstall else entry, args.dry_run
+            )
+        elif config_path:
             update_config(
                 config_path.expanduser(),
                 target.servers_key,

@@ -1,0 +1,69 @@
+name: Release
+
+# Push a tag such as v0.5.0 to test, package, and publish that version.
+on:
+  push:
+    tags:
+      - "v*"
+
+permissions:
+  contents: write
+
+jobs:
+  release:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+
+      - name: Check the tag matches every host manifest
+        run: |
+          version="${GITHUB_REF_NAME#v}"
+          plugin=plugins/requirements-analysis-workbench
+          for manifest in "$plugin/.codex-plugin/plugin.json" "$plugin/.claude-plugin/plugin.json" "$plugin/gemini-extension.json"; do
+            found=$(python -c "import json,sys; print(json.load(open(sys.argv[1]))['version'])" "$manifest")
+            if [ "$found" != "$version" ]; then
+              echo "::error file=$manifest::version $found does not match tag $GITHUB_REF_NAME"
+              exit 1
+            fi
+          done
+
+      - name: Run tests
+        run: python -m unittest discover -s plugins/requirements-analysis-workbench/tests -v
+
+      - name: Build release package
+        run: python scripts/package_release.py
+
+      - name: Write release notes from CHANGELOG
+        run: |
+          version="${GITHUB_REF_NAME#v}"
+          awk -v heading="## [$version]" '
+            index($0, heading) == 1 { found = 1; next }
+            found && /^## \[/ { exit }
+            found { print }
+          ' CHANGELOG.md > release-notes.md
+          {
+            echo
+            echo "## Install"
+            echo
+            echo "- Codex / ChatGPT desktop: \`codex plugin marketplace add ${GITHUB_REPOSITORY} --ref ${GITHUB_REF_NAME}\`"
+            echo "- Claude Code: \`/plugin install requirements-analysis-workbench --marketplace ${GITHUB_REPOSITORY}\`"
+            echo "- Antigravity, DeepSeek Harness, Gemini CLI, Cursor, VS Code, Windsurf, Claude Desktop: extract the ZIP and run \`python plugins/requirements-analysis-workbench/scripts/install_agent.py --target <host>\`"
+            echo
+            echo "SHA-256: \`$(cut -d' ' -f1 dist/SHA256SUMS.txt)\`"
+          } >> release-notes.md
+          cat release-notes.md
+
+      - name: Publish GitHub release
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          gh release create "$GITHUB_REF_NAME" \
+            dist/requirements-analysis-workbench-"$GITHUB_REF_NAME".zip \
+            dist/SHA256SUMS.txt \
+            --title "Requirements Analysis Workbench $GITHUB_REF_NAME" \
+            --notes-file release-notes.md \
+            --verify-tag

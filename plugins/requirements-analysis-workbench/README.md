@@ -16,7 +16,7 @@ When a user directly `@`-mentions the plugin and supplies a matching requirement
 
 ## Hosts
 
-The same folder installs into several hosts: `.codex-plugin/` for ChatGPT and Codex, `.claude-plugin/` for Claude Code, and `gemini-extension.json` for Gemini CLI. For Antigravity, Cursor, VS Code, Windsurf, Claude Desktop, or any other MCP host, run `scripts/install_agent.py --target <host>`. Besides the visual selector, the MCP server publishes the skills as prompts and exposes `get_workflow_instructions`, `read_workflow_reference`, `materialize_analysis`, `traceguard_audit`, and `traceguard_impact`, so hosts without Agent Skills support run the same workflow.
+The same folder installs into several hosts: `.codex-plugin/` for ChatGPT and Codex, `.claude-plugin/` for Claude Code, and `gemini-extension.json` for Gemini CLI. For Antigravity, DeepSeek Harness (DSH), Cursor, VS Code, Windsurf, Claude Desktop, or any other MCP host, run `scripts/install_agent.py --target <host>`. Besides the visual selector, the MCP server publishes the skills as prompts and exposes `get_workflow_instructions`, `read_workflow_reference`, `materialize_analysis`, `traceguard_audit`, and `traceguard_impact`, so hosts without Agent Skills support run the same workflow.
 
 In Claude Code:
 

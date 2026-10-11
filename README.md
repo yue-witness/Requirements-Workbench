@@ -2,7 +2,7 @@
 
 [简体中文](README.zh-CN.md) | English
 
-Requirements Analysis Workbench is a plugin for ChatGPT, Codex, and Claude Code, and also runs in Google Antigravity, Gemini CLI, Cursor, VS Code, Windsurf, Claude Desktop, and any other host that supports MCP servers or Agent Skills. It turns software ideas, problem statements, user stories, meeting notes, or draft requirements into selectable, traceable review artefacts. It combines three skills, deterministic Python tools, and an MCP server with an MCP Apps visual configuration panel.
+Requirements Analysis Workbench is a plugin for ChatGPT, Codex, and Claude Code, and also runs in Google Antigravity, DeepSeek Harness (DSH), Gemini CLI, Cursor, VS Code, Windsurf, Claude Desktop, and any other host that supports MCP servers or Agent Skills. It turns software ideas, problem statements, user stories, meeting notes, or draft requirements into selectable, traceable review artefacts. It combines three skills, deterministic Python tools, and an MCP server with an MCP Apps visual configuration panel.
 
 It supports first-time contributors with plain-language guidance and experienced analysts with evidence, confidence, acceptance, traceability, and change-scope controls. The plugin is domain-neutral, with project-specific constraints supplied as project data.
 
@@ -47,6 +47,7 @@ For example, `project.minimum_requirements` is optional and defaults to no count
 | ChatGPT desktop / Codex | Codex plugin marketplace | Yes | Yes (MCP Apps) |
 | Claude Code | Claude Code plugin marketplace | Yes | Conversational fallback (`AskUserQuestion`) |
 | Google Antigravity | `install_agent.py --target antigravity` | Yes | Conversational fallback |
+| DeepSeek Harness (DSH) | `install_agent.py --target dsh` | Yes | Conversational fallback |
 | Gemini CLI | `gemini extensions install` or `install_agent.py --target gemini-cli` | Yes | Conversational fallback |
 | Cursor, VS Code (Copilot), Windsurf | `install_agent.py --target cursor`, `vscode`, or `windsurf` | Yes where the host reads Agent Skills | Conversational fallback |
 | Claude Desktop | `install_agent.py --target claude-desktop` | As MCP prompts | Yes where MCP Apps are enabled |
@@ -85,7 +86,7 @@ Or install in one step on Claude Code 2.1.275 or later:
 
 Restart Claude Code. The skills appear as `/requirements-analysis-workbench:analyze-requirements`, `/requirements-analysis-workbench:revise-requirements-module`, and `/requirements-analysis-workbench:traceguard-audit`, and Claude also selects them automatically from matching requests. The plugin starts its MCP server with `python`; if your machine only provides `python3`, edit `plugins/requirements-analysis-workbench/.claude-plugin/plugin.json` in your copy or use the installer route below.
 
-## Install in Antigravity, Gemini CLI, Cursor, VS Code, Windsurf, or Claude Desktop
+## Install in Antigravity, DeepSeek Harness, Gemini CLI, Cursor, VS Code, Windsurf, or Claude Desktop
 
 Clone the repository (or extract the release ZIP) to a folder you will keep, then run the installer with the Python you want the host to use:
 
@@ -95,7 +96,7 @@ cd Requirements-Workbench
 python plugins/requirements-analysis-workbench/scripts/install_agent.py --target antigravity
 ```
 
-Replace `antigravity` with `gemini-cli`, `cursor`, `vscode`, `windsurf`, `claude-desktop`, `claude-code`, or `generic`. The installer:
+Replace `antigravity` with `dsh`, `gemini-cli`, `cursor`, `vscode`, `windsurf`, `claude-desktop`, `claude-code`, or `generic`. The installer:
 
 - merges a `requirements_analysis_workbench` entry into the host's MCP configuration, keeping every other server and saving a `.bak` copy first;
 - copies the three skills into the host's skills folder and records the plugin location in `plugin-root.txt` beside each `SKILL.md`;
@@ -104,6 +105,7 @@ Replace `antigravity` with `gemini-cli`, `cursor`, `vscode`, `windsurf`, `claude
 | Target | User scope (default) | `--scope workspace` |
 |---|---|---|
 | `antigravity` | `~/.gemini/antigravity/mcp_config.json`, `~/.gemini/antigravity/skills/` | `.agents/skills/` (MCP stays global) |
+| `dsh` | `$DSH_HOME/cordis.patch.yml` (default `~/.dsh`), `$DSH_HOME/skills/` | `.dsh/skills/` (MCP stays in the home patch layer) |
 | `gemini-cli` | `~/.gemini/settings.json`, `~/.gemini/skills/` | `.gemini/settings.json`, `.gemini/skills/` |
 | `cursor` | `~/.cursor/mcp.json`, `~/.cursor/skills/` | `.cursor/mcp.json`, `.cursor/skills/` |
 | `vscode` | — | `.vscode/mcp.json`, `.github/skills/` |
@@ -112,6 +114,8 @@ Replace `antigravity` with `gemini-cli`, `cursor`, `vscode`, `windsurf`, `claude
 | `claude-code` | `~/.claude/skills/` and a printed `claude mcp add` command | `.mcp.json`, `.claude/skills/` |
 
 Useful options: `--print` shows the JSON snippet without writing anything, `--dry-run` lists planned changes, `--config PATH` and `--skills-dir PATH` target any other host or a newer config location, `--no-skills` or `--no-mcp` installs one half only, and `--uninstall` removes exactly what the installer added. Restart the host afterwards.
+
+For DeepSeek Harness, the installer appends one marked `@deepseek-ai/dsh-mcp-client` row to the home-level Cordis patch layer, so every profile (`dsh web`, `dsh tui`, `dsh headless`, Desktop) loads the server; your existing patch rows are left untouched and `--uninstall` removes only the marked block. To enable it for one profile, pass `--config ~/.dsh/profiles/<profile>/cordis.patch.yml`. DSH does not list MCP prompts, so keep the skills installed; start a new DSH session afterwards. Tested with `@deepseek-ai/dsh` 0.2.0-rc.2.
 
 For Gemini CLI you can alternatively install the bundled extension, which loads the MCP server and skills together:
 

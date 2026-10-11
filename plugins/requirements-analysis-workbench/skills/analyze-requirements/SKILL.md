@@ -44,7 +44,7 @@ Treat the confirmed saved selection as the source of truth for
 ## Locate the tools
 
 Work in whichever host loaded this skill (Codex, ChatGPT, Claude Code, Claude
-Desktop, Antigravity, Gemini CLI, Cursor, VS Code, Windsurf, or another
+Desktop, Antigravity, DeepSeek Harness, Gemini CLI, Cursor, VS Code, Windsurf, or another
 Agent Skills or MCP host):
 
 - Prefer the `materialize_analysis`, `traceguard_audit`, and

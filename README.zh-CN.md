@@ -2,7 +2,7 @@
 
 简体中文 | [English](README.md)
 
-Requirements Analysis Workbench 是一个适用于 ChatGPT、Codex 和 Claude Code 的插件，同时可在 Google Antigravity、Gemini CLI、Cursor、VS Code、Windsurf、Claude Desktop 以及任何支持 MCP 服务器或 Agent Skills 的软件中使用。它可将软件构想、问题陈述、用户故事、会议记录或需求草稿整理为可选择、可追踪、便于评审的需求工件。插件包含三个技能、确定性 Python 工具，以及带 MCP Apps 可视化配置面板的 MCP 服务器。
+Requirements Analysis Workbench 是一个适用于 ChatGPT、Codex 和 Claude Code 的插件，同时可在 Google Antigravity、DeepSeek Harness（DSH）、Gemini CLI、Cursor、VS Code、Windsurf、Claude Desktop 以及任何支持 MCP 服务器或 Agent Skills 的软件中使用。它可将软件构想、问题陈述、用户故事、会议记录或需求草稿整理为可选择、可追踪、便于评审的需求工件。插件包含三个技能、确定性 Python 工具，以及带 MCP Apps 可视化配置面板的 MCP 服务器。
 
 插件既为初次参与需求分析的用户提供通俗引导，也为专业分析人员保留证据、置信度、验收条件、可追踪关系和变更范围控制。它是领域无关的通用插件，项目专属约束由项目数据提供。
 
@@ -47,6 +47,7 @@ Requirements Analysis Workbench 是一个适用于 ChatGPT、Codex 和 Claude Co
 | ChatGPT 桌面应用 / Codex | Codex 插件 marketplace | 支持 | 支持（MCP Apps） |
 | Claude Code | Claude Code 插件 marketplace | 支持 | 对话式回退（`AskUserQuestion`） |
 | Google Antigravity | `install_agent.py --target antigravity` | 支持 | 对话式回退 |
+| DeepSeek Harness（DSH） | `install_agent.py --target dsh` | 支持 | 对话式回退 |
 | Gemini CLI | `gemini extensions install` 或 `install_agent.py --target gemini-cli` | 支持 | 对话式回退 |
 | Cursor、VS Code（Copilot）、Windsurf | `install_agent.py --target cursor`、`vscode` 或 `windsurf` | 宿主支持 Agent Skills 时可用 | 对话式回退 |
 | Claude Desktop | `install_agent.py --target claude-desktop` | 以 MCP prompts 提供 | 启用 MCP Apps 时支持 |
@@ -85,7 +86,7 @@ Claude Code 2.1.275 及以上版本也可一步安装：
 
 重启 Claude Code 后，技能显示为 `/requirements-analysis-workbench:analyze-requirements`、`/requirements-analysis-workbench:revise-requirements-module` 和 `/requirements-analysis-workbench:traceguard-audit`，Claude 也会根据匹配的请求自动选用。插件使用 `python` 启动 MCP 服务器；如果本机只有 `python3`，请修改本地副本中的 `plugins/requirements-analysis-workbench/.claude-plugin/plugin.json`，或改用下方安装脚本。
 
-## 在 Antigravity、Gemini CLI、Cursor、VS Code、Windsurf 或 Claude Desktop 中安装
+## 在 Antigravity、DeepSeek Harness、Gemini CLI、Cursor、VS Code、Windsurf 或 Claude Desktop 中安装
 
 将仓库克隆（或将 Release ZIP 解压）到一个会长期保留的目录，然后用希望宿主使用的 Python 运行安装脚本：
 
@@ -95,7 +96,7 @@ cd Requirements-Workbench
 python plugins/requirements-analysis-workbench/scripts/install_agent.py --target antigravity
 ```
 
-可将 `antigravity` 替换为 `gemini-cli`、`cursor`、`vscode`、`windsurf`、`claude-desktop`、`claude-code` 或 `generic`。安装脚本会：
+可将 `antigravity` 替换为 `dsh`、`gemini-cli`、`cursor`、`vscode`、`windsurf`、`claude-desktop`、`claude-code` 或 `generic`。安装脚本会：
 
 - 将 `requirements_analysis_workbench` 条目合并进宿主的 MCP 配置，保留其他所有服务器，并先保存一份 `.bak` 备份；
 - 将三个技能复制到宿主的技能目录，并在每个 `SKILL.md` 旁写入记录插件位置的 `plugin-root.txt`；
@@ -104,6 +105,7 @@ python plugins/requirements-analysis-workbench/scripts/install_agent.py --target
 | 目标 | 用户范围（默认） | `--scope workspace` |
 |---|---|---|
 | `antigravity` | `~/.gemini/antigravity/mcp_config.json`、`~/.gemini/antigravity/skills/` | `.agents/skills/`（MCP 仍为全局） |
+| `dsh` | `$DSH_HOME/cordis.patch.yml`（默认 `~/.dsh`）、`$DSH_HOME/skills/` | `.dsh/skills/`（MCP 仍在主目录补丁层） |
 | `gemini-cli` | `~/.gemini/settings.json`、`~/.gemini/skills/` | `.gemini/settings.json`、`.gemini/skills/` |
 | `cursor` | `~/.cursor/mcp.json`、`~/.cursor/skills/` | `.cursor/mcp.json`、`.cursor/skills/` |
 | `vscode` | — | `.vscode/mcp.json`、`.github/skills/` |
@@ -112,6 +114,8 @@ python plugins/requirements-analysis-workbench/scripts/install_agent.py --target
 | `claude-code` | `~/.claude/skills/`，并打印 `claude mcp add` 命令 | `.mcp.json`、`.claude/skills/` |
 
 常用选项：`--print` 只显示 JSON 片段而不写文件；`--dry-run` 列出计划的修改；`--config PATH` 和 `--skills-dir PATH` 可指向其他宿主或较新的配置位置；`--no-skills` 或 `--no-mcp` 只安装其中一部分；`--uninstall` 只移除安装脚本添加的内容。完成后请重启宿主。
+
+对于 DeepSeek Harness，安装脚本会在主目录级 Cordis 补丁层中追加一个带标记的 `@deepseek-ai/dsh-mcp-client` 条目，使所有 profile（`dsh web`、`dsh tui`、`dsh headless`、桌面版）都加载该服务器；已有补丁条目保持不变，`--uninstall` 只删除带标记的部分。如只需为单个 profile 启用，请传入 `--config ~/.dsh/profiles/<profile>/cordis.patch.yml`。DSH 不显示 MCP prompts，因此请保留技能安装；安装后新建一个 DSH 会话。已在 `@deepseek-ai/dsh` 0.2.0-rc.2 上测试。
 
 Gemini CLI 也可以直接安装内置扩展，一次性加载 MCP 服务器和技能：
 

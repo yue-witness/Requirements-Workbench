@@ -9,6 +9,7 @@ import json
 import sys
 import tempfile
 import unittest
+import unittest.mock
 from pathlib import Path
 
 
@@ -110,6 +111,44 @@ class InstallerTests(unittest.TestCase):
         config = json.loads((workspace / ".vscode" / "mcp.json").read_text(encoding="utf-8"))
         self.assertEqual("stdio", config["servers"][install_agent.SERVER_KEY]["type"])
         self.assertTrue((workspace / ".github" / "skills" / "analyze-requirements").is_dir())
+
+    def test_dsh_appends_patch_row_and_uninstall_restores_file(self) -> None:
+        dsh_home = self.home / ".dsh"
+        dsh_home.mkdir()
+        patch_path = dsh_home / "cordis.patch.yml"
+        existing = "# my overrides\n- insert:\n    - id: other-row\n      name: x\n"
+        patch_path.write_text(existing, encoding="utf-8")
+
+        with unittest.mock.patch.dict("os.environ", {}, clear=False) as environ:
+            environ.pop("DSH_HOME", None)
+            run("--target", "dsh", "--home", str(self.home), "--python", "C:\\Py\\python.exe")
+
+            text = patch_path.read_text(encoding="utf-8")
+            self.assertTrue(text.startswith(existing))
+            self.assertIn("name: '@deepseek-ai/dsh-mcp-client'", text)
+            self.assertIn(f"serverName: {install_agent.SERVER_KEY}", text)
+            self.assertIn('command: "C:\\\\Py\\\\python.exe"', text)
+            self.assertIn("transport: stdio", text)
+            self.assertTrue((dsh_home / "skills" / "analyze-requirements" / "SKILL.md").is_file())
+
+            # Reinstalling replaces the managed block instead of adding a second row.
+            run("--target", "dsh", "--home", str(self.home))
+            self.assertEqual(
+                1, patch_path.read_text(encoding="utf-8").count(install_agent.DSH_BLOCK_START)
+            )
+
+            run("--target", "dsh", "--home", str(self.home), "--uninstall")
+            self.assertEqual(existing, patch_path.read_text(encoding="utf-8"))
+            self.assertFalse((dsh_home / "skills" / "analyze-requirements").exists())
+
+    def test_dsh_refuses_patch_that_is_not_a_block_list(self) -> None:
+        patch_path = self.home / "custom.patch.yml"
+        patch_path.write_text("profile: web\n", encoding="utf-8")
+
+        with self.assertRaises(SystemExit):
+            run("--target", "dsh", "--config", str(patch_path), "--no-skills")
+
+        self.assertEqual("profile: web\n", patch_path.read_text(encoding="utf-8"))
 
     def test_dry_run_and_print_write_nothing(self) -> None:
         output = run("--target", "claude-desktop", "--print", "--home", str(self.home))

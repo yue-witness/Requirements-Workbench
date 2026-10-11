@@ -5,9 +5,10 @@ The server exposes a visual configuration resource and a matching structured
 tool. The tools remain useful when a client cannot render MCP Apps UI.
 
 It also carries the whole workflow for hosts that load MCP servers but not the
-bundled skills (Antigravity, Cursor, Windsurf, VS Code, Gemini CLI, Claude
-Desktop, and others): the skills are published as MCP prompts and resources,
-and the deterministic materialiser and TraceGuard run as tools.
+bundled skills (Antigravity, DeepSeek Harness, Cursor, Windsurf, VS Code,
+Gemini CLI, Claude Desktop, and others): the skills are published as MCP
+prompts and resources, and the deterministic materialiser and TraceGuard run
+as tools.
 """
 
 from __future__ import annotations

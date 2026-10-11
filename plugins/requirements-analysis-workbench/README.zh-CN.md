@@ -16,7 +16,7 @@
 
 ## 支持的宿主
 
-同一目录可安装到多个宿主：`.codex-plugin/` 用于 ChatGPT 和 Codex，`.claude-plugin/` 用于 Claude Code，`gemini-extension.json` 用于 Gemini CLI。对于 Antigravity、Cursor、VS Code、Windsurf、Claude Desktop 或其他 MCP 宿主，运行 `scripts/install_agent.py --target <宿主>`。除可视化选择器外，MCP 服务器还将技能发布为 prompts，并提供 `get_workflow_instructions`、`read_workflow_reference`、`materialize_analysis`、`traceguard_audit` 和 `traceguard_impact` 工具，使不支持 Agent Skills 的宿主也能执行同一工作流。
+同一目录可安装到多个宿主：`.codex-plugin/` 用于 ChatGPT 和 Codex，`.claude-plugin/` 用于 Claude Code，`gemini-extension.json` 用于 Gemini CLI。对于 Antigravity、DeepSeek Harness（DSH）、Cursor、VS Code、Windsurf、Claude Desktop 或其他 MCP 宿主，运行 `scripts/install_agent.py --target <宿主>`。除可视化选择器外，MCP 服务器还将技能发布为 prompts，并提供 `get_workflow_instructions`、`read_workflow_reference`、`materialize_analysis`、`traceguard_audit` 和 `traceguard_impact` 工具，使不支持 Agent Skills 的宿主也能执行同一工作流。
 
 在 Claude Code 中：
 
