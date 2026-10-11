@@ -2,6 +2,21 @@
 
 All notable changes to Requirements Analysis Workbench are documented here.
 
+## [0.5.0] - 2026-10-11
+
+### Added
+
+- Claude Code support: a `.claude-plugin/plugin.json` plugin manifest and a repository `.claude-plugin/marketplace.json`, with the MCP server started from `${CLAUDE_PLUGIN_ROOT}`.
+- Gemini CLI support through a bundled `gemini-extension.json`.
+- `scripts/install_agent.py`, which merges the MCP server into Google Antigravity, Gemini CLI, Cursor, VS Code, Windsurf, Claude Desktop, Claude Code, or any MCP host configuration and copies the skills into the host's skills folder, with backups, dry runs, and uninstall.
+- MCP prompts and `workbench://skills/` resources for the three workflows, plus `get_workflow_instructions` and `read_workflow_reference` tools for hosts without Agent Skills support.
+- `materialize_analysis`, `traceguard_audit`, and `traceguard_impact` MCP tools that run the bundled scripts in-process, so agents no longer need to locate the plugin folder.
+- Tests for the new MCP features, the installer, and version consistency across every host manifest.
+
+### Changed
+
+- The skills now describe a host-neutral route: prefer the MCP tools, otherwise locate the plugin root by `scripts/materialize_analysis.py` or the installer's `plugin-root.txt`, and use a host's structured question tool (such as Claude Code's `AskUserQuestion`) when the visual panel cannot render.
+
 ## [0.4.0] - 2026-08-24
 
 ### Added

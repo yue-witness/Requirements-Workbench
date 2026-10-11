@@ -1,0 +1,18 @@
+{
+  "name": "requirements-analysis-workbench",
+  "owner": {
+    "name": "Requirements Analysis Workbench contributors",
+    "url": "https://github.com/yue-witness"
+  },
+  "metadata": {
+    "description": "Requirements analysis skills, TraceGuard auditing, and a visual workbench MCP server."
+  },
+  "plugins": [
+    {
+      "name": "requirements-analysis-workbench",
+      "source": "./plugins/requirements-analysis-workbench",
+      "description": "Create selectable requirements artefacts with visual configuration and TraceGuard auditing.",
+      "category": "productivity"
+    }
+  ]
+}

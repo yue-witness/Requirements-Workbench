@@ -14,6 +14,16 @@
 
 当用户通过 `@` 直接调用插件并提供匹配的需求描述时，`analyze-requirements` 技能默认在分析前打开此工作台。仅打开面板不会接受界面中显示的默认值：用户必须点击 **Apply selection**，且服务端确认已保存模式与模块后，分析才会解锁。只有在请求同时给出模式和至少一个模块时，插件才接受“不打开 GUI”的明确要求；不兼容 MCP Apps 的宿主则回退为同样具有等待门禁的结构化或对话式选择。
 
+## 支持的宿主
+
+同一目录可安装到多个宿主：`.codex-plugin/` 用于 ChatGPT 和 Codex，`.claude-plugin/` 用于 Claude Code，`gemini-extension.json` 用于 Gemini CLI。对于 Antigravity、Cursor、VS Code、Windsurf、Claude Desktop 或其他 MCP 宿主，运行 `scripts/install_agent.py --target <宿主>`。除可视化选择器外，MCP 服务器还将技能发布为 prompts，并提供 `get_workflow_instructions`、`read_workflow_reference`、`materialize_analysis`、`traceguard_audit` 和 `traceguard_impact` 工具，使不支持 Agent Skills 的宿主也能执行同一工作流。
+
+在 Claude Code 中：
+
+```text
+/plugin install requirements-analysis-workbench --marketplace yue-witness/Requirements-Workbench
+```
+
 ## 确定性示例
 
 在插件目录运行：
